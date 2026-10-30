@@ -1,7 +1,19 @@
+export type Role = 'admin' | 'employee';
+
 export type User = {
     id: number;
     name: string;
     email: string;
+    role: Role;
+    role_label?: string;
+    title?: { ar?: string; en?: string } | string | null;
+    display_title?: string;
+    title_en?: string | null;
+    title_ar?: string | null;
+    phone?: string | null;
+    status: 'active' | 'inactive';
+    isAdmin?: boolean;
+    isEmployee?: boolean;
     avatar?: string;
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
