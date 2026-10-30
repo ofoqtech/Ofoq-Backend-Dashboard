@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Project;
 use App\Models\ProjectImage;
 use Illuminate\Http\RedirectResponse;
@@ -15,15 +16,31 @@ use Inertia\Response;
 class ProjectController extends Controller
 {
     /**
-     * Standard category definitions matching ofoq-frontend.
+     * Dynamic categories loaded from database.
      */
     protected function getCategories(): array
     {
-        return [
-            ['id' => 'web', 'label' => 'Web & Portals', 'label_ar' => 'بوابات وتطبيقات الويب'],
-            ['id' => 'mobile', 'label' => 'Mobile Systems', 'label_ar' => 'أنظمة وتطبيقات الجوال'],
-            ['id' => 'erp', 'label' => 'ERP & Cloud', 'label_ar' => 'الأنظمة الإدارية والسحابية'],
-        ];
+        $categories = Category::query()
+            ->where('is_active', true)
+            ->orderBy('order')
+            ->get();
+
+        if ($categories->isEmpty()) {
+            return [
+                ['id' => 'web', 'slug' => 'web', 'label' => 'Web & Portals', 'label_ar' => 'بوابات وتطبيقات الويب', 'name_en' => 'Web & Portals', 'name_ar' => 'بوابات وتطبيقات الويب'],
+                ['id' => 'mobile', 'slug' => 'mobile', 'label' => 'Mobile Systems', 'label_ar' => 'أنظمة وتطبيقات الجوال', 'name_en' => 'Mobile Systems', 'name_ar' => 'أنظمة وتطبيقات الجوال'],
+                ['id' => 'erp', 'slug' => 'erp', 'label' => 'ERP & Cloud', 'label_ar' => 'الأنظمة الإدارية والسحابية', 'name_en' => 'ERP & Cloud', 'name_ar' => 'الأنظمة الإدارية والسحابية'],
+            ];
+        }
+
+        return $categories->map(fn (Category $cat) => [
+            'id' => $cat->slug,
+            'slug' => $cat->slug,
+            'label' => $cat->name_en ?: $cat->slug,
+            'label_ar' => $cat->name_ar ?: '',
+            'name_en' => $cat->name_en ?: $cat->slug,
+            'name_ar' => $cat->name_ar ?: '',
+        ])->toArray();
     }
 
     /**
@@ -135,6 +152,14 @@ class ProjectController extends Controller
 
         $categoryLabelAr = $request->input('category_label.ar') ?? $request->input('category_label_ar') ?? '';
         $categoryLabelEn = $request->input('category_label.en') ?? (is_string($request->input('category_label')) ? $request->input('category_label') : ($request->input('category_label_en') ?? ''));
+
+        if (empty($categoryLabelAr) || empty($categoryLabelEn)) {
+            $catModel = Category::where('slug', $validated['category'])->first();
+            if ($catModel) {
+                $categoryLabelAr = $categoryLabelAr ?: ($catModel->name_ar ?? '');
+                $categoryLabelEn = $categoryLabelEn ?: ($catModel->name_en ?? '');
+            }
+        }
 
         $taglineAr = $request->input('tagline.ar') ?? $request->input('tagline_ar') ?? '';
         $taglineEn = $request->input('tagline.en') ?? (is_string($request->input('tagline')) ? $request->input('tagline') : ($request->input('tagline_en') ?? ''));
@@ -287,6 +312,14 @@ class ProjectController extends Controller
 
         $categoryLabelAr = $request->input('category_label.ar') ?? $request->input('category_label_ar') ?? $project->category_label_ar ?? '';
         $categoryLabelEn = $request->input('category_label.en') ?? (is_string($request->input('category_label')) ? $request->input('category_label') : ($request->input('category_label_en') ?? $project->category_label_en ?? ''));
+
+        if (empty($categoryLabelAr) || empty($categoryLabelEn)) {
+            $catModel = Category::where('slug', $validated['category'])->first();
+            if ($catModel) {
+                $categoryLabelAr = $categoryLabelAr ?: ($catModel->name_ar ?? '');
+                $categoryLabelEn = $categoryLabelEn ?: ($catModel->name_en ?? '');
+            }
+        }
 
         $taglineAr = $request->input('tagline.ar') ?? $request->input('tagline_ar') ?? $project->tagline_ar ?? '';
         $taglineEn = $request->input('tagline.en') ?? (is_string($request->input('tagline')) ? $request->input('tagline') : ($request->input('tagline_en') ?? $project->tagline_en ?? ''));

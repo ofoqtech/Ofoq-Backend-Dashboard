@@ -64,7 +64,10 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 3. Seed Projects
+        // 3. Seed Categories
+        $this->call(CategorySeeder::class);
+
+        // 4. Seed Projects
         $this->call(ProjectSeeder::class);
     }
 }

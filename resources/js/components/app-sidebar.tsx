@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { FolderKanban, LayoutGrid, ShieldCheck, Users } from 'lucide-react';
+import { FolderKanban, FolderTree, LayoutGrid, ShieldCheck, Users } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -43,6 +43,15 @@ export function AppSidebar() {
             href: employeesIndex(),
             icon: Users,
         },
+        ...(isAdmin
+            ? [
+                  {
+                      title: 'Categories',
+                      href: '/categories',
+                      icon: FolderTree,
+                  },
+              ]
+            : []),
         {
             title: 'Projects',
             href: projectsIndex(),

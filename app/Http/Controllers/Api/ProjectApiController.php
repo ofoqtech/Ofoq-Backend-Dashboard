@@ -3,12 +3,30 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProjectApiController extends Controller
 {
+    /**
+     * Return all active project categories formatted for ofoq-frontend.
+     */
+    public function categories(): JsonResponse
+    {
+        $categories = Category::query()
+            ->where('is_active', true)
+            ->orderBy('order')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'count' => $categories->count(),
+            'data' => $categories,
+        ], 200, [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
     /**
      * Return all projects formatted for ofoq-frontend.
      */

@@ -151,9 +151,9 @@ export default function ProjectForm({
         setCategory(selectedCatId);
         const match = categories.find((c) => c.id === selectedCatId);
         if (match) {
-            setCategoryLabel(match.label);
-            if (match.label_ar) {
-                setCategoryLabelAr(match.label_ar);
+            setCategoryLabel(match.label || match.name_en || '');
+            if (match.label_ar || match.name_ar) {
+                setCategoryLabelAr(match.label_ar || match.name_ar || '');
             }
         }
     };
@@ -406,7 +406,7 @@ export default function ProjectForm({
                             >
                                 {categories.map((c) => (
                                     <option key={c.id} value={c.id}>
-                                        {c.label} ({c.id})
+                                        {c.label || c.name_en || c.id} {c.label_ar || c.name_ar ? `(${c.label_ar || c.name_ar})` : ''}
                                     </option>
                                 ))}
                             </select>

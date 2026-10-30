@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Api\ProjectApiController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProjectController;
@@ -19,12 +20,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('employees', EmployeeController::class);
     Route::resource('admins', AdminController::class);
+    Route::resource('categories', CategoryController::class);
     Route::delete('projects/{project}/images/{image}', [ProjectController::class, 'destroyImage'])->name('projects.images.destroy');
     Route::resource('projects', ProjectController::class);
 });
 
 // Public API endpoints for ofoq-frontend
 Route::prefix('api')->name('api.')->group(function () {
+    Route::get('categories', [ProjectApiController::class, 'categories'])->name('categories.index');
     Route::get('projects', [ProjectApiController::class, 'index'])->name('projects.index');
     Route::get('projects/{project}', [ProjectApiController::class, 'show'])->name('projects.show');
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Role;
+use App\Models\Category;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -19,12 +20,18 @@ class DashboardController extends Controller
         $totalProjects = Project::count();
         $totalEmployees = User::where('role', Role::Employee)->count();
         $totalAdmins = User::where('role', Role::Admin)->count();
+        $totalCategories = Category::count();
 
         $categories = [
             'web' => Project::where('category', 'web')->count(),
             'mobile' => Project::where('category', 'mobile')->count(),
             'erp' => Project::where('category', 'erp')->count(),
         ];
+
+        $activeCategories = Category::withCount('projects')->get();
+        foreach ($activeCategories as $cat) {
+            $categories[$cat->slug] = $cat->projects_count;
+        }
 
         $recentProjects = Project::query()
             ->latest()
@@ -42,6 +49,7 @@ class DashboardController extends Controller
                 'totalProjects' => $totalProjects,
                 'totalEmployees' => $totalEmployees,
                 'totalAdmins' => $totalAdmins,
+                'totalCategories' => $totalCategories,
                 'categories' => $categories,
             ],
             'recentProjects' => $recentProjects,

@@ -12,6 +12,25 @@ export type ProjectCategory = {
     id: string;
     label: string;
     label_ar?: string;
+    name_en?: string;
+    name_ar?: string;
+    slug?: string;
+};
+
+export type Category = {
+    id: number;
+    slug: string;
+    name: MultilingualString | string;
+    name_ar?: string | null;
+    name_en?: string | null;
+    description?: MultilingualString | string | null;
+    description_ar?: string | null;
+    description_en?: string | null;
+    order: number;
+    is_active: boolean;
+    projects_count?: number;
+    created_at?: string;
+    updated_at?: string;
 };
 
 export type ProjectImage = {
