@@ -137,4 +137,3 @@ test('public api returns active categories in json', function () {
             ],
         ]);
 });
-

@@ -2,9 +2,13 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import {
     Briefcase,
     Building2,
+    Calendar,
     ChevronRight,
     FolderKanban,
     Globe,
+    Inbox,
+    MessageCircle,
+    Phone,
     Plus,
     ShieldCheck,
     Smartphone,
@@ -19,23 +23,29 @@ import { create as createAdmin } from '@/routes/admins';
 import { create as createEmployee, index as employeesIndex } from '@/routes/employees';
 import { create as createProject, edit as editProject, index as projectsIndex } from '@/routes/projects';
 import type { Auth, Project, User } from '@/types';
+import type { Lead } from '@/types/crm';
 
 type DashboardProps = {
     stats: {
         totalProjects: number;
         totalEmployees: number;
         totalAdmins: number;
+        totalCategories: number;
+        totalLeads?: number;
+        newLeadsCount?: number;
         categories: {
             web: number;
             mobile: number;
             erp: number;
+            [key: string]: number;
         };
     };
     recentProjects: Project[];
     recentEmployees: User[];
+    recentLeads?: Lead[];
 };
 
-export default function Dashboard({ stats, recentProjects, recentEmployees }: DashboardProps) {
+export default function Dashboard({ stats, recentProjects, recentEmployees, recentLeads = [] }: DashboardProps) {
     const { auth } = usePage<{ auth: Auth }>().props;
     const user = auth.user;
     const isAdmin = user.role === 'admin';
@@ -62,6 +72,12 @@ export default function Dashboard({ stats, recentProjects, recentEmployees }: Da
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2.5">
+                        <Button asChild variant="outline" size="sm">
+                            <Link href="/crm">
+                                <Inbox className="mr-1.5 size-4 text-emerald-500" />
+                                CRM Pipeline
+                            </Link>
+                        </Button>
                         {isAdmin && (
                             <>
                                 <Button asChild variant="outline" size="sm">
@@ -89,6 +105,27 @@ export default function Dashboard({ stats, recentProjects, recentEmployees }: Da
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    {/* CRM Inquiries Card */}
+                    <Card className="relative overflow-hidden border-emerald-500/30 bg-emerald-500/[0.02]">
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">CRM Inquiries</CardTitle>
+                            <Inbox className="text-emerald-500 size-4" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex items-baseline justify-between">
+                                <div className="text-2xl font-bold">{stats.totalLeads ?? 0}</div>
+                                {(stats.newLeadsCount ?? 0) > 0 && (
+                                    <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                                        {stats.newLeadsCount} new
+                                    </span>
+                                )}
+                            </div>
+                            <p className="text-muted-foreground mt-1 text-xs">
+                                Client inquiries via website & CRM
+                            </p>
+                        </CardContent>
+                    </Card>
+
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
@@ -132,20 +169,100 @@ export default function Dashboard({ stats, recentProjects, recentEmployees }: Da
                             </p>
                         </CardContent>
                     </Card>
+                </div>
 
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium">ERP & Cloud Systems</CardTitle>
-                            <Building2 className="text-muted-foreground size-4" />
+                {/* CRM Recent Inquiries Section */}
+                {recentLeads.length > 0 && (
+                    <Card className="border-border">
+                        <CardHeader className="flex flex-row items-center justify-between pb-3">
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <CardTitle>Recent Client Inquiries</CardTitle>
+                                    {(stats.newLeadsCount ?? 0) > 0 && (
+                                        <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                            {stats.newLeadsCount} awaiting response
+                                        </span>
+                                    )}
+                                </div>
+                                <CardDescription>
+                                    Incoming requests submitted through the &quot;Get In Touch&quot; website form
+                                </CardDescription>
+                            </div>
+                            <Button asChild variant="ghost" size="sm">
+                                <Link href="/crm" className="flex items-center gap-1 text-xs">
+                                    Open CRM <ChevronRight className="size-3.5" />
+                                </Link>
+                            </Button>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.categories.erp}</div>
-                            <p className="text-muted-foreground mt-1 text-xs">
-                                Enterprise systems
-                            </p>
+                            <div className="divide-y divide-border/60">
+                                {recentLeads.map((lead) => (
+                                    <div
+                                        key={lead.id}
+                                        className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between first:pt-0 last:pb-0"
+                                    >
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div className="size-9 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0">
+                                                {lead.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <h3 className="text-sm font-semibold truncate text-foreground">
+                                                        {lead.name}
+                                                    </h3>
+                                                    {lead.company && (
+                                                        <span className="text-xs text-muted-foreground truncate hidden sm:inline">
+                                                            &bull; {lead.company}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
+                                                    <span className="truncate">
+                                                        {lead.service_name_snapshot || lead.service?.name_en || 'General Solution'}
+                                                    </span>
+                                                    {lead.budget_range_snapshot && (
+                                                        <>
+                                                            <span>&bull;</span>
+                                                            <span className="truncate text-[11px]">
+                                                                {lead.budget_range_snapshot}
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <span
+                                                className={`inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold ${lead.status_color}`}
+                                            >
+                                                {lead.status_label}
+                                            </span>
+
+                                            <Button size="sm" variant="outline" className="h-7 px-2.5 text-xs" asChild>
+                                                <a
+                                                    href={lead.whatsapp_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-1 text-emerald-600"
+                                                >
+                                                    <MessageCircle className="size-3" />
+                                                    WhatsApp
+                                                </a>
+                                            </Button>
+
+                                            <Button size="sm" variant="ghost" className="h-7 px-2.5 text-xs" asChild>
+                                                <Link href={`/crm?selected=${lead.id}`}>
+                                                    Details
+                                                </Link>
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </CardContent>
                     </Card>
-                </div>
+                )}
 
                 {/* Main Content Grid: Recent Projects & Team */}
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-7">
@@ -252,19 +369,12 @@ export default function Dashboard({ stats, recentProjects, recentEmployees }: Da
                                                 </div>
                                                 <div className="min-w-0">
                                                     <div className="flex items-center gap-1.5">
-                                                        <span className="text-sm font-medium truncate">
-                                                            {emp.name}
-                                                        </span>
-                                                        <Badge
-                                                            variant={emp.role === 'admin' ? 'default' : 'secondary'}
-                                                            className="text-[10px] px-1 py-0"
-                                                        >
-                                                            {emp.role}
+                                                        <h4 className="text-sm font-semibold truncate">{emp.name}</h4>
+                                                        <Badge variant="secondary" className="text-[10px] px-1 py-0 capitalize">
+                                                            {emp.role_label || emp.role}
                                                         </Badge>
                                                     </div>
-                                                    <p className="text-xs text-muted-foreground truncate">
-                                                        {emp.display_title || emp.title_en || (typeof emp.title === 'object' ? emp.title?.en : emp.title) || emp.email}
-                                                    </p>
+                                                    <p className="text-xs text-muted-foreground truncate">{emp.display_title || emp.title_en || emp.email}</p>
                                                 </div>
                                             </div>
 

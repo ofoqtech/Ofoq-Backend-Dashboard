@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { FolderKanban, FolderTree, LayoutGrid, ShieldCheck, Users } from 'lucide-react';
+import { FolderKanban, FolderTree, Inbox, LayoutGrid, ShieldCheck, Users } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -20,7 +20,7 @@ import { index as projectsIndex } from '@/routes/projects';
 import type { Auth, NavItem } from '@/types';
 
 export function AppSidebar() {
-    const { auth } = usePage<{ auth: Auth }>().props;
+    const { auth, crm } = usePage<{ auth: Auth; crm?: { newLeadsCount?: number } }>().props;
     const isAdmin = auth?.user?.role === 'admin';
 
     const mainNavItems: NavItem[] = [
@@ -28,6 +28,12 @@ export function AppSidebar() {
             title: 'Dashboard',
             href: dashboard(),
             icon: LayoutGrid,
+        },
+        {
+            title: 'CRM & Leads',
+            href: '/crm',
+            icon: Inbox,
+            badge: crm?.newLeadsCount ?? 0,
         },
         ...(isAdmin
             ? [

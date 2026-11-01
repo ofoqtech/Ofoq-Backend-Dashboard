@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\LeadStatus;
 use App\Enums\Role;
 use App\Models\Category;
+use App\Models\Lead;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -21,6 +23,8 @@ class DashboardController extends Controller
         $totalEmployees = User::where('role', Role::Employee)->count();
         $totalAdmins = User::where('role', Role::Admin)->count();
         $totalCategories = Category::count();
+        $totalLeads = Lead::count();
+        $newLeadsCount = Lead::where('status', LeadStatus::New)->count();
 
         $categories = [
             'web' => Project::where('category', 'web')->count(),
@@ -44,16 +48,25 @@ class DashboardController extends Controller
             ->take(5)
             ->get(['id', 'name', 'email', 'role', 'title', 'phone', 'status', 'created_at']);
 
+        $recentLeads = Lead::query()
+            ->with(['assignee', 'service'])
+            ->latest()
+            ->take(5)
+            ->get();
+
         return Inertia::render('dashboard', [
             'stats' => [
                 'totalProjects' => $totalProjects,
                 'totalEmployees' => $totalEmployees,
                 'totalAdmins' => $totalAdmins,
                 'totalCategories' => $totalCategories,
+                'totalLeads' => $totalLeads,
+                'newLeadsCount' => $newLeadsCount,
                 'categories' => $categories,
             ],
             'recentProjects' => $recentProjects,
             'recentEmployees' => $recentEmployees,
+            'recentLeads' => $recentLeads,
         ]);
     }
 }

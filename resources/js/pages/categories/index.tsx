@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     Edit3,
@@ -7,6 +7,7 @@ import {
     Plus,
     Search,
     Trash2,
+    X,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -41,11 +42,32 @@ export default function CategoriesIndex({
     const [search, setSearch] = useState(filters.search || '');
     const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
 
+    // Keep search in sync if filters.search changes externally
+    useEffect(() => {
+        setSearch(filters.search || '');
+    }, [filters.search]);
+
+    // Live instant search (fires debounced at 250ms when typing or clearing)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const currentFilterSearch = filters.search || '';
+            if (search.trim() !== currentFilterSearch.trim()) {
+                router.get(
+                    '/categories',
+                    { search: search.trim() || undefined },
+                    { preserveState: true, preserveScroll: true, replace: true }
+                );
+            }
+        }, 250);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
             '/categories',
-            { search },
+            { search: search.trim() || undefined },
             { preserveState: true, replace: true }
         );
     };
@@ -112,13 +134,24 @@ export default function CategoriesIndex({
                     <CardContent>
                         <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row sm:items-center">
                             <div className="relative flex-1">
-                                <Search className="text-muted-foreground absolute left-3 top-1/2 size-4 -translate-y-1/2" />
+                                <Search className="text-muted-foreground absolute left-3 top-1/2 size-4 -translate-y-1/2 pointer-events-none" />
                                 <Input
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder="Search categories (e.g. Web, Mobile, تطبيقات, سحابية)..."
-                                    className="pl-9"
+                                    className="pl-9 pr-8"
+                                    autoComplete="off"
                                 />
+                                {search && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearch('')}
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                                        title="Clear search"
+                                    >
+                                        <X className="size-3.5" />
+                                    </button>
+                                )}
                             </div>
 
                             <div className="flex items-center gap-2">

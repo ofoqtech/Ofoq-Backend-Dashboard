@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Api\ProjectApiController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,18 +18,20 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
+    // CRM & Lead Pipeline Management
+    Route::get('crm', [LeadController::class, 'index'])->name('crm.index');
+    Route::post('crm', [LeadController::class, 'store'])->name('crm.store');
+    Route::patch('crm/{lead}/status', [LeadController::class, 'updateStatus'])->name('crm.update-status');
+    Route::patch('crm/{lead}/priority', [LeadController::class, 'updatePriority'])->name('crm.update-priority');
+    Route::patch('crm/{lead}/assign', [LeadController::class, 'assign'])->name('crm.assign');
+    Route::post('crm/{lead}/notes', [LeadController::class, 'addNote'])->name('crm.add-note');
+    Route::delete('crm/{lead}', [LeadController::class, 'destroy'])->name('crm.destroy');
+
     Route::resource('employees', EmployeeController::class);
     Route::resource('admins', AdminController::class);
     Route::resource('categories', CategoryController::class);
     Route::delete('projects/{project}/images/{image}', [ProjectController::class, 'destroyImage'])->name('projects.images.destroy');
     Route::resource('projects', ProjectController::class);
-});
-
-// Public API endpoints for ofoq-frontend
-Route::prefix('api')->name('api.')->group(function () {
-    Route::get('categories', [ProjectApiController::class, 'categories'])->name('categories.index');
-    Route::get('projects', [ProjectApiController::class, 'index'])->name('projects.index');
-    Route::get('projects/{project}', [ProjectApiController::class, 'show'])->name('projects.show');
 });
 
 require __DIR__.'/settings.php';

@@ -69,5 +69,11 @@ class DatabaseSeeder extends Seeder
 
         // 4. Seed Projects
         $this->call(ProjectSeeder::class);
+
+        // 5. Seed Services & Budgets for CRM
+        $this->call(ServiceSeeder::class);
+
+        // 6. Seed CRM Leads
+        $this->call(LeadSeeder::class);
     }
 }

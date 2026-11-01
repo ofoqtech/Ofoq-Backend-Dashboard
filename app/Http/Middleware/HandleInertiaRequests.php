@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\LeadStatus;
+use App\Models\Lead;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -45,6 +47,9 @@ class HandleInertiaRequests extends Middleware
                     'isAdmin' => $user->isAdmin(),
                     'isEmployee' => $user->isEmployee(),
                 ]) : null,
+            ],
+            'crm' => [
+                'newLeadsCount' => $user ? fn () => Lead::where('status', LeadStatus::New)->count() : 0,
             ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
