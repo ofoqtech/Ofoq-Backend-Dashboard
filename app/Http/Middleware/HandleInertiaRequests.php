@@ -49,7 +49,7 @@ class HandleInertiaRequests extends Middleware
                 ]) : null,
             ],
             'crm' => [
-                'newLeadsCount' => $user ? fn () => Lead::where('status', LeadStatus::New)->count() : 0,
+                'newLeadsCount' => $user ? fn () => cache()->remember('crm_new_leads_count', 15, fn () => Lead::where('status', LeadStatus::New)->count()) : 0,
             ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),

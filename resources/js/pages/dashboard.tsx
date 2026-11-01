@@ -18,6 +18,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from '@/lib/i18n';
 import { dashboard } from '@/routes';
 import { create as createAdmin } from '@/routes/admins';
 import { create as createEmployee, index as employeesIndex } from '@/routes/employees';
@@ -47,12 +48,20 @@ type DashboardProps = {
 
 export default function Dashboard({ stats, recentProjects, recentEmployees, recentLeads = [] }: DashboardProps) {
     const { auth } = usePage<{ auth: Auth }>().props;
+    const { t, localized, isRtl } = useTranslation();
     const user = auth.user;
     const isAdmin = user.role === 'admin';
 
+    const getRoleLabel = (role: string) => {
+        if (isRtl) {
+            return role === 'admin' ? 'مدير عام' : 'مهندس ومطور';
+        }
+        return role === 'admin' ? 'Administrator' : 'Employee Staff';
+    };
+
     return (
         <>
-            <Head title="Dashboard" />
+            <Head title={t('nav.dashboard')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 {/* Welcome Header */}
@@ -60,44 +69,44 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                     <div>
                         <div className="flex items-center gap-2.5">
                             <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                                Welcome back, {user.name}
+                                {t('dashboard.welcome')}, {user.name}
                             </h1>
-                            <Badge variant={isAdmin ? 'default' : 'secondary'} className="capitalize">
-                                {user.role_label || user.role}
+                            <Badge variant={isAdmin ? 'default' : 'secondary'} className="capitalize text-xs font-semibold">
+                                {getRoleLabel(user.role)}
                             </Badge>
                         </div>
                         <p className="text-muted-foreground mt-1 text-sm">
-                            Manage Ofoq Tech projects, team members, and client delivery operations.
+                            {t('dashboard.subtitle')}
                         </p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2.5">
                         <Button asChild variant="outline" size="sm">
-                            <Link href="/crm">
-                                <Inbox className="mr-1.5 size-4 text-emerald-500" />
-                                CRM Pipeline
+                            <Link href="/crm" prefetch={['mount', 'hover']} cacheFor="2m" className="gap-1.5">
+                                <Inbox className="size-4 text-emerald-500" />
+                                {t('dashboard.crm_pipeline')}
                             </Link>
                         </Button>
                         {isAdmin && (
                             <>
                                 <Button asChild variant="outline" size="sm">
-                                    <Link href={createAdmin()}>
-                                        <ShieldCheck className="mr-1.5 size-4 text-primary" />
-                                        Add Admin
+                                    <Link href={createAdmin()} prefetch="hover" cacheFor="1m" className="gap-1.5">
+                                        <ShieldCheck className="size-4 text-primary" />
+                                        {t('dashboard.add_admin')}
                                     </Link>
                                 </Button>
                                 <Button asChild variant="outline" size="sm">
-                                    <Link href={createEmployee()}>
-                                        <Users className="mr-1.5 size-4" />
-                                        Add Employee
+                                    <Link href={createEmployee()} prefetch="hover" cacheFor="1m" className="gap-1.5">
+                                        <Users className="size-4" />
+                                        {t('dashboard.add_employee')}
                                     </Link>
                                 </Button>
                             </>
                         )}
                         <Button asChild size="sm">
-                            <Link href={createProject()}>
-                                <Plus className="mr-1.5 size-4" />
-                                Add Project
+                            <Link href={createProject()} prefetch="hover" cacheFor="1m" className="gap-1.5">
+                                <Plus className="size-4" />
+                                {t('dashboard.add_project')}
                             </Link>
                         </Button>
                     </div>
@@ -108,7 +117,7 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                     {/* CRM Inquiries Card */}
                     <Card className="relative overflow-hidden border-emerald-500/30 bg-emerald-500/[0.02]">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium">CRM Inquiries</CardTitle>
+                            <CardTitle className="text-sm font-medium">{t('dashboard.crm_inquiries')}</CardTitle>
                             <Inbox className="text-emerald-500 size-4" />
                         </CardHeader>
                         <CardContent>
@@ -116,45 +125,45 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                                 <div className="text-2xl font-bold">{stats.totalLeads ?? 0}</div>
                                 {(stats.newLeadsCount ?? 0) > 0 && (
                                     <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
-                                        {stats.newLeadsCount} new
+                                        {stats.newLeadsCount} {t('dashboard.new_tag')}
                                     </span>
                                 )}
                             </div>
                             <p className="text-muted-foreground mt-1 text-xs">
-                                Client inquiries via website & CRM
+                                {t('dashboard.recent_inquiries_desc')}
                             </p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
+                            <CardTitle className="text-sm font-medium">{t('dashboard.total_projects')}</CardTitle>
                             <FolderKanban className="text-muted-foreground size-4" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.totalProjects}</div>
                             <p className="text-muted-foreground mt-1 text-xs">
-                                Portfolio showcase items
+                                {t('dashboard.portfolio_items')}
                             </p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium">Team Members</CardTitle>
+                            <CardTitle className="text-sm font-medium">{t('dashboard.team_members')}</CardTitle>
                             <Users className="text-muted-foreground size-4" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.totalEmployees}</div>
                             <p className="text-muted-foreground mt-1 text-xs">
-                                {stats.totalAdmins} admin{stats.totalAdmins !== 1 ? 's' : ''} with full system access
+                                {stats.totalAdmins} {t('dashboard.admins_count')}
                             </p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium">Web & Mobile Apps</CardTitle>
+                            <CardTitle className="text-sm font-medium">{t('dashboard.web_mobile')}</CardTitle>
                             <div className="flex gap-1">
                                 <Globe className="text-muted-foreground size-4" />
                                 <Smartphone className="text-muted-foreground size-4" />
@@ -165,7 +174,7 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                                 {stats.categories.web + stats.categories.mobile}
                             </div>
                             <p className="text-muted-foreground mt-1 text-xs">
-                                {stats.categories.web} Web &bull; {stats.categories.mobile} Mobile
+                                {stats.categories.web} {t('dashboard.web')} &bull; {stats.categories.mobile} {t('dashboard.mobile')}
                             </p>
                         </CardContent>
                     </Card>
@@ -177,20 +186,20 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                         <CardHeader className="flex flex-row items-center justify-between pb-3">
                             <div>
                                 <div className="flex items-center gap-2">
-                                    <CardTitle>Recent Client Inquiries</CardTitle>
+                                    <CardTitle>{t('dashboard.recent_inquiries')}</CardTitle>
                                     {(stats.newLeadsCount ?? 0) > 0 && (
                                         <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                                            {stats.newLeadsCount} awaiting response
+                                            {stats.newLeadsCount} {t('dashboard.awaiting_response')}
                                         </span>
                                     )}
                                 </div>
                                 <CardDescription>
-                                    Incoming requests submitted through the &quot;Get In Touch&quot; website form
+                                    {t('dashboard.recent_inquiries_desc')}
                                 </CardDescription>
                             </div>
                             <Button asChild variant="ghost" size="sm">
-                                <Link href="/crm" className="flex items-center gap-1 text-xs">
-                                    Open CRM <ChevronRight className="size-3.5" />
+                                <Link href="/crm" prefetch={['mount', 'hover']} cacheFor="2m" className="flex items-center gap-1 text-xs">
+                                    {t('dashboard.open_crm')} <ChevronRight className="size-3.5 rtl:rotate-180" />
                                 </Link>
                             </Button>
                         </CardHeader>
@@ -218,7 +227,7 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
                                                     <span className="truncate">
-                                                        {lead.service_name_snapshot || lead.service?.name_en || 'General Solution'}
+                                                        {isRtl ? (lead.service?.name_ar || lead.service_name_snapshot) : (lead.service?.name_en || lead.service_name_snapshot)}
                                                     </span>
                                                     {lead.budget_range_snapshot && (
                                                         <>
@@ -236,7 +245,7 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                                             <span
                                                 className={`inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold ${lead.status_color}`}
                                             >
-                                                {lead.status_label}
+                                                {isRtl ? lead.status_label_ar : lead.status_label}
                                             </span>
 
                                             <Button size="sm" variant="outline" className="h-7 px-2.5 text-xs" asChild>
@@ -247,13 +256,13 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                                                     className="flex items-center gap-1 text-emerald-600"
                                                 >
                                                     <MessageCircle className="size-3" />
-                                                    WhatsApp
+                                                    {t('dashboard.whatsapp')}
                                                 </a>
                                             </Button>
 
                                             <Button size="sm" variant="ghost" className="h-7 px-2.5 text-xs" asChild>
                                                 <Link href={`/crm?selected=${lead.id}`}>
-                                                    Details
+                                                    {t('common.details')}
                                                 </Link>
                                             </Button>
                                         </div>
@@ -270,12 +279,12 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                     <Card className="lg:col-span-4">
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
-                                <CardTitle>Recent Projects</CardTitle>
-                                <CardDescription>Latest portfolio entries added to the platform</CardDescription>
+                                <CardTitle>{t('dashboard.recent_projects')}</CardTitle>
+                                <CardDescription>{t('dashboard.recent_projects_desc')}</CardDescription>
                             </div>
                             <Button asChild variant="ghost" size="sm">
-                                <Link href={projectsIndex()} className="flex items-center gap-1 text-xs">
-                                    View all <ChevronRight className="size-3.5" />
+                                <Link href={projectsIndex()} prefetch={['mount', 'hover']} cacheFor="2m" className="flex items-center gap-1 text-xs">
+                                    {t('common.view_all')} <ChevronRight className="size-3.5 rtl:rotate-180" />
                                 </Link>
                             </Button>
                         </CardHeader>
@@ -283,7 +292,7 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                             <div className="divide-y divide-border/60">
                                 {recentProjects.length === 0 ? (
                                     <p className="text-muted-foreground py-6 text-center text-sm">
-                                        No projects found yet.
+                                        {t('dashboard.no_projects')}
                                     </p>
                                 ) : (
                                     recentProjects.map((project) => (
@@ -295,7 +304,7 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                                                 {project.image ? (
                                                     <img
                                                         src={project.image}
-                                                        alt={typeof project.title === 'object' ? project.title.en || project.title.ar : project.title}
+                                                        alt={localized(project.title)}
                                                         className="size-11 rounded-lg object-cover border border-border/70 shrink-0"
                                                     />
                                                 ) : (
@@ -305,14 +314,13 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                                                 )}
                                                 <div className="min-w-0">
                                                     <h3 className="text-sm font-semibold truncate">
-                                                        {project.title_en || (typeof project.title === 'object' ? project.title.en : project.title)}
+                                                        {localized(project.title)}
                                                     </h3>
-                                                    <p className="text-xs text-muted-foreground truncate" dir="rtl">
-                                                        {project.title_ar || (typeof project.title === 'object' ? project.title.ar : '')}
-                                                    </p>
                                                     <div className="mt-1 flex flex-wrap items-center gap-1.5">
                                                         <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                                                            {project.category_label_en || (typeof project.category_label === 'object' ? project.category_label.en : project.category_label) || project.category}
+                                                            {isRtl
+                                                                ? (project.category_label_ar || (typeof project.category_label === 'object' ? project.category_label?.ar : project.category_label) || project.category)
+                                                                : (project.category_label_en || (typeof project.category_label === 'object' ? project.category_label?.en : project.category_label) || project.category)}
                                                         </Badge>
                                                         {project.technologies?.slice(0, 2).map((tech) => (
                                                             <span
@@ -326,9 +334,9 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                                                 </div>
                                             </div>
 
-                                            <Button asChild variant="outline" size="sm" className="ml-2 shrink-0 text-xs">
+                                            <Button asChild variant="outline" size="sm" className="ms-2 shrink-0 text-xs">
                                                 <Link href={editProject(project.slug)}>
-                                                    Edit
+                                                    {t('common.edit')}
                                                 </Link>
                                             </Button>
                                         </div>
@@ -342,12 +350,12 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                     <Card className="lg:col-span-3">
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
-                                <CardTitle>Team & Staff</CardTitle>
-                                <CardDescription>Active employees and administrators</CardDescription>
+                                <CardTitle>{t('dashboard.team_staff')}</CardTitle>
+                                <CardDescription>{t('dashboard.team_staff_desc')}</CardDescription>
                             </div>
                             <Button asChild variant="ghost" size="sm">
-                                <Link href={employeesIndex()} className="flex items-center gap-1 text-xs">
-                                    Manage <ChevronRight className="size-3.5" />
+                                <Link href={employeesIndex()} prefetch={['mount', 'hover']} cacheFor="2m" className="flex items-center gap-1 text-xs">
+                                    {t('dashboard.manage')} <ChevronRight className="size-3.5 rtl:rotate-180" />
                                 </Link>
                             </Button>
                         </CardHeader>
@@ -355,7 +363,7 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                             <div className="divide-y divide-border/60">
                                 {recentEmployees.length === 0 ? (
                                     <p className="text-muted-foreground py-6 text-center text-sm">
-                                        No team members registered yet.
+                                        {t('dashboard.no_team')}
                                     </p>
                                 ) : (
                                     recentEmployees.map((emp) => (
@@ -371,17 +379,19 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                                                     <div className="flex items-center gap-1.5">
                                                         <h4 className="text-sm font-semibold truncate">{emp.name}</h4>
                                                         <Badge variant="secondary" className="text-[10px] px-1 py-0 capitalize">
-                                                            {emp.role_label || emp.role}
+                                                            {getRoleLabel(emp.role)}
                                                         </Badge>
                                                     </div>
-                                                    <p className="text-xs text-muted-foreground truncate">{emp.display_title || emp.title_en || emp.email}</p>
+                                                    <p className="text-xs text-muted-foreground truncate">
+                                                        {isRtl ? (emp.title_ar || emp.display_title || emp.email) : (emp.title_en || emp.display_title || emp.email)}
+                                                    </p>
                                                 </div>
                                             </div>
 
                                             <div className="flex items-center gap-1.5">
                                                 <span
                                                     className={`size-2 rounded-full ${emp.status === 'active' ? 'bg-emerald-500' : 'bg-muted-foreground'}`}
-                                                    title={emp.status}
+                                                    title={emp.status === 'active' ? t('common.active') : t('common.inactive')}
                                                 />
                                             </div>
                                         </div>

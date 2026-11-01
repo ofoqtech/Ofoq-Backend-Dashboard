@@ -18,6 +18,11 @@
                         document.documentElement.classList.add('dark');
                     }
                 }
+
+                // Detect and apply saved locale and RTL/LTR direction
+                const savedLocale = localStorage.getItem('ofoq_locale') || 'en';
+                document.documentElement.lang = savedLocale;
+                document.documentElement.dir = savedLocale === 'ar' ? 'rtl' : 'ltr';
             })();
         </script>
 

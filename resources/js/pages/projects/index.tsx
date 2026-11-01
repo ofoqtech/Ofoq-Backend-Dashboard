@@ -25,6 +25,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/lib/i18n';
 import { dashboard } from '@/routes';
 import {
     create as createProject,
@@ -49,6 +50,7 @@ export default function ProjectsIndex({
     categories,
 }: ProjectsIndexProps) {
     const { flash } = usePage<{ auth: Auth; flash?: { success?: string; error?: string } }>().props;
+    const { t, isRtl, localized } = useTranslation();
 
     const [search, setSearch] = useState(filters.search || '');
     const [category, setCategory] = useState(filters.category || 'all');
@@ -111,26 +113,56 @@ export default function ProjectsIndex({
         }
     };
 
+    const getProjectTitle = (p: Project | null | undefined): string => {
+        if (!p) return '';
+        if (isRtl) {
+            return p.title_ar || (typeof p.title === 'object' ? p.title?.ar : '') || p.title_en || (typeof p.title === 'object' ? p.title?.en : p.title) || '';
+        }
+        return p.title_en || (typeof p.title === 'object' ? p.title?.en : p.title) || '';
+    };
+
+    const getProjectTagline = (p: Project | null | undefined): string => {
+        if (!p) return '';
+        if (isRtl) {
+            return (
+                p.tagline_ar ||
+                (typeof p.tagline === 'object' ? p.tagline?.ar : '') ||
+                p.description_ar ||
+                (typeof p.description === 'object' ? p.description?.ar : '') ||
+                p.tagline_en ||
+                (typeof p.tagline === 'object' ? p.tagline?.en : '') ||
+                ''
+            );
+        }
+        return (
+            p.tagline_en ||
+            (typeof p.tagline === 'object' ? p.tagline?.en : '') ||
+            p.description_en ||
+            (typeof p.description === 'object' ? p.description?.en : '') ||
+            ''
+        );
+    };
+
     return (
         <>
-            <Head title="Portfolio Projects" />
+            <Head title={t('projects.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 {/* Header */}
                 <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                            Portfolio Projects
+                            {t('projects.title')}
                         </h1>
                         <p className="text-muted-foreground mt-1 text-sm">
-                            Manage projects, showcase items, technologies, and metrics displayed on the frontend website.
+                            {t('projects.subtitle')}
                         </p>
                     </div>
 
                     <Button asChild size="sm">
-                        <Link href={createProject()}>
-                            <Plus className="mr-1.5 size-4" />
-                            Add Project
+                        <Link href={createProject()} prefetch="hover" cacheFor="1m">
+                            <Plus className={`size-4 ${isRtl ? 'ml-1.5' : 'mr-1.5'}`} />
+                            {t('projects.add_project')}
                         </Link>
                     </Button>
                 </div>
@@ -150,26 +182,32 @@ export default function ProjectsIndex({
                 {/* Filters */}
                 <Card>
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-base font-semibold">Filter Projects</CardTitle>
-                        <CardDescription>Search by title, technology, or category</CardDescription>
+                        <CardTitle className="text-base font-semibold">{t('projects.filter_title')}</CardTitle>
+                        <CardDescription>{t('projects.filter_desc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row sm:items-center">
                             <div className="relative flex-1">
-                                <Search className="text-muted-foreground absolute left-3 top-1/2 size-4 -translate-y-1/2 pointer-events-none" />
+                                <Search
+                                    className={`text-muted-foreground absolute top-1/2 size-4 -translate-y-1/2 pointer-events-none ${
+                                        isRtl ? 'right-3' : 'left-3'
+                                    }`}
+                                />
                                 <Input
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    placeholder="Search title, technologies, or keywords..."
-                                    className="pl-9 pr-8"
+                                    placeholder={t('projects.search_placeholder')}
+                                    className={isRtl ? 'pr-9 pl-8' : 'pl-9 pr-8'}
                                     autoComplete="off"
                                 />
                                 {search && (
                                     <button
                                         type="button"
                                         onClick={() => setSearch('')}
-                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                                        title="Clear search"
+                                        className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors ${
+                                            isRtl ? 'left-2.5' : 'right-2.5'
+                                        }`}
+                                        title={t('common.clear')}
                                     >
                                         <X className="size-3.5" />
                                     </button>
@@ -182,16 +220,16 @@ export default function ProjectsIndex({
                                     onChange={(e) => handleCategoryChange(e.target.value)}
                                     className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                 >
-                                    <option value="all">All Categories</option>
+                                    <option value="all">{t('projects.all_categories')}</option>
                                     {categories.map((c) => (
                                         <option key={c.id} value={c.id}>
-                                            {c.label}
+                                            {isRtl ? (c.label_ar || c.label) : c.label}
                                         </option>
                                     ))}
                                 </select>
 
                                 <Button type="submit" variant="secondary" size="sm">
-                                    Search
+                                    {t('common.search')}
                                 </Button>
                                 {(search || category !== 'all') && (
                                     <Button
@@ -204,7 +242,7 @@ export default function ProjectsIndex({
                                             router.get(projectsIndex.url());
                                         }}
                                     >
-                                        Reset
+                                        {t('common.reset')}
                                     </Button>
                                 )}
                             </div>
@@ -217,8 +255,8 @@ export default function ProjectsIndex({
                     <Card>
                         <CardContent className="py-12 text-center text-muted-foreground">
                             <FolderKanban className="mx-auto size-12 opacity-30 mb-3" />
-                            <p className="text-base font-medium">No projects found</p>
-                            <p className="text-xs mt-1">Try adjusting your filters or click Add Project to create one.</p>
+                            <p className="text-base font-medium">{t('projects.no_projects_found')}</p>
+                            <p className="text-xs mt-1">{t('projects.no_projects_hint')}</p>
                         </CardContent>
                     </Card>
                 ) : (
@@ -231,7 +269,7 @@ export default function ProjectsIndex({
                                         {project.image ? (
                                             <img
                                                 src={project.image}
-                                                alt={project.title_en || project.title_ar || (typeof project.title === 'object' ? project.title.en || project.title.ar : '')}
+                                                alt={getProjectTitle(project)}
                                                 className="size-full object-cover"
                                             />
                                         ) : (
@@ -240,16 +278,18 @@ export default function ProjectsIndex({
                                             </div>
                                         )}
 
-                                        <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+                                        <div className={`absolute top-2.5 flex items-center gap-1.5 ${isRtl ? 'left-2.5' : 'right-2.5'}`}>
                                             {project.is_featured && (
                                                 <Badge variant="default" className="gap-1 text-[10px] bg-amber-500 text-white border-transparent">
                                                     <Star className="size-3 fill-current" />
-                                                    Featured
+                                                    {t('projects.featured')}
                                                 </Badge>
                                             )}
                                             <Badge variant="secondary" className="gap-1 text-[10px] backdrop-blur-md bg-background/80">
                                                 {getCategoryIcon(project.category)}
-                                                {project.category_label_en || (typeof project.category_label === 'object' ? project.category_label.en : project.category_label) || project.category}
+                                                {isRtl
+                                                    ? (project.category_label_ar || (typeof project.category_label === 'object' ? project.category_label?.ar : '') || project.category)
+                                                    : (project.category_label_en || (typeof project.category_label === 'object' ? project.category_label?.en : project.category_label) || project.category)}
                                             </Badge>
                                         </div>
                                     </div>
@@ -258,15 +298,12 @@ export default function ProjectsIndex({
                                     <div className="p-4 space-y-2.5">
                                         <div>
                                             <h3 className="font-bold text-base line-clamp-1">
-                                                {project.title_en || (typeof project.title === 'object' ? project.title.en : project.title)}
+                                                {getProjectTitle(project)}
                                             </h3>
-                                            <p className="text-xs text-muted-foreground line-clamp-1 font-arabic" dir="rtl">
-                                                {project.title_ar || (typeof project.title === 'object' ? project.title.ar : '')}
-                                            </p>
                                         </div>
 
                                         <p className="text-xs text-muted-foreground line-clamp-2">
-                                            {project.tagline_en || (typeof project.tagline === 'object' && project.tagline ? project.tagline.en : project.tagline) || project.description_en || (typeof project.description === 'object' && project.description ? project.description.en : project.description) || 'No description provided.'}
+                                            {getProjectTagline(project) || '—'}
                                         </p>
 
                                         {/* Technologies */}
@@ -299,15 +336,15 @@ export default function ProjectsIndex({
                                     <div className="flex items-center gap-1">
                                         {project.live_url && (
                                             <Button asChild variant="ghost" size="sm" className="h-8 size-8 p-0">
-                                                <a href={project.live_url} target="_blank" rel="noopener noreferrer">
+                                                <a href={project.live_url} target="_blank" rel="noopener noreferrer" title={t('projects.view_live')}>
                                                     <ExternalLink className="size-3.5" />
                                                 </a>
                                             </Button>
                                         )}
                                         <Button asChild variant="outline" size="sm" className="h-8 text-xs">
                                             <Link href={editProject(project.slug)}>
-                                                <Pencil className="mr-1 size-3" />
-                                                Edit
+                                                <Pencil className={`size-3 ${isRtl ? 'ml-1' : 'mr-1'}`} />
+                                                {t('common.edit')}
                                             </Link>
                                         </Button>
                                         <Button
@@ -315,6 +352,7 @@ export default function ProjectsIndex({
                                             size="sm"
                                             className="h-8 size-8 p-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
                                             onClick={() => setProjectToDelete(project)}
+                                            title={t('common.delete')}
                                         >
                                             <Trash2 className="size-3.5" />
                                         </Button>
@@ -329,7 +367,7 @@ export default function ProjectsIndex({
                 {projects.last_page > 1 && (
                     <div className="flex items-center justify-between border-t pt-4 text-xs text-muted-foreground">
                         <div>
-                            Showing {projects.from} to {projects.to} of {projects.total} projects
+                            {t('common.showing')} {projects.from} {t('common.to')} {projects.to} {t('common.of')} {projects.total}
                         </div>
                         <div className="flex items-center gap-1">
                             {projects.links.map((link, idx) => (
@@ -344,6 +382,8 @@ export default function ProjectsIndex({
                                     {link.url ? (
                                         <Link
                                             href={link.url}
+                                            prefetch="hover"
+                                            cacheFor="1m"
                                             preserveScroll
                                             dangerouslySetInnerHTML={{ __html: link.label }}
                                         />
@@ -361,17 +401,17 @@ export default function ProjectsIndex({
             <Dialog open={!!projectToDelete} onOpenChange={(open) => !open && setProjectToDelete(null)}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Project</DialogTitle>
+                        <DialogTitle>{t('projects.delete_title')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete <strong>{projectToDelete?.title_en || projectToDelete?.title_ar || (typeof projectToDelete?.title === 'object' ? projectToDelete?.title?.en || projectToDelete?.title?.ar : '')}</strong>? This will remove the project from the dashboard and the frontend portfolio.
+                            {t('projects.delete_msg')}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setProjectToDelete(null)}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button variant="destructive" onClick={confirmDelete}>
-                            Delete
+                            {t('common.delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -392,4 +432,3 @@ ProjectsIndex.layout = {
         },
     ],
 };
-

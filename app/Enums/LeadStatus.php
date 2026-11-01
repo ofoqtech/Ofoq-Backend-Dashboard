@@ -64,4 +64,3 @@ enum LeadStatus: string
         };
     }
 }
-

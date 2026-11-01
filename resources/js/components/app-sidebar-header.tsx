@@ -1,5 +1,6 @@
 import { ExternalLink, Globe, Moon, Sun } from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useAppearance } from '@/hooks/use-appearance';
@@ -24,6 +25,8 @@ export function AppSidebarHeader({
             </div>
 
             <div className="flex items-center gap-2">
+                <LanguageSwitcher />
+
                 <Button
                     variant="ghost"
                     size="sm"

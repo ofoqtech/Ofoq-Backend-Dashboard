@@ -1,5 +1,6 @@
 import { CheckCircle2, Clock, Inbox, TrendingUp, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTranslation } from '@/lib/i18n';
 import type { CrmAnalytics } from '@/types/crm';
 
 interface CrmStatsProps {
@@ -7,44 +8,46 @@ interface CrmStatsProps {
 }
 
 export function CrmStats({ analytics }: CrmStatsProps) {
+    const { t } = useTranslation();
+
     const stats = [
         {
-            title: 'Total Inquiries',
+            title: t('crm.total_inquiries'),
             value: analytics.total_leads,
-            subtitle: 'All-time client requests',
+            subtitle: t('crm.all_time_requests'),
             icon: Inbox,
             color: 'text-blue-500',
             bg: 'bg-blue-500/10 dark:bg-blue-500/20',
         },
         {
-            title: 'New / Uncontacted',
+            title: t('crm.new_uncontacted'),
             value: analytics.new_leads,
-            subtitle: 'Awaiting first response',
+            subtitle: t('crm.awaiting_first_response'),
             icon: Clock,
             color: 'text-amber-500',
             bg: 'bg-amber-500/10 dark:bg-amber-500/20',
             highlight: analytics.new_leads > 0,
         },
         {
-            title: 'In Progress',
+            title: t('crm.in_progress'),
             value: analytics.in_progress,
-            subtitle: 'Under discussion / proposal',
+            subtitle: t('crm.under_discussion'),
             icon: Users,
             color: 'text-indigo-500',
             bg: 'bg-indigo-500/10 dark:bg-indigo-500/20',
         },
         {
-            title: 'Won Deals',
+            title: t('crm.won_deals'),
             value: analytics.won,
-            subtitle: 'Successfully converted',
+            subtitle: t('crm.successfully_converted'),
             icon: CheckCircle2,
             color: 'text-emerald-500',
             bg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
         },
         {
-            title: 'Conversion Rate',
+            title: t('crm.conversion_rate'),
             value: `${analytics.conversion_rate}%`,
-            subtitle: `${analytics.won} won out of ${analytics.total_leads} total`,
+            subtitle: `${analytics.won} ${t('crm.won_of_total')} ${analytics.total_leads}`,
             icon: TrendingUp,
             color: 'text-violet-500',
             bg: 'bg-violet-500/10 dark:bg-violet-500/20',
@@ -77,4 +80,3 @@ export function CrmStats({ analytics }: CrmStatsProps) {
         </div>
     );
 }
-

@@ -23,6 +23,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/lib/i18n';
 import { dashboard } from '@/routes';
 import {
     create as createEmployee,
@@ -47,6 +48,7 @@ export default function EmployeesIndex({
     canManageEmployees,
 }: EmployeesIndexProps) {
     const { auth, flash } = usePage<{ auth: Auth; flash?: { success?: string; error?: string } }>().props;
+    const { t, isRtl, localized } = useTranslation();
     const currentUser = auth.user;
 
     const [search, setSearch] = useState(filters.search || '');
@@ -90,9 +92,17 @@ export default function EmployeesIndex({
         });
     };
 
+    const getEmployeeTitle = (emp: User | null | undefined) => {
+        if (!emp) return '—';
+        if (isRtl) {
+            return emp.title_ar || (typeof emp.title === 'object' ? emp.title?.ar : '') || emp.display_title || emp.title_en || '—';
+        }
+        return emp.title_en || (typeof emp.title === 'object' ? emp.title?.en : emp.title) || emp.display_title || '—';
+    };
+
     return (
         <>
-            <Head title="Employee Staff - Ofoq Technology" />
+            <Head title={t('employees.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 {/* Flash Notifications */}
@@ -112,24 +122,24 @@ export default function EmployeesIndex({
                     <div>
                         <div className="flex items-center gap-2">
                             <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                                Employee Staff
+                                {t('employees.title')}
                             </h1>
                             <Badge variant="secondary" className="gap-1">
                                 <Users className="size-3" />
-                                Staff Roster
+                                {t('employees.staff_roster')}
                             </Badge>
                         </div>
                         <p className="text-muted-foreground mt-1 text-sm">
-                            Manage employees, job titles, and contact information.
+                            {t('employees.subtitle')}
                         </p>
                     </div>
 
                     <div className="flex items-center gap-2.5">
                         {canManageEmployees && (
                             <Button asChild size="sm">
-                                <Link href={createEmployee()}>
-                                    <Plus className="mr-1.5 size-4" />
-                                    Add Employee
+                                <Link href={createEmployee()} prefetch="hover" cacheFor="1m">
+                                    <Plus className={`size-4 ${isRtl ? 'ml-1.5' : 'mr-1.5'}`} />
+                                    {t('employees.add_employee')}
                                 </Link>
                             </Button>
                         )}
@@ -139,26 +149,32 @@ export default function EmployeesIndex({
                 {/* Search Card */}
                 <Card>
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-base font-semibold">Filter Employees</CardTitle>
-                        <CardDescription>Search by name, email, or bilingual job title</CardDescription>
+                        <CardTitle className="text-base font-semibold">{t('employees.filter_title')}</CardTitle>
+                        <CardDescription>{t('employees.filter_desc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row sm:items-center">
                             <div className="relative flex-1">
-                                <Search className="text-muted-foreground absolute left-3 top-1/2 size-4 -translate-y-1/2 pointer-events-none" />
+                                <Search
+                                    className={`text-muted-foreground absolute top-1/2 size-4 -translate-y-1/2 pointer-events-none ${
+                                        isRtl ? 'right-3' : 'left-3'
+                                    }`}
+                                />
                                 <Input
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    placeholder="Search by employee name, email, or job title..."
-                                    className="pl-9 pr-8"
+                                    placeholder={t('employees.search_placeholder')}
+                                    className={isRtl ? 'pr-9 pl-8' : 'pl-9 pr-8'}
                                     autoComplete="off"
                                 />
                                 {search && (
                                     <button
                                         type="button"
                                         onClick={() => setSearch('')}
-                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                                        title="Clear search"
+                                        className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors ${
+                                            isRtl ? 'left-2.5' : 'right-2.5'
+                                        }`}
+                                        title={t('common.clear')}
                                     >
                                         <X className="size-3.5" />
                                     </button>
@@ -167,7 +183,7 @@ export default function EmployeesIndex({
 
                             <div className="flex items-center gap-2">
                                 <Button type="submit" variant="secondary" size="sm">
-                                    Search
+                                    {t('common.search')}
                                 </Button>
                                 {search && (
                                     <Button
@@ -179,7 +195,7 @@ export default function EmployeesIndex({
                                             router.get(employeesIndex.url());
                                         }}
                                     >
-                                        Reset
+                                        {t('common.reset')}
                                     </Button>
                                 )}
                             </div>
@@ -191,15 +207,15 @@ export default function EmployeesIndex({
                 <Card>
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm">
+                            <table className="w-full text-start text-sm">
                                 <thead className="border-b bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                     <tr>
-                                        <th className="px-6 py-3.5">Employee</th>
-                                        <th className="px-6 py-3.5">Title (Arabic & English)</th>
-                                        <th className="px-6 py-3.5">Contact</th>
-                                        <th className="px-6 py-3.5">Status</th>
+                                        <th className="px-6 py-3.5 text-start">{t('common.name')}</th>
+                                        <th className="px-6 py-3.5 text-start">{t('employees.job_title')}</th>
+                                        <th className="px-6 py-3.5 text-start">{t('common.phone')}</th>
+                                        <th className="px-6 py-3.5 text-start">{t('common.status')}</th>
                                         {canManageEmployees && (
-                                            <th className="px-6 py-3.5 text-right">Actions</th>
+                                            <th className="px-6 py-3.5 text-end">{t('common.actions')}</th>
                                         )}
                                     </tr>
                                 </thead>
@@ -207,7 +223,7 @@ export default function EmployeesIndex({
                                     {employees.data.length === 0 ? (
                                         <tr>
                                             <td colSpan={canManageEmployees ? 5 : 4} className="px-6 py-10 text-center text-muted-foreground">
-                                                No employees found matching the criteria.
+                                                {t('employees.no_employees_found')}
                                             </td>
                                         </tr>
                                     ) : (
@@ -216,7 +232,7 @@ export default function EmployeesIndex({
 
                                             return (
                                                 <tr key={employee.id} className="hover:bg-muted/30 transition-colors">
-                                                    <td className="px-6 py-4">
+                                                    <td className="px-6 py-4 text-start">
                                                         <div className="flex items-center gap-3">
                                                             <div className="size-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
                                                                 {employee.name.charAt(0).toUpperCase()}
@@ -226,7 +242,7 @@ export default function EmployeesIndex({
                                                                     {employee.name}
                                                                     {isSelf && (
                                                                         <span className="text-[10px] text-muted-foreground font-normal">
-                                                                            (You)
+                                                                            ({t('common.you')})
                                                                         </span>
                                                                     )}
                                                                 </div>
@@ -238,18 +254,13 @@ export default function EmployeesIndex({
                                                         </div>
                                                     </td>
 
-                                                    <td className="px-6 py-4">
-                                                        <div className="space-y-0.5">
-                                                            <div className="font-medium text-foreground text-xs">
-                                                                {employee.title_en || (typeof employee.title === 'object' ? employee.title?.en : employee.title) || '—'}
-                                                            </div>
-                                                            <div className="text-xs text-muted-foreground font-arabic" dir="rtl">
-                                                                {employee.title_ar || (typeof employee.title === 'object' ? employee.title?.ar : '') || ''}
-                                                            </div>
+                                                    <td className="px-6 py-4 text-start">
+                                                        <div className="font-medium text-foreground text-xs">
+                                                            {getEmployeeTitle(employee)}
                                                         </div>
                                                     </td>
 
-                                                    <td className="px-6 py-4">
+                                                    <td className="px-6 py-4 text-start">
                                                         {employee.phone ? (
                                                             <span className="text-xs flex items-center gap-1 text-muted-foreground font-mono">
                                                                 <Phone className="size-3" />
@@ -260,7 +271,7 @@ export default function EmployeesIndex({
                                                         )}
                                                     </td>
 
-                                                    <td className="px-6 py-4">
+                                                    <td className="px-6 py-4 text-start">
                                                         <Badge
                                                             variant={employee.status === 'active' ? 'default' : 'secondary'}
                                                             className={`gap-1 text-xs capitalize ${
@@ -274,17 +285,17 @@ export default function EmployeesIndex({
                                                                     employee.status === 'active' ? 'bg-emerald-500' : 'bg-muted-foreground'
                                                                 }`}
                                                             />
-                                                            {employee.status}
+                                                            {employee.status === 'active' ? t('common.active') : t('common.inactive')}
                                                         </Badge>
                                                     </td>
 
                                                     {canManageEmployees && (
-                                                        <td className="px-6 py-4 text-right">
+                                                        <td className="px-6 py-4 text-end">
                                                             <div className="flex items-center justify-end gap-1.5">
-                                                                <Button asChild variant="ghost" size="sm" className="size-8 p-0">
+                                                                <Button asChild variant="ghost" size="sm" className="size-8 p-0" title={t('common.edit')}>
                                                                     <Link href={editEmployee(employee.id)}>
                                                                         <Edit3 className="size-3.5" />
-                                                                        <span className="sr-only">Edit</span>
+                                                                        <span className="sr-only">{t('common.edit')}</span>
                                                                     </Link>
                                                                 </Button>
 
@@ -295,9 +306,10 @@ export default function EmployeesIndex({
                                                                         size="sm"
                                                                         className="size-8 p-0 text-muted-foreground hover:text-destructive"
                                                                         onClick={() => setEmployeeToDelete(employee)}
+                                                                        title={t('common.delete')}
                                                                     >
                                                                         <Trash2 className="size-3.5" />
-                                                                        <span className="sr-only">Delete</span>
+                                                                        <span className="sr-only">{t('common.delete')}</span>
                                                                     </Button>
                                                                 )}
                                                             </div>
@@ -317,7 +329,7 @@ export default function EmployeesIndex({
                 {employees.last_page > 1 && (
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <div>
-                            Showing {employees.from} to {employees.to} of {employees.total} employees
+                            {t('common.showing')} {employees.from} {t('common.to')} {employees.to} {t('common.of')} {employees.total} {t('nav.employees')}
                         </div>
                         <div className="flex gap-2">
                             {employees.links.map((link, idx) => (
@@ -330,6 +342,9 @@ export default function EmployeesIndex({
                                 >
                                     <Link
                                         href={link.url || '#'}
+                                        prefetch="hover"
+                                        cacheFor="1m"
+                                        preserveScroll
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />
                                 </Button>
@@ -343,18 +358,17 @@ export default function EmployeesIndex({
             <Dialog open={!!employeeToDelete} onOpenChange={(open) => !open && setEmployeeToDelete(null)}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Confirm Delete Employee</DialogTitle>
+                        <DialogTitle>{t('common.confirm')}</DialogTitle>
                         <DialogDescription>
                             Are you sure you want to delete <strong>{employeeToDelete?.name}</strong>?
-                            This action cannot be undone.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="gap-2">
                         <Button variant="outline" onClick={() => setEmployeeToDelete(null)}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button variant="destructive" onClick={confirmDelete}>
-                            Delete Employee
+                            {t('common.delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

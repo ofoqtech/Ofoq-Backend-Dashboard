@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from '@/lib/i18n';
 import { index as projectsIndex } from '@/routes/projects';
 import type { Project, ProjectCategory, ProjectMetric } from '@/types';
 
@@ -60,6 +61,8 @@ export default function ProjectForm({
     errors,
     isEdit = false,
 }: ProjectFormProps) {
+    const { t, isRtl, localized } = useTranslation();
+
     // Form fields helper for JSON / accessor fields
     const getInitial = (
         field: 'title' | 'category_label' | 'tagline' | 'description' | 'problem' | 'solution',
@@ -359,22 +362,22 @@ export default function ProjectForm({
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <Layers className="size-4 text-primary" />
-                        Basic Information & Category
+                        {t('projects.form_info_title')}
                     </CardTitle>
                     <CardDescription>
-                        Bilingual titles and category stored in clean JSON format.
+                        {t('projects.form_info_desc')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {/* Title (Arabic) */}
                         <div className="space-y-1.5">
-                            <Label htmlFor="title">Arabic Title * (الاسم بالعربية)</Label>
+                            <Label htmlFor="title">{t('projects.form_arabic_title')}</Label>
                             <Input
                                 id="title"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
-                                placeholder="e.g. ماستر شوب — تطبيق خدمات وتوصيل متكامل"
+                                placeholder="ماستر شوب — تطبيق خدمات وتوصيل متكامل"
                                 required
                                 dir="rtl"
                             />
@@ -383,12 +386,13 @@ export default function ProjectForm({
 
                         {/* Title (English) */}
                         <div className="space-y-1.5">
-                            <Label htmlFor="title_en">English Title</Label>
+                            <Label htmlFor="title_en">{t('projects.form_english_title')}</Label>
                             <Input
                                 id="title_en"
                                 value={titleEn}
                                 onChange={(e) => setTitleEn(e.target.value)}
-                                placeholder="e.g. Master Shop — Multi-Service Delivery"
+                                placeholder="Master Shop — Multi-Service Delivery"
+                                dir="ltr"
                             />
                             <InputError message={errors.title_en || errors['title.en']} />
                         </div>
@@ -397,7 +401,7 @@ export default function ProjectForm({
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         {/* Category */}
                         <div className="space-y-1.5">
-                            <Label htmlFor="category">Category *</Label>
+                            <Label htmlFor="category">{t('projects.form_category')}</Label>
                             <select
                                 id="category"
                                 value={category}
@@ -406,7 +410,7 @@ export default function ProjectForm({
                             >
                                 {categories.map((c) => (
                                     <option key={c.id} value={c.id}>
-                                        {c.label || c.name_en || c.id} {c.label_ar || c.name_ar ? `(${c.label_ar || c.name_ar})` : ''}
+                                        {isRtl ? (c.label_ar || c.name_ar || c.label) : (c.label || c.name_en || c.id)}
                                     </option>
                                 ))}
                             </select>
@@ -415,12 +419,13 @@ export default function ProjectForm({
 
                         {/* Category Label EN */}
                         <div className="space-y-1.5">
-                            <Label htmlFor="category_label">Category Label (EN) *</Label>
+                            <Label htmlFor="category_label">{t('projects.form_category_label_en')}</Label>
                             <Input
                                 id="category_label"
                                 value={categoryLabel}
                                 onChange={(e) => setCategoryLabel(e.target.value)}
                                 placeholder="e.g. Mobile Systems"
+                                dir="ltr"
                                 required
                             />
                             <InputError message={errors.category_label || errors['category_label.en']} />
@@ -428,12 +433,12 @@ export default function ProjectForm({
 
                         {/* Category Label AR */}
                         <div className="space-y-1.5">
-                            <Label htmlFor="category_label_ar">Category Label (AR)</Label>
+                            <Label htmlFor="category_label_ar">{t('projects.form_category_label_ar')}</Label>
                             <Input
                                 id="category_label_ar"
                                 value={categoryLabelAr}
                                 onChange={(e) => setCategoryLabelAr(e.target.value)}
-                                placeholder="e.g. أنظمة وتطبيقات الجوال"
+                                placeholder="مثال: أنظمة وتطبيقات الجوال"
                                 dir="rtl"
                             />
                             <InputError message={errors.category_label_ar || errors['category_label.ar']} />
@@ -444,37 +449,40 @@ export default function ProjectForm({
                         {/* Slug */}
                         <div className="space-y-1.5">
                             <Label htmlFor="slug">
-                                Slug / URL Key <span className="text-xs text-muted-foreground font-normal">(auto-generated if empty)</span>
+                                {t('projects.form_slug')}{' '}
+                                <span className="text-xs text-muted-foreground font-normal">{t('projects.form_slug_hint')}</span>
                             </Label>
                             <Input
                                 id="slug"
                                 value={slug}
                                 onChange={(e) => setSlug(e.target.value)}
-                                placeholder="e.g. master-shop-marketplace"
+                                placeholder="master-shop-marketplace"
+                                dir="ltr"
                             />
                             <InputError message={errors.slug} />
                         </div>
 
                         {/* Client */}
                         <div className="space-y-1.5">
-                            <Label htmlFor="client">Client Name</Label>
+                            <Label htmlFor="client">{t('projects.form_client')}</Label>
                             <Input
                                 id="client"
                                 value={client}
                                 onChange={(e) => setClient(e.target.value)}
-                                placeholder="e.g. Master Shop Co."
+                                placeholder={isRtl ? 'مثال: شركة ماستر شوب' : 'e.g. Master Shop Co.'}
                             />
                             <InputError message={errors.client} />
                         </div>
 
                         {/* Live URL */}
                         <div className="space-y-1.5">
-                            <Label htmlFor="live_url">Live Website / Store Link</Label>
+                            <Label htmlFor="live_url">{t('projects.form_live_url')}</Label>
                             <Input
                                 id="live_url"
                                 value={liveUrl}
                                 onChange={(e) => setLiveUrl(e.target.value)}
                                 placeholder="https://..."
+                                dir="ltr"
                             />
                             <InputError message={errors.live_url} />
                         </div>
@@ -488,11 +496,11 @@ export default function ProjectForm({
                                 onChange={(e) => setIsFeatured(e.target.checked)}
                                 className="rounded border-input text-primary focus:ring-primary size-4"
                             />
-                            Mark as Featured Showcase Project
+                            {t('projects.form_is_featured')}
                         </label>
 
                         <div className="flex items-center gap-2">
-                            <Label htmlFor="order" className="text-sm">Display Order:</Label>
+                            <Label htmlFor="order" className="text-sm">{t('projects.form_order')}:</Label>
                             <Input
                                 id="order"
                                 type="number"
@@ -511,10 +519,10 @@ export default function ProjectForm({
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <ImageIcon className="size-4 text-primary" />
-                        Project Imagery & Gallery
+                        {t('projects.form_cover_title')}
                     </CardTitle>
                     <CardDescription>
-                        Set the primary cover image and upload multiple gallery images with custom display orders.
+                        {t('projects.form_cover_desc')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -522,12 +530,12 @@ export default function ProjectForm({
                     <div>
                         <h4 className="text-sm font-semibold mb-3 text-foreground flex items-center gap-1.5">
                             <span className="size-2 rounded-full bg-primary" />
-                            Primary Cover Image (صورة الغلاف الرئيسية)
+                            {t('projects.form_cover_title')}
                         </h4>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                             <div className="space-y-3">
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="image_file">Upload Cover Image</Label>
+                                    <Label htmlFor="image_file">{t('projects.form_upload_cover')}</Label>
                                     <Input
                                         id="image_file"
                                         type="file"
@@ -538,7 +546,7 @@ export default function ProjectForm({
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="image">Or Image Path / URL</Label>
+                                    <Label htmlFor="image">{isRtl ? 'أو مسار / رابط الصورة' : 'Or Image Path / URL'}</Label>
                                     <Input
                                         id="image"
                                         value={image}
@@ -547,6 +555,7 @@ export default function ProjectForm({
                                             setImagePreview(e.target.value);
                                         }}
                                         placeholder="/images/projects/... or https://..."
+                                        dir="ltr"
                                     />
                                     <InputError message={errors.image} />
                                 </div>
@@ -554,7 +563,7 @@ export default function ProjectForm({
 
                             {/* Live Preview */}
                             <div>
-                                <Label className="block mb-1.5">Cover Preview</Label>
+                                <Label className="block mb-1.5">{isRtl ? 'معاينة الغلاف' : 'Cover Preview'}</Label>
                                 <div className="aspect-video w-full rounded-lg border border-dashed border-border bg-muted/40 overflow-hidden flex items-center justify-center">
                                     {imagePreview ? (
                                         <img
@@ -565,7 +574,7 @@ export default function ProjectForm({
                                     ) : (
                                         <div className="text-center text-muted-foreground p-4">
                                             <Upload className="mx-auto size-8 opacity-40 mb-1" />
-                                            <p className="text-xs">No cover image selected</p>
+                                            <p className="text-xs">{isRtl ? 'لم يتم اختيار صورة غلاف بعد' : 'No cover image selected'}</p>
                                         </div>
                                     )}
                                 </div>
@@ -579,10 +588,10 @@ export default function ProjectForm({
                             <div>
                                 <h4 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                                     <span className="size-2 rounded-full bg-cyan-500" />
-                                    Project Gallery Images & Display Order (معرض الصور وترتيب العرض)
+                                    {t('projects.form_gallery_title')}
                                 </h4>
                                 <p className="text-xs text-muted-foreground mt-0.5">
-                                    Add multiple images for this project. Adjust the display order number to control which image appears first.
+                                    {t('projects.form_gallery_desc')}
                                 </p>
                             </div>
 
@@ -590,7 +599,7 @@ export default function ProjectForm({
                                 <label className="cursor-pointer">
                                     <span className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-xs hover:bg-primary/90 transition-colors">
                                         <Plus className="size-3.5" />
-                                        Add Gallery Images (إضافة صور)
+                                        {t('projects.form_upload_gallery')}
                                     </span>
                                     <input
                                         type="file"
@@ -607,9 +616,9 @@ export default function ProjectForm({
                         {existingGallery.length === 0 && newGalleryFiles.length === 0 ? (
                             <div className="rounded-lg border border-dashed border-border p-8 text-center bg-muted/20">
                                 <ImageIcon className="mx-auto size-8 opacity-30 mb-2" />
-                                <p className="text-sm font-medium text-foreground">No gallery images added yet</p>
+                                <p className="text-sm font-medium text-foreground">{isRtl ? 'لم تتم إضافة صور للمعرض بعد' : 'No gallery images added yet'}</p>
                                 <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-                                    Click &quot;Add Gallery Images&quot; above to upload multiple screenshots, diagrams, and UI mockups.
+                                    {isRtl ? 'اضغط على زر رفع لقطات للمعرض أعلاه لإضافة صور وسكرينشوتس للمشروع.' : 'Click "Upload Gallery Images" above to upload multiple screenshots and UI mockups.'}
                                 </p>
                             </div>
                         ) : (
@@ -634,19 +643,19 @@ export default function ProjectForm({
                                                 />
                                                 <div className="absolute top-1.5 left-1.5">
                                                     <Badge variant="secondary" className="text-[10px] bg-background/90 backdrop-blur-xs font-mono">
-                                                        Saved #{item.id}
+                                                        {isRtl ? `محفوظ #${item.id}` : `Saved #${item.id}`}
                                                     </Badge>
                                                 </div>
                                                 <div className="absolute top-1.5 right-1.5">
                                                     <Badge variant="default" className="text-[10px] bg-primary font-bold">
-                                                        Order #{item.display_order}
+                                                        {isRtl ? `الترتيب #${item.display_order}` : `Order #${item.display_order}`}
                                                     </Badge>
                                                 </div>
                                             </div>
 
                                             {/* Order controls */}
                                             <div className="flex items-center justify-between gap-2 pt-1">
-                                                <Label className="text-xs font-medium">Display Order:</Label>
+                                                <Label className="text-xs font-medium">{t('categories.order')}:</Label>
                                                 <div className="flex items-center gap-1">
                                                     <Button
                                                         type="button"
@@ -682,7 +691,7 @@ export default function ProjectForm({
                                             {/* Captions */}
                                             <div className="space-y-1">
                                                 <Input
-                                                    placeholder="Arabic Caption (وصف الصورة)"
+                                                    placeholder={isRtl ? 'وصف الصورة (بالعربية)' : 'Arabic Caption'}
                                                     dir="rtl"
                                                     disabled={item.is_deleted}
                                                     value={item.caption_ar}
@@ -695,7 +704,8 @@ export default function ProjectForm({
                                                     className="h-7 text-xs"
                                                 />
                                                 <Input
-                                                    placeholder="English Caption"
+                                                    placeholder={isRtl ? 'وصف الصورة (بالإنجليزية)' : 'English Caption'}
+                                                    dir="ltr"
                                                     disabled={item.is_deleted}
                                                     value={item.caption_en}
                                                     onChange={(e) => {
@@ -720,7 +730,7 @@ export default function ProjectForm({
                                                     className="h-7 text-xs gap-1 text-primary"
                                                 >
                                                     <Undo2 className="size-3" />
-                                                    Restore
+                                                    {isRtl ? 'استعادة' : 'Restore'}
                                                 </Button>
                                             ) : (
                                                 <Button
@@ -731,7 +741,7 @@ export default function ProjectForm({
                                                     className="h-7 text-xs text-destructive hover:bg-destructive/10 gap-1"
                                                 >
                                                     <Trash2 className="size-3" />
-                                                    Remove Image
+                                                    {isRtl ? 'حذف الصورة' : 'Remove Image'}
                                                 </Button>
                                             )}
                                         </div>
@@ -754,19 +764,19 @@ export default function ProjectForm({
                                                 />
                                                 <div className="absolute top-1.5 left-1.5">
                                                     <Badge variant="default" className="text-[10px] bg-cyan-600 text-white font-semibold">
-                                                        New Upload
+                                                        {isRtl ? 'جديدة' : 'New Upload'}
                                                     </Badge>
                                                 </div>
                                                 <div className="absolute top-1.5 right-1.5">
                                                     <Badge variant="default" className="text-[10px] bg-primary font-bold">
-                                                        Order #{item.display_order}
+                                                        {isRtl ? `الترتيب #${item.display_order}` : `Order #${item.display_order}`}
                                                     </Badge>
                                                 </div>
                                             </div>
 
                                             {/* Order controls */}
                                             <div className="flex items-center justify-between gap-2 pt-1">
-                                                <Label className="text-xs font-medium">Display Order:</Label>
+                                                <Label className="text-xs font-medium">{t('categories.order')}:</Label>
                                                 <div className="flex items-center gap-1">
                                                     <Button
                                                         type="button"
@@ -800,7 +810,7 @@ export default function ProjectForm({
                                             {/* Captions */}
                                             <div className="space-y-1">
                                                 <Input
-                                                    placeholder="Arabic Caption (وصف الصورة)"
+                                                    placeholder={isRtl ? 'وصف الصورة (بالعربية)' : 'Arabic Caption'}
                                                     dir="rtl"
                                                     value={item.caption_ar}
                                                     onChange={(e) => {
@@ -812,7 +822,8 @@ export default function ProjectForm({
                                                     className="h-7 text-xs"
                                                 />
                                                 <Input
-                                                    placeholder="English Caption"
+                                                    placeholder={isRtl ? 'وصف الصورة (بالإنجليزية)' : 'English Caption'}
+                                                    dir="ltr"
                                                     value={item.caption_en}
                                                     onChange={(e) => {
                                                         const text = e.target.value;
@@ -835,7 +846,7 @@ export default function ProjectForm({
                                                 className="h-7 text-xs text-destructive hover:bg-destructive/10 gap-1"
                                             >
                                                 <Trash2 className="size-3" />
-                                                Remove File
+                                                {isRtl ? 'حذف الملف' : 'Remove File'}
                                             </Button>
                                         </div>
                                     </div>
@@ -851,26 +862,27 @@ export default function ProjectForm({
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <Globe className="size-4 text-primary" />
-                        Project Story & Bilingual Content (JSON Fields)
+                        {t('projects.form_descriptions_title')}
                     </CardTitle>
                     <CardDescription>
-                        All text stored in native UTF-8 JSON columns with full Arabic and English support.
+                        {t('projects.form_descriptions_desc')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {/* Tagline */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="space-y-1.5">
-                            <Label htmlFor="tagline">Tagline (EN)</Label>
+                            <Label htmlFor="tagline">{t('projects.form_tagline_en')}</Label>
                             <Input
                                 id="tagline"
                                 value={tagline}
                                 onChange={(e) => setTagline(e.target.value)}
                                 placeholder="One-line summary in English..."
+                                dir="ltr"
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <Label htmlFor="tagline_ar">Tagline (AR)</Label>
+                            <Label htmlFor="tagline_ar">{t('projects.form_tagline_ar')}</Label>
                             <Input
                                 id="tagline_ar"
                                 value={taglineAr}
@@ -884,18 +896,19 @@ export default function ProjectForm({
                     {/* Description */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="space-y-1.5">
-                            <Label htmlFor="description">Full Description (EN)</Label>
+                            <Label htmlFor="description">{t('projects.form_desc_en')}</Label>
                             <textarea
                                 id="description"
                                 rows={3}
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="Detailed overview in English..."
+                                dir="ltr"
                                 className="w-full rounded-md border border-input bg-background p-2.5 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <Label htmlFor="description_ar">Full Description (AR)</Label>
+                            <Label htmlFor="description_ar">{t('projects.form_desc_ar')}</Label>
                             <textarea
                                 id="description_ar"
                                 rows={3}
@@ -911,18 +924,19 @@ export default function ProjectForm({
                     {/* Problem Statement */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="space-y-1.5">
-                            <Label htmlFor="problem">Business Problem (EN)</Label>
+                            <Label htmlFor="problem">{t('projects.form_problem_en')}</Label>
                             <textarea
                                 id="problem"
                                 rows={2}
                                 value={problem}
                                 onChange={(e) => setProblem(e.target.value)}
                                 placeholder="Challenge or pain point faced by client..."
+                                dir="ltr"
                                 className="w-full rounded-md border border-input bg-background p-2.5 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <Label htmlFor="problem_ar">Business Problem (AR)</Label>
+                            <Label htmlFor="problem_ar">{t('projects.form_problem_ar')}</Label>
                             <textarea
                                 id="problem_ar"
                                 rows={2}
@@ -938,18 +952,19 @@ export default function ProjectForm({
                     {/* Solution Statement */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="space-y-1.5">
-                            <Label htmlFor="solution">Delivered Solution (EN)</Label>
+                            <Label htmlFor="solution">{t('projects.form_solution_en')}</Label>
                             <textarea
                                 id="solution"
                                 rows={2}
                                 value={solution}
                                 onChange={(e) => setSolution(e.target.value)}
                                 placeholder="How Ofoq Tech solved it..."
+                                dir="ltr"
                                 className="w-full rounded-md border border-input bg-background p-2.5 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <Label htmlFor="solution_ar">Delivered Solution (AR)</Label>
+                            <Label htmlFor="solution_ar">{t('projects.form_solution_ar')}</Label>
                             <textarea
                                 id="solution_ar"
                                 rows={2}
@@ -969,16 +984,16 @@ export default function ProjectForm({
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <Sparkles className="size-4 text-primary" />
-                        Technologies, Features & Metrics
+                        {isRtl ? 'التقنيات والمميزات ومؤشرات الإنجاز' : 'Technologies, Features & Metrics'}
                     </CardTitle>
                     <CardDescription>
-                        Bilingual highlights and specs stored as JSON arrays.
+                        {isRtl ? 'حزم برمجية ومميزات ومؤشرات قياس نتائج المشروع.' : 'Bilingual highlights and specs stored as JSON arrays.'}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     {/* Technologies Tag Input */}
                     <div className="space-y-2">
-                        <Label>Technologies & Stack</Label>
+                        <Label>{t('projects.form_tech_title')}</Label>
                         <div className="flex gap-2">
                             <Input
                                 value={techInput}
@@ -989,10 +1004,11 @@ export default function ProjectForm({
                                         addTechnology();
                                     }
                                 }}
-                                placeholder="Type a tech name (e.g. Flutter, React, Laravel) and press Add or Enter..."
+                                placeholder={t('projects.form_tech_placeholder')}
+                                dir="ltr"
                             />
                             <Button type="button" variant="secondary" onClick={addTechnology}>
-                                Add Tech
+                                {t('projects.form_add_tech')}
                             </Button>
                         </div>
                         <div className="flex flex-wrap gap-1.5 pt-1">
@@ -1013,7 +1029,7 @@ export default function ProjectForm({
 
                     {/* Features List (EN) */}
                     <div className="space-y-2">
-                        <Label>Key Highlights / Features (EN)</Label>
+                        <Label>{isRtl ? 'المميزات والخصائص (EN)' : 'Key Highlights / Features (EN)'}</Label>
                         <div className="flex gap-2">
                             <Input
                                 value={featureInput}
@@ -1025,9 +1041,10 @@ export default function ProjectForm({
                                     }
                                 }}
                                 placeholder="Add a key feature in English..."
+                                dir="ltr"
                             />
                             <Button type="button" variant="secondary" onClick={addFeature}>
-                                Add Feature
+                                {isRtl ? 'إضافة ميزة' : 'Add Feature'}
                             </Button>
                         </div>
                         <ul className="space-y-1.5 pt-1">
@@ -1053,7 +1070,7 @@ export default function ProjectForm({
 
                     {/* Features List (AR) */}
                     <div className="space-y-2">
-                        <Label>Key Highlights / Features (AR)</Label>
+                        <Label>{isRtl ? 'المميزات والخصائص (AR)' : 'Key Highlights / Features (AR)'}</Label>
                         <div className="flex gap-2">
                             <Input
                                 value={featureArInput}
@@ -1068,7 +1085,7 @@ export default function ProjectForm({
                                 dir="rtl"
                             />
                             <Button type="button" variant="secondary" onClick={addFeatureAr}>
-                                إضافة ميزة
+                                {isRtl ? 'إضافة ميزة' : 'Add Feature'}
                             </Button>
                         </div>
                         <ul className="space-y-1.5 pt-1" dir="rtl">
@@ -1094,22 +1111,23 @@ export default function ProjectForm({
 
                     {/* Impact Metrics */}
                     <div className="space-y-2">
-                        <Label>Impact & Results Metrics (Key-Value)</Label>
+                        <Label>{t('projects.form_metrics_title')}</Label>
                         <div className="grid grid-cols-1 gap-2 sm:grid-cols-5">
                             <Input
                                 className="sm:col-span-2"
                                 value={metricLabel}
                                 onChange={(e) => setMetricLabel(e.target.value)}
-                                placeholder="Label (e.g. Service Verticals)"
+                                placeholder={t('projects.form_metric_label')}
                             />
                             <Input
                                 className="sm:col-span-2"
                                 value={metricVal}
                                 onChange={(e) => setMetricVal(e.target.value)}
-                                placeholder="Value (e.g. 4 in one app)"
+                                placeholder={t('projects.form_metric_val')}
+                                dir="ltr"
                             />
                             <Button type="button" variant="secondary" onClick={addMetric} className="sm:col-span-1">
-                                Add Metric
+                                {t('projects.form_add_metric')}
                             </Button>
                         </div>
 
@@ -1139,11 +1157,11 @@ export default function ProjectForm({
             {/* Actions Bar */}
             <div className="flex items-center justify-end gap-3 pt-4">
                 <Button asChild variant="outline">
-                    <Link href={projectsIndex()}>Cancel</Link>
+                    <Link href={projectsIndex()}>{t('common.cancel')}</Link>
                 </Button>
                 <Button type="submit" disabled={processing} size="lg">
-                    <Save className="mr-2 size-4" />
-                    {processing ? 'Saving...' : isEdit ? 'Update Project' : 'Create Project'}
+                    <Save className={`size-4 ${isRtl ? 'ml-2' : 'mr-2'}`} />
+                    {processing ? t('common.saving') : isEdit ? t('common.save_changes') : t('projects.form_save_btn')}
                 </Button>
             </div>
         </form>

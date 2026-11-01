@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
+import { useTranslation } from '@/lib/i18n';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import type { User } from '@/types';
@@ -18,10 +19,12 @@ type Props = {
 
 export function UserMenuContent({ user }: Props) {
     const cleanup = useMobileNavigation();
+    const { t } = useTranslation();
 
     const handleLogout = () => {
         cleanup();
         router.flushAll();
+        router.post(logout.url());
     };
 
     return (
@@ -35,28 +38,24 @@ export function UserMenuContent({ user }: Props) {
             <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                     <Link
-                        className="block w-full cursor-pointer"
+                        className="flex w-full items-center gap-2 cursor-pointer"
                         href={edit()}
                         prefetch
                         onClick={cleanup}
                     >
-                        <Settings className="mr-2" />
-                        Settings
+                        <Settings className="size-4" />
+                        <span>{t('nav.profile')}</span>
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-                <Link
-                    className="block w-full cursor-pointer"
-                    href={logout()}
-                    as="button"
-                    onClick={handleLogout}
-                    data-test="logout-button"
-                >
-                    <LogOut className="mr-2" />
-                    Log out
-                </Link>
+            <DropdownMenuItem
+                className="flex w-full items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
+                onSelect={handleLogout}
+                data-test="logout-button"
+            >
+                <LogOut className="size-4" />
+                <span>{t('nav.logout')}</span>
             </DropdownMenuItem>
         </>
     );

@@ -13,6 +13,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useTranslation } from '@/lib/i18n';
 import { dashboard } from '@/routes';
 import { index as adminsIndex } from '@/routes/admins';
 import { index as employeesIndex } from '@/routes/employees';
@@ -21,16 +22,17 @@ import type { Auth, NavItem } from '@/types';
 
 export function AppSidebar() {
     const { auth, crm } = usePage<{ auth: Auth; crm?: { newLeadsCount?: number } }>().props;
+    const { t, isRtl } = useTranslation();
     const isAdmin = auth?.user?.role === 'admin';
 
     const mainNavItems: NavItem[] = [
         {
-            title: 'Dashboard',
+            title: t('nav.dashboard'),
             href: dashboard(),
             icon: LayoutGrid,
         },
         {
-            title: 'CRM & Leads',
+            title: t('nav.crm'),
             href: '/crm',
             icon: Inbox,
             badge: crm?.newLeadsCount ?? 0,
@@ -38,40 +40,40 @@ export function AppSidebar() {
         ...(isAdmin
             ? [
                   {
-                      title: 'Administrators',
+                      title: t('nav.admins'),
                       href: adminsIndex(),
                       icon: ShieldCheck,
                   },
               ]
             : []),
         {
-            title: 'Employees',
+            title: t('nav.employees'),
             href: employeesIndex(),
             icon: Users,
         },
         ...(isAdmin
             ? [
                   {
-                      title: 'Categories',
+                      title: t('nav.categories'),
                       href: '/categories',
                       icon: FolderTree,
                   },
               ]
             : []),
         {
-            title: 'Projects',
+            title: t('nav.projects'),
             href: projectsIndex(),
             icon: FolderKanban,
         },
     ];
 
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar collapsible="icon" variant="inset" side={isRtl ? 'right' : 'left'}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href={dashboard()} prefetch={['mount', 'hover']} cacheFor="2m">
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

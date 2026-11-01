@@ -8,6 +8,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { useTranslation } from '@/lib/i18n';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
 export function Breadcrumbs({
@@ -15,6 +16,42 @@ export function Breadcrumbs({
 }: {
     breadcrumbs: BreadcrumbItemType[];
 }) {
+    const { t } = useTranslation();
+
+    const getTranslatedTitle = (title: string): string => {
+        const lower = title.toLowerCase().trim();
+        switch (lower) {
+            case 'dashboard':
+                return t('nav.dashboard');
+            case 'crm & leads':
+            case 'crm':
+            case 'crm & client inquiries':
+                return t('nav.crm');
+            case 'projects':
+            case 'portfolio projects':
+                return t('nav.projects');
+            case 'categories':
+            case 'project categories':
+                return t('nav.categories');
+            case 'employees':
+            case 'employee staff':
+                return t('nav.employees');
+            case 'administrators':
+            case 'admins':
+            case 'system administrators':
+                return t('nav.admins');
+            case 'profile':
+            case 'profile settings':
+                return t('nav.profile');
+            case 'security':
+                return t('nav.security');
+            case 'appearance':
+                return t('nav.appearance');
+            default:
+                return title;
+        }
+    };
+
     return (
         <>
             {breadcrumbs.length > 0 && (
@@ -22,18 +59,19 @@ export function Breadcrumbs({
                     <BreadcrumbList>
                         {breadcrumbs.map((item, index) => {
                             const isLast = index === breadcrumbs.length - 1;
+                            const translated = getTranslatedTitle(item.title);
 
                             return (
                                 <Fragment key={index}>
                                     <BreadcrumbItem>
                                         {isLast ? (
                                             <BreadcrumbPage>
-                                                {item.title}
+                                                {translated}
                                             </BreadcrumbPage>
                                         ) : (
                                             <BreadcrumbLink asChild>
-                                                <Link href={item.href}>
-                                                    {item.title}
+                                                <Link href={item.href} prefetch="hover" cacheFor="1m">
+                                                    {translated}
                                                 </Link>
                                             </BreadcrumbLink>
                                         )}

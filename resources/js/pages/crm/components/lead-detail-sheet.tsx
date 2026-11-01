@@ -41,6 +41,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
+import { useTranslation } from '@/lib/i18n';
 import type { Lead, PriorityOption, StatusOption } from '@/types/crm';
 import type { User } from '@/types/auth';
 
@@ -63,6 +64,8 @@ export function LeadDetailSheet({
     teamMembers,
     isAdmin,
 }: LeadDetailSheetProps) {
+    const { t, isRtl, localized, formatDate } = useTranslation();
+
     const [noteContent, setNoteContent] = useState('');
     const [noteType, setNoteType] = useState<'note' | 'call' | 'whatsapp' | 'meeting' | 'proposal_sent'>('note');
     const [isSubmittingNote, setIsSubmittingNote] = useState(false);
@@ -185,27 +188,35 @@ export function LeadDetailSheet({
         }
     };
 
+    const getServiceLabel = () => {
+        const localizedName = localized({
+            en: lead.service?.name_en || lead.service_name_snapshot,
+            ar: lead.service?.name_ar || lead.service_name_snapshot,
+        });
+        return localizedName || t('common.custom_inquiry');
+    };
+
     return (
         <>
             <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
                 <SheetContent
-                    side="right"
+                    side={isRtl ? 'left' : 'right'}
                     className="flex w-full flex-col overflow-y-auto sm:max-w-xl p-0"
                 >
                     {/* Header Banner */}
                     <div className="border-b bg-muted/40 p-6">
-                        <SheetHeader className="text-left">
+                        <SheetHeader className="text-start">
                             <div className="flex flex-wrap items-center justify-between gap-2">
                                 <div className="flex items-center gap-2">
                                     <span
                                         className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${lead.status_color}`}
                                     >
-                                        {lead.status_label}
+                                        {t(`stage.${lead.status}`, lead.status_label)}
                                     </span>
                                     <span
                                         className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${lead.priority_color}`}
                                     >
-                                        {lead.priority_label}
+                                        {t(`priority.${lead.priority}`, lead.priority_label)}
                                     </span>
                                 </div>
                                 <span className="text-xs text-muted-foreground">ID #{lead.id}</span>
@@ -237,7 +248,7 @@ export function LeadDetailSheet({
                                     className="flex items-center gap-1.5"
                                 >
                                     <MessageCircle className="size-4" />
-                                    Chat on WhatsApp
+                                    {t('crm.chat_whatsapp')}
                                 </a>
                             </Button>
 
@@ -252,7 +263,7 @@ export function LeadDetailSheet({
                                 <Button size="sm" variant="ghost" asChild>
                                     <a href={`mailto:${lead.email}`} className="flex items-center gap-1.5">
                                         <Mail className="size-4" />
-                                        Email
+                                        {t('crm.email')}
                                     </a>
                                 </Button>
                             )}
@@ -265,38 +276,32 @@ export function LeadDetailSheet({
                             <div className="flex items-center justify-between border-b pb-2.5">
                                 <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                                     <SlidersHorizontal className="size-3.5 text-primary" />
-                                    Lead Stage & Assignment
+                                    {t('crm.lead_stage_mgmt')}
                                 </h4>
-                                <span className="text-[10px] text-muted-foreground">Auto-saved on change</span>
+                                <span className="text-[10px] text-muted-foreground">{t('common.auto_saved')}</span>
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 {/* Pipeline Stage */}
                                 <div className="space-y-1.5 min-w-0">
-                                    <label className="text-xs font-semibold text-foreground flex items-center justify-between">
-                                        <span className="flex items-center gap-1.5 truncate">
-                                            <span className={`size-2 rounded-full shrink-0 ${getStatusDotColor(lead.status)}`} />
-                                            Pipeline Stage
-                                        </span>
-                                        <span className="text-[11px] font-normal text-muted-foreground shrink-0">مرحلة الطلب</span>
+                                    <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                                        <span className={`size-2 rounded-full shrink-0 ${getStatusDotColor(lead.status)}`} />
+                                        <span>{t('crm.pipeline_stage')}</span>
                                     </label>
                                     <Select
                                         value={lead.status}
                                         onValueChange={handleStatusChange}
                                     >
                                         <SelectTrigger className="w-full min-w-0 h-10 text-xs bg-background/80 shadow-2xs font-medium border-input">
-                                            <SelectValue placeholder="Stage" />
+                                            <SelectValue placeholder={t('crm.stage')} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {statuses.map((s) => (
                                                 <SelectItem key={s.value} value={s.value} className="text-xs py-2">
-                                                    <div className="flex items-center justify-between gap-3 w-full">
-                                                        <span className="flex items-center gap-2">
-                                                            <span className={`size-2 rounded-full ${getStatusDotColor(s.value)}`} />
-                                                            <span className="font-medium">{s.label}</span>
-                                                        </span>
-                                                        <span className="text-[11px] text-muted-foreground" dir="rtl">
-                                                            ({s.label_ar})
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`size-2 rounded-full shrink-0 ${getStatusDotColor(s.value)}`} />
+                                                        <span className="font-medium">
+                                                            {isRtl ? s.label_ar : s.label}
                                                         </span>
                                                     </div>
                                                 </SelectItem>
@@ -307,30 +312,24 @@ export function LeadDetailSheet({
 
                                 {/* Priority Level */}
                                 <div className="space-y-1.5 min-w-0">
-                                    <label className="text-xs font-semibold text-foreground flex items-center justify-between">
-                                        <span className="flex items-center gap-1.5 truncate">
-                                            <span className={`size-2 rounded-full shrink-0 ${getPriorityDotColor(lead.priority)}`} />
-                                            Priority Level
-                                        </span>
-                                        <span className="text-[11px] font-normal text-muted-foreground shrink-0">الأولوية</span>
+                                    <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                                        <span className={`size-2 rounded-full shrink-0 ${getPriorityDotColor(lead.priority)}`} />
+                                        <span>{t('crm.priority_level')}</span>
                                     </label>
                                     <Select
                                         value={lead.priority}
                                         onValueChange={handlePriorityChange}
                                     >
                                         <SelectTrigger className="w-full min-w-0 h-10 text-xs bg-background/80 shadow-2xs font-medium border-input">
-                                            <SelectValue placeholder="Priority" />
+                                            <SelectValue placeholder={t('crm.priority')} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {priorities.map((p) => (
                                                 <SelectItem key={p.value} value={p.value} className="text-xs py-2">
-                                                    <div className="flex items-center justify-between gap-3 w-full">
-                                                        <span className="flex items-center gap-2">
-                                                            <span className={`size-2 rounded-full ${getPriorityDotColor(p.value)}`} />
-                                                            <span className="font-medium">{p.label}</span>
-                                                        </span>
-                                                        <span className="text-[11px] text-muted-foreground" dir="rtl">
-                                                            ({p.label_ar})
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`size-2 rounded-full shrink-0 ${getPriorityDotColor(p.value)}`} />
+                                                        <span className="font-medium">
+                                                            {isRtl ? p.label_ar : p.label}
                                                         </span>
                                                     </div>
                                                 </SelectItem>
@@ -345,11 +344,11 @@ export function LeadDetailSheet({
                                 <label className="text-xs font-semibold text-foreground flex items-center justify-between">
                                     <span className="flex items-center gap-1.5">
                                         <UserCheck className="size-3.5 text-muted-foreground" />
-                                        Assigned Representative (الموظف المسؤول)
+                                        {t('crm.assigned_rep')}
                                     </span>
                                     {!isAdmin && (
                                         <span className="text-[10px] text-muted-foreground font-normal">
-                                            Assigned by Admin
+                                            {t('crm.assigned_by_admin')}
                                         </span>
                                     )}
                                 </label>
@@ -359,11 +358,11 @@ export function LeadDetailSheet({
                                     disabled={!isAdmin}
                                 >
                                     <SelectTrigger className="w-full min-w-0 h-10 text-xs bg-background/80 shadow-2xs font-medium border-input">
-                                        <SelectValue placeholder="Assignee" />
+                                        <SelectValue placeholder={t('crm.assignee')} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="unassigned" className="text-xs py-2">
-                                            <span className="italic text-muted-foreground">Unassigned (غير مخصص)</span>
+                                            <span className="italic text-muted-foreground">{t('common.unassigned')}</span>
                                         </SelectItem>
                                         {teamMembers.map((m) => (
                                             <SelectItem key={m.id} value={String(m.id)} className="text-xs py-2">
@@ -383,29 +382,29 @@ export function LeadDetailSheet({
                         {/* Inquiry Details Snapshot Card */}
                         <div className="rounded-xl border bg-card p-4 shadow-sm space-y-3">
                             <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                Project & Scope Details
+                                {t('crm.project_scope_details')}
                             </h4>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                                 <div>
-                                    <span className="text-xs text-muted-foreground">Service Requested</span>
+                                    <span className="text-xs text-muted-foreground">{t('crm.service_requested')}</span>
                                     <p className="font-semibold text-foreground mt-0.5">
-                                        {lead.service_name_snapshot || lead.service?.name_en || 'Custom Inquiry'}
+                                        {getServiceLabel()}
                                     </p>
                                 </div>
 
                                 <div>
-                                    <span className="text-xs text-muted-foreground">Budget Tier Range</span>
+                                    <span className="text-xs text-muted-foreground">{t('crm.budget_range')}</span>
                                     <p className="font-medium text-foreground mt-0.5">
-                                        {lead.budget_range_snapshot || 'Not specified'}
+                                        {lead.budget_range_snapshot || t('common.not_specified')}
                                     </p>
                                 </div>
 
                                 <div>
-                                    <span className="text-xs text-muted-foreground">First Submitted</span>
+                                    <span className="text-xs text-muted-foreground">{t('crm.first_submitted')}</span>
                                     <p className="text-foreground mt-0.5 flex items-center gap-1.5">
                                         <Calendar className="size-3.5 text-muted-foreground" />
-                                        {new Date(lead.created_at).toLocaleString('en-US', {
+                                        {formatDate(lead.created_at, {
                                             month: 'short',
                                             day: 'numeric',
                                             year: 'numeric',
@@ -416,7 +415,7 @@ export function LeadDetailSheet({
                                 </div>
 
                                 <div>
-                                    <span className="text-xs text-muted-foreground">Inquiry Source</span>
+                                    <span className="text-xs text-muted-foreground">{t('crm.inquiry_source')}</span>
                                     <p className="text-foreground mt-0.5 flex items-center gap-1.5">
                                         <Tag className="size-3.5 text-muted-foreground" />
                                         <span className="capitalize">{lead.source?.replace('_', ' ')}</span>
@@ -427,7 +426,7 @@ export function LeadDetailSheet({
                             {lead.internal_notes && (
                                 <div className="mt-2 rounded-lg bg-muted/50 p-3 text-xs leading-relaxed text-muted-foreground">
                                     <span className="font-semibold text-foreground block mb-1">
-                                        Initial Message / Note:
+                                        {t('crm.initial_message')}
                                     </span>
                                     {lead.internal_notes}
                                 </div>
@@ -435,7 +434,7 @@ export function LeadDetailSheet({
 
                             {lead.lost_reason && (
                                 <div className="mt-2 rounded-lg bg-rose-500/10 p-3 text-xs leading-relaxed text-rose-700 dark:text-rose-400">
-                                    <span className="font-semibold block mb-1">Reason Lost:</span>
+                                    <span className="font-semibold block mb-1">{t('crm.reason_lost')}</span>
                                     {lead.lost_reason}
                                 </div>
                             )}
@@ -443,7 +442,7 @@ export function LeadDetailSheet({
                             {/* Convert to Project Quick Action */}
                             <div className="pt-2 border-t flex items-center justify-between">
                                 <span className="text-xs text-muted-foreground">
-                                    Ready to initiate production?
+                                    {t('crm.ready_initiate')}
                                 </span>
                                 <Button
                                     size="sm"
@@ -457,7 +456,7 @@ export function LeadDetailSheet({
                                         )}&client=${encodeURIComponent(lead.name)}`}
                                     >
                                         <FolderPlus className="size-3.5 text-primary" />
-                                        Convert to Project
+                                        {t('crm.convert_to_project')}
                                     </a>
                                 </Button>
                             </div>
@@ -466,7 +465,7 @@ export function LeadDetailSheet({
                         {/* Add Communication / Note Box */}
                         <div className="rounded-xl border bg-card p-4 shadow-sm">
                             <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                                Log Communication or Activity
+                                {t('crm.log_communication')}
                             </h4>
 
                             <form onSubmit={handleAddNote} className="space-y-3">
@@ -475,15 +474,15 @@ export function LeadDetailSheet({
                                         value={noteType}
                                         onValueChange={(val) => setNoteType(val as any)}
                                     >
-                                        <SelectTrigger className="w-40 h-8 text-xs">
+                                        <SelectTrigger className="w-44 h-8 text-xs">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="note">Internal Note</SelectItem>
-                                            <SelectItem value="call">Phone Call</SelectItem>
-                                            <SelectItem value="whatsapp">WhatsApp Chat</SelectItem>
-                                            <SelectItem value="meeting">Client Meeting</SelectItem>
-                                            <SelectItem value="proposal_sent">Proposal Sent</SelectItem>
+                                            <SelectItem value="note">{t('activity.note')}</SelectItem>
+                                            <SelectItem value="call">{t('activity.call')}</SelectItem>
+                                            <SelectItem value="whatsapp">{t('activity.whatsapp')}</SelectItem>
+                                            <SelectItem value="meeting">{t('activity.meeting')}</SelectItem>
+                                            <SelectItem value="proposal_sent">{t('activity.proposal_sent')}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -491,7 +490,7 @@ export function LeadDetailSheet({
                                 <textarea
                                     value={noteContent}
                                     onChange={(e) => setNoteContent(e.target.value)}
-                                    placeholder="Enter details of your call, conversation, or internal instructions..."
+                                    placeholder={t('crm.note_placeholder')}
                                     rows={3}
                                     className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-xs shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                     required
@@ -504,7 +503,7 @@ export function LeadDetailSheet({
                                         disabled={isSubmittingNote || !noteContent.trim()}
                                         className="text-xs"
                                     >
-                                        {isSubmittingNote ? 'Saving...' : 'Add to Timeline'}
+                                        {isSubmittingNote ? t('common.saving') : t('crm.add_to_timeline')}
                                     </Button>
                                 </div>
                             </form>
@@ -513,27 +512,37 @@ export function LeadDetailSheet({
                         {/* Activity & Notes Timeline */}
                         <div className="space-y-3">
                             <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                Activity Timeline ({lead.activities?.length ?? 0})
+                                {t('crm.activity_timeline')} ({lead.activities?.length ?? 0})
                             </h4>
 
                             {(!lead.activities || lead.activities.length === 0) ? (
-                                <p className="text-xs text-muted-foreground italic">No activities recorded yet.</p>
+                                <p className="text-xs text-muted-foreground italic">{t('crm.no_activities')}</p>
                             ) : (
-                                <div className="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
+                                <div
+                                    className={`relative space-y-4 before:absolute ${
+                                        isRtl
+                                            ? 'pr-6 before:right-2'
+                                            : 'pl-6 before:left-2'
+                                    } before:top-2 before:bottom-2 before:w-0.5 before:bg-border`}
+                                >
                                     {lead.activities.map((act) => (
                                         <div key={act.id} className="relative group">
-                                            <div className="absolute -left-6 top-0.5 flex size-4.5 items-center justify-center rounded-full bg-background border shadow-xs">
+                                            <div
+                                                className={`absolute top-0.5 flex size-4.5 items-center justify-center rounded-full bg-background border shadow-xs ${
+                                                    isRtl ? '-right-6' : '-left-6'
+                                                }`}
+                                            >
                                                 {getActivityIcon(act.type)}
                                             </div>
 
                                             <div className="rounded-lg border bg-card/60 p-3 shadow-xs">
                                                 <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                                                     <span className="font-medium text-foreground">
-                                                        {act.user?.name ?? 'Website System'}
+                                                        {act.user?.name ?? t('common.website_system')}
                                                     </span>
                                                     <span className="flex items-center gap-1 text-[11px]">
                                                         <Clock className="size-3" />
-                                                        {new Date(act.created_at).toLocaleString('en-US', {
+                                                        {formatDate(act.created_at, {
                                                             month: 'short',
                                                             day: 'numeric',
                                                             hour: '2-digit',
@@ -557,10 +566,10 @@ export function LeadDetailSheet({
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <h5 className="text-xs font-semibold text-rose-700 dark:text-rose-400">
-                                            Delete Lead
+                                            {t('crm.delete_lead')}
                                         </h5>
                                         <p className="text-[11px] text-muted-foreground">
-                                            Permanently remove this inquiry and all associated activities.
+                                            {t('crm.delete_lead_desc')}
                                         </p>
                                     </div>
                                     <Button
@@ -570,7 +579,7 @@ export function LeadDetailSheet({
                                         className="h-8 text-xs gap-1"
                                     >
                                         <Trash2 className="size-3.5" />
-                                        Delete
+                                        {t('common.delete')}
                                     </Button>
                                 </div>
                             </div>
@@ -583,9 +592,9 @@ export function LeadDetailSheet({
             <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Confirm Delete Lead</DialogTitle>
+                        <DialogTitle>{t('crm.delete_confirm_title')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete the lead for <strong>{lead.name}</strong>? This action cannot be undone.
+                            {t('crm.delete_confirm_msg')}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -594,14 +603,14 @@ export function LeadDetailSheet({
                             onClick={() => setShowDeleteConfirm(false)}
                             disabled={isDeleting}
                         >
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             variant="destructive"
                             onClick={handleDeleteLead}
                             disabled={isDeleting}
                         >
-                            {isDeleting ? 'Deleting...' : 'Delete Permanently'}
+                            {isDeleting ? t('common.deleting') : t('crm.delete_permanent')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -609,4 +618,3 @@ export function LeadDetailSheet({
         </>
     );
 }
-

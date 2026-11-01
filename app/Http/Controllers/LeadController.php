@@ -73,17 +73,22 @@ class LeadController extends Controller
             ];
         }
 
-        // CRM KPI Analytics
-        $totalLeads = Lead::count();
-        $newLeadsCount = Lead::where('status', LeadStatus::New)->count();
-        $inProgressCount = Lead::whereIn('status', [
-            LeadStatus::Contacted,
-            LeadStatus::Qualified,
-            LeadStatus::ProposalSent,
-            LeadStatus::Negotiation,
-        ])->count();
-        $wonCount = Lead::where('status', LeadStatus::Won)->count();
-        $lostCount = Lead::where('status', LeadStatus::Lost)->count();
+        // CRM KPI Analytics (Single fast aggregated query using status index)
+        $leadCounts = Lead::query()
+            ->selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        $totalLeads = (int) $leadCounts->sum();
+        $newLeadsCount = (int) ($leadCounts[LeadStatus::New->value] ?? 0);
+        $inProgressCount = (int) (
+            ($leadCounts[LeadStatus::Contacted->value] ?? 0) +
+            ($leadCounts[LeadStatus::Qualified->value] ?? 0) +
+            ($leadCounts[LeadStatus::ProposalSent->value] ?? 0) +
+            ($leadCounts[LeadStatus::Negotiation->value] ?? 0)
+        );
+        $wonCount = (int) ($leadCounts[LeadStatus::Won->value] ?? 0);
+        $lostCount = (int) ($leadCounts[LeadStatus::Lost->value] ?? 0);
         $conversionRate = $totalLeads > 0 ? round(($wonCount / $totalLeads) * 100, 1) : 0;
 
         $teamMembers = User::query()
@@ -174,6 +179,7 @@ class LeadController extends Controller
         ]);
 
         $lead->logActivity('created', 'Lead created manually by '.auth()->user()->name.'.', auth()->id());
+        cache()->forget('crm_new_leads_count');
 
         return redirect()->route('crm.index', ['selected' => $lead->id])
             ->with('success', 'Lead created successfully.');
@@ -211,6 +217,8 @@ class LeadController extends Controller
             "Status changed from '{$oldStatus->label()}' to '{$newStatus->label()}' by ".auth()->user()->name.'.',
             auth()->id()
         );
+
+        cache()->forget('crm_new_leads_count');
 
         return back()->with('success', 'Lead stage updated.');
     }
@@ -294,6 +302,7 @@ class LeadController extends Controller
         Gate::authorize('delete', $lead);
 
         $lead->delete();
+        cache()->forget('crm_new_leads_count');
 
         return redirect()->route('crm.index')->with('success', 'Lead deleted successfully.');
     }

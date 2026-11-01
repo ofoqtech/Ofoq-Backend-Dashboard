@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/lib/i18n';
 import type { Lead } from '@/types/crm';
 
 interface CrmTableProps {
@@ -18,12 +19,30 @@ interface CrmTableProps {
 }
 
 export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
+    const { t, isRtl, localized, formatDate } = useTranslation();
+
+    const getStatusLabel = (lead: Lead) => {
+        return t(`stage.${lead.status}`, lead.status_label);
+    };
+
+    const getPriorityLabel = (lead: Lead) => {
+        return t(`priority.${lead.priority}`, lead.priority_label);
+    };
+
+    const getServiceLabel = (lead: Lead) => {
+        const localizedName = localized({
+            en: lead.service?.name_en || lead.service_name_snapshot,
+            ar: lead.service?.name_ar || lead.service_name_snapshot,
+        });
+        return localizedName || t('common.general');
+    };
+
     if (leads.length === 0) {
         return (
             <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center">
-                <p className="text-sm font-medium text-foreground">No leads found</p>
+                <p className="text-sm font-medium text-foreground">{t('crm.no_leads_found')}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                    Try adjusting your filters or search keywords.
+                    {t('crm.no_leads_hint')}
                 </p>
             </div>
         );
@@ -32,17 +51,17 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
     return (
         <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
             <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
+                <table className="w-full text-start text-sm">
                     <thead className="border-b bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         <tr>
-                            <th className="px-4 py-3">Client & Company</th>
-                            <th className="px-4 py-3">Contact</th>
-                            <th className="px-4 py-3">Service & Budget</th>
-                            <th className="px-4 py-3">Stage</th>
-                            <th className="px-4 py-3">Priority</th>
-                            <th className="px-4 py-3">Assignee</th>
-                            <th className="px-4 py-3">Submitted</th>
-                            <th className="px-4 py-3 text-right">Actions</th>
+                            <th className="px-4 py-3 text-start">{t('crm.client_company')}</th>
+                            <th className="px-4 py-3 text-start">{t('crm.contact')}</th>
+                            <th className="px-4 py-3 text-start">{t('crm.service_budget')}</th>
+                            <th className="px-4 py-3 text-start">{t('crm.stage')}</th>
+                            <th className="px-4 py-3 text-start">{t('crm.priority')}</th>
+                            <th className="px-4 py-3 text-start">{t('crm.assignee')}</th>
+                            <th className="px-4 py-3 text-start">{t('crm.submitted')}</th>
+                            <th className="px-4 py-3 text-end">{t('common.actions')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -52,19 +71,19 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                 onClick={() => onSelectLead(lead)}
                                 className="group cursor-pointer transition-colors hover:bg-muted/50"
                             >
-                                <td className="px-4 py-3">
+                                <td className="px-4 py-3 text-start">
                                     <div className="font-semibold text-foreground group-hover:text-primary transition-colors">
                                         {lead.name}
                                     </div>
                                     {lead.company && (
                                         <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-                                            <Building2 className="size-3" />
+                                            <Building2 className="size-3 shrink-0" />
                                             {lead.company}
                                         </div>
                                     )}
                                 </td>
 
-                                <td className="px-4 py-3">
+                                <td className="px-4 py-3 text-start">
                                     <div className="flex items-center gap-2">
                                         <span className="font-mono text-xs">{lead.phone}</span>
                                         <div
@@ -75,14 +94,14 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                                 href={lead.whatsapp_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                title="WhatsApp Chat"
+                                                title={t('crm.chat_whatsapp')}
                                                 className="flex size-6 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-colors"
                                             >
                                                 <MessageCircle className="size-3.5" />
                                             </a>
                                             <a
                                                 href={`tel:${lead.phone}`}
-                                                title="Call"
+                                                title={t('crm.call')}
                                                 className="flex size-6 items-center justify-center rounded-md bg-muted text-muted-foreground hover:bg-foreground hover:text-background transition-colors"
                                             >
                                                 <Phone className="size-3.5" />
@@ -96,9 +115,9 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                     )}
                                 </td>
 
-                                <td className="px-4 py-3">
+                                <td className="px-4 py-3 text-start">
                                     <div className="font-medium text-xs text-foreground truncate max-w-[200px]">
-                                        {lead.service_name_snapshot || lead.service?.name_en || 'General'}
+                                        {getServiceLabel(lead)}
                                     </div>
                                     {lead.budget_range_snapshot && (
                                         <div className="text-[11px] text-muted-foreground truncate max-w-[200px]">
@@ -107,38 +126,34 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                     )}
                                 </td>
 
-                                <td className="px-4 py-3 whitespace-nowrap">
+                                <td className="px-4 py-3 whitespace-nowrap text-start">
                                     <span
                                         className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ${lead.status_color}`}
                                     >
-                                        {lead.status_label}
+                                        {getStatusLabel(lead)}
                                     </span>
                                 </td>
 
-                                <td className="px-4 py-3 whitespace-nowrap">
+                                <td className="px-4 py-3 whitespace-nowrap text-start">
                                     <span
                                         className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${lead.priority_color}`}
                                     >
-                                        {lead.priority_label}
+                                        {getPriorityLabel(lead)}
                                     </span>
                                 </td>
 
-                                <td className="px-4 py-3 whitespace-nowrap">
+                                <td className="px-4 py-3 whitespace-nowrap text-start">
                                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                        <UserIcon className="size-3.5" />
-                                        <span>{lead.assignee?.name ?? 'Unassigned'}</span>
+                                        <UserIcon className="size-3.5 shrink-0" />
+                                        <span>{lead.assignee?.name ?? t('common.unassigned')}</span>
                                     </div>
                                 </td>
 
-                                <td className="px-4 py-3 whitespace-nowrap text-xs text-muted-foreground">
-                                    {new Date(lead.created_at).toLocaleDateString('en-US', {
-                                        month: 'short',
-                                        day: 'numeric',
-                                        year: 'numeric',
-                                    })}
+                                <td className="px-4 py-3 whitespace-nowrap text-xs text-muted-foreground text-start">
+                                    {formatDate(lead.created_at)}
                                 </td>
 
-                                <td className="px-4 py-3 text-right whitespace-nowrap">
+                                <td className="px-4 py-3 text-end whitespace-nowrap">
                                     <Button
                                         size="sm"
                                         variant="ghost"
@@ -148,8 +163,8 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                             onSelectLead(lead);
                                         }}
                                     >
-                                        Details
-                                        <ChevronRight className="size-3.5" />
+                                        {t('common.details')}
+                                        <ChevronRight className={`size-3.5 ${isRtl ? 'rotate-180' : ''}`} />
                                     </Button>
                                 </td>
                             </tr>
@@ -160,4 +175,3 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
         </div>
     );
 }
-

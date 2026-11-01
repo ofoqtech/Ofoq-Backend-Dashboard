@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Route;
 // Default server landing page: redirects directly to login (or dashboard if already authenticated)
 Route::get('/', function () {
     return auth()->check()
-        ? redirect()->route('dashboard')
-        : redirect()->route('login');
+        ? redirect('/dashboard')
+        : redirect('/login');
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {

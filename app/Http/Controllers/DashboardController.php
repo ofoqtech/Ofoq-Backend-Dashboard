@@ -19,20 +19,38 @@ class DashboardController extends Controller
      */
     public function __invoke(Request $request): Response
     {
+        $userCounts = User::query()
+            ->selectRaw('role, count(*) as count')
+            ->groupBy('role')
+            ->pluck('count', 'role');
+
+        $totalEmployees = (int) ($userCounts[Role::Employee->value] ?? 0);
+        $totalAdmins = (int) ($userCounts[Role::Admin->value] ?? 0);
+
         $totalProjects = Project::count();
-        $totalEmployees = User::where('role', Role::Employee)->count();
-        $totalAdmins = User::where('role', Role::Admin)->count();
         $totalCategories = Category::count();
-        $totalLeads = Lead::count();
-        $newLeadsCount = Lead::where('status', LeadStatus::New)->count();
+
+        $leadCounts = Lead::query()
+            ->selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        $totalLeads = (int) $leadCounts->sum();
+        $newLeadsCount = (int) ($leadCounts[LeadStatus::New->value] ?? 0);
+
+        $projectCountsByCategory = Project::query()
+            ->selectRaw('category, count(*) as count')
+            ->groupBy('category')
+            ->pluck('count', 'category')
+            ->toArray();
 
         $categories = [
-            'web' => Project::where('category', 'web')->count(),
-            'mobile' => Project::where('category', 'mobile')->count(),
-            'erp' => Project::where('category', 'erp')->count(),
+            'web' => $projectCountsByCategory['web'] ?? 0,
+            'mobile' => $projectCountsByCategory['mobile'] ?? 0,
+            'erp' => $projectCountsByCategory['erp'] ?? 0,
         ];
 
-        $activeCategories = Category::withCount('projects')->get();
+        $activeCategories = Category::withCount('projects')->get(['id', 'slug']);
         foreach ($activeCategories as $cat) {
             $categories[$cat->slug] = $cat->projects_count;
         }

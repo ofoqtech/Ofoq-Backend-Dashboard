@@ -24,6 +24,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/lib/i18n';
 import { dashboard } from '@/routes';
 import {
     create as createAdmin,
@@ -48,6 +49,7 @@ export default function AdminsIndex({
     currentAdminId,
 }: AdminsIndexProps) {
     const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
+    const { t, isRtl, localized } = useTranslation();
 
     const [search, setSearch] = useState(filters.search || '');
     const [status, setStatus] = useState(filters.status || '');
@@ -90,11 +92,19 @@ export default function AdminsIndex({
         });
     };
 
+    const getAdminTitle = (admin: User | null | undefined) => {
+        if (!admin) return '';
+        if (isRtl) {
+            return admin.title_ar || (typeof admin.title === 'object' ? admin.title?.ar : '') || admin.title_en || (typeof admin.title === 'object' ? admin.title?.en : admin.title) || 'مدير النظام';
+        }
+        return admin.title_en || (typeof admin.title === 'object' ? admin.title?.en : admin.title) || 'System Administrator';
+    };
+
     const totalAdminsCount = admins.total;
 
     return (
         <>
-            <Head title="System Administrators - Ofoq Technology" />
+            <Head title={t('admins.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 {/* Flash Notifications */}
@@ -114,23 +124,23 @@ export default function AdminsIndex({
                     <div>
                         <div className="flex items-center gap-2">
                             <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                                System Administrators
+                                {t('admins.title')}
                             </h1>
                             <Badge variant="secondary" className="gap-1 bg-amber-500/10 text-amber-600 border-amber-500/20">
                                 <ShieldCheck className="size-3" />
-                                Admin Authority
+                                {t('admins.security_access')}
                             </Badge>
                         </div>
                         <p className="text-muted-foreground mt-1 text-sm">
-                            Manage users with full administration privileges across the entire dashboard.
+                            {t('admins.subtitle')}
                         </p>
                     </div>
 
                     <div className="flex items-center gap-2.5">
                         <Button asChild size="sm">
-                            <Link href={createAdmin()}>
-                                <Plus className="mr-1.5 size-4" />
-                                Add Administrator
+                            <Link href={createAdmin()} prefetch="hover" cacheFor="1m">
+                                <Plus className={`size-4 ${isRtl ? 'ml-1.5' : 'mr-1.5'}`} />
+                                {t('admins.add_admin')}
                             </Link>
                         </Button>
                     </div>
@@ -139,26 +149,32 @@ export default function AdminsIndex({
                 {/* Search Card */}
                 <Card>
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-base font-semibold">Filter Administrators</CardTitle>
-                        <CardDescription>Search by administrator name, email, or job title</CardDescription>
+                        <CardTitle className="text-base font-semibold">{t('admins.filter_title')}</CardTitle>
+                        <CardDescription>{t('admins.filter_desc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row sm:items-center">
                             <div className="relative flex-1">
-                                <Search className="text-muted-foreground absolute left-3 top-1/2 size-4 -translate-y-1/2 pointer-events-none" />
+                                <Search
+                                    className={`text-muted-foreground absolute top-1/2 size-4 -translate-y-1/2 pointer-events-none ${
+                                        isRtl ? 'right-3' : 'left-3'
+                                    }`}
+                                />
                                 <Input
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    placeholder="Search by administrator name, email, or job title..."
-                                    className="pl-9 pr-8"
+                                    placeholder={t('admins.search_placeholder')}
+                                    className={isRtl ? 'pr-9 pl-8' : 'pl-9 pr-8'}
                                     autoComplete="off"
                                 />
                                 {search && (
                                     <button
                                         type="button"
                                         onClick={() => setSearch('')}
-                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                                        title="Clear search"
+                                        className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors ${
+                                            isRtl ? 'left-2.5' : 'right-2.5'
+                                        }`}
+                                        title={t('common.clear')}
                                     >
                                         <X className="size-3.5" />
                                     </button>
@@ -167,7 +183,7 @@ export default function AdminsIndex({
 
                             <div className="flex items-center gap-2">
                                 <Button type="submit" variant="secondary" size="sm">
-                                    Search
+                                    {t('common.search')}
                                 </Button>
                                 {search && (
                                     <Button
@@ -179,7 +195,7 @@ export default function AdminsIndex({
                                             router.get(adminsIndex.url());
                                         }}
                                     >
-                                        Reset
+                                        {t('common.reset')}
                                     </Button>
                                 )}
                             </div>
@@ -191,21 +207,21 @@ export default function AdminsIndex({
                 <Card>
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm">
+                            <table className="w-full text-start text-sm">
                                 <thead className="border-b bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                     <tr>
-                                        <th className="px-6 py-3.5">Administrator</th>
-                                        <th className="px-6 py-3.5">Title (Arabic & English)</th>
-                                        <th className="px-6 py-3.5">Contact</th>
-                                        <th className="px-6 py-3.5">Status</th>
-                                        <th className="px-6 py-3.5 text-right">Actions</th>
+                                        <th className="px-6 py-3.5 text-start">{t('admins.admin_col')}</th>
+                                        <th className="px-6 py-3.5 text-start">{t('admins.title_col')}</th>
+                                        <th className="px-6 py-3.5 text-start">{t('common.phone')}</th>
+                                        <th className="px-6 py-3.5 text-start">{t('common.status')}</th>
+                                        <th className="px-6 py-3.5 text-end">{t('common.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border/60">
                                     {admins.data.length === 0 ? (
                                         <tr>
                                             <td colSpan={5} className="px-6 py-10 text-center text-muted-foreground">
-                                                No administrators found matching the criteria.
+                                                {t('admins.no_admins_found')}
                                             </td>
                                         </tr>
                                     ) : (
@@ -214,7 +230,7 @@ export default function AdminsIndex({
 
                                             return (
                                                 <tr key={admin.id} className="hover:bg-muted/30 transition-colors">
-                                                    <td className="px-6 py-4">
+                                                    <td className="px-6 py-4 text-start">
                                                         <div className="flex items-center gap-3">
                                                             <div className="size-9 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold text-xs shrink-0 ring-1 ring-amber-500/20">
                                                                 <Shield className="size-4" />
@@ -224,7 +240,7 @@ export default function AdminsIndex({
                                                                     {admin.name}
                                                                     {isSelf && (
                                                                         <Badge variant="outline" className="text-[10px] py-0 px-1.5 h-4 border-primary text-primary">
-                                                                            You
+                                                                            {t('common.you')}
                                                                         </Badge>
                                                                     )}
                                                                 </div>
@@ -236,18 +252,13 @@ export default function AdminsIndex({
                                                         </div>
                                                     </td>
 
-                                                    <td className="px-6 py-4">
-                                                        <div className="space-y-0.5">
-                                                            <div className="font-medium text-foreground text-xs">
-                                                                {admin.title_en || (typeof admin.title === 'object' ? admin.title?.en : admin.title) || 'System Administrator'}
-                                                            </div>
-                                                            <div className="text-xs text-muted-foreground font-arabic" dir="rtl">
-                                                                {admin.title_ar || (typeof admin.title === 'object' ? admin.title?.ar : '') || 'مدير النظام'}
-                                                            </div>
+                                                    <td className="px-6 py-4 text-start">
+                                                        <div className="font-medium text-foreground text-xs">
+                                                            {getAdminTitle(admin)}
                                                         </div>
                                                     </td>
 
-                                                    <td className="px-6 py-4">
+                                                    <td className="px-6 py-4 text-start">
                                                         {admin.phone ? (
                                                             <span className="text-xs flex items-center gap-1 text-muted-foreground font-mono">
                                                                 <Phone className="size-3" />
@@ -258,7 +269,7 @@ export default function AdminsIndex({
                                                         )}
                                                     </td>
 
-                                                    <td className="px-6 py-4">
+                                                    <td className="px-6 py-4 text-start">
                                                         <Badge
                                                             variant={admin.status === 'active' ? 'default' : 'secondary'}
                                                             className={`gap-1 text-xs capitalize ${
@@ -272,16 +283,16 @@ export default function AdminsIndex({
                                                                     admin.status === 'active' ? 'bg-emerald-500' : 'bg-muted-foreground'
                                                                 }`}
                                                             />
-                                                            {admin.status}
+                                                            {admin.status === 'active' ? t('common.active') : t('common.inactive')}
                                                         </Badge>
                                                     </td>
 
-                                                    <td className="px-6 py-4 text-right">
+                                                    <td className="px-6 py-4 text-end">
                                                         <div className="flex items-center justify-end gap-1.5">
-                                                            <Button asChild variant="ghost" size="sm" className="size-8 p-0" title="Edit Administrator">
+                                                            <Button asChild variant="ghost" size="sm" className="size-8 p-0" title={t('common.edit')}>
                                                                 <Link href={editAdmin(admin.id)}>
                                                                     <Edit3 className="size-3.5" />
-                                                                    <span className="sr-only">Edit</span>
+                                                                    <span className="sr-only">{t('common.edit')}</span>
                                                                 </Link>
                                                             </Button>
 
@@ -291,11 +302,11 @@ export default function AdminsIndex({
                                                                     variant="ghost"
                                                                     size="sm"
                                                                     className="size-8 p-0 text-muted-foreground hover:text-destructive"
-                                                                    title="Delete Administrator"
+                                                                    title={t('common.delete')}
                                                                     onClick={() => setAdminToDelete(admin)}
                                                                 >
                                                                     <Trash2 className="size-3.5" />
-                                                                    <span className="sr-only">Delete</span>
+                                                                    <span className="sr-only">{t('common.delete')}</span>
                                                                 </Button>
                                                             )}
                                                         </div>
@@ -314,7 +325,7 @@ export default function AdminsIndex({
                 {admins.last_page > 1 && (
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <div>
-                            Showing {admins.from} to {admins.to} of {admins.total} administrators
+                            {t('common.showing')} {admins.from} {t('common.to')} {admins.to} {t('common.of')} {admins.total} {t('nav.admins')}
                         </div>
                         <div className="flex gap-2">
                             {admins.links.map((link, idx) => (
@@ -327,6 +338,9 @@ export default function AdminsIndex({
                                 >
                                     <Link
                                         href={link.url || '#'}
+                                        prefetch="hover"
+                                        cacheFor="1m"
+                                        preserveScroll
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />
                                 </Button>
@@ -342,19 +356,18 @@ export default function AdminsIndex({
                     <DialogHeader>
                         <div className="flex items-center gap-2 text-destructive mb-1">
                             <ShieldAlert className="size-5" />
-                            <DialogTitle>Confirm Delete Administrator</DialogTitle>
+                            <DialogTitle>{t('common.confirm')}</DialogTitle>
                         </div>
                         <DialogDescription>
                             Are you sure you want to revoke administrative access and delete <strong>{adminToDelete?.name}</strong>?
-                            This action cannot be undone.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="gap-2">
                         <Button variant="outline" onClick={() => setAdminToDelete(null)}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button variant="destructive" onClick={confirmDelete}>
-                            Delete Administrator
+                            {t('common.delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -375,4 +388,3 @@ AdminsIndex.layout = {
         },
     ],
 };
-

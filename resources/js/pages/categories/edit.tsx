@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from '@/lib/i18n';
 import { dashboard } from '@/routes';
 import type { Category } from '@/types';
 
@@ -14,6 +15,7 @@ type EditCategoryProps = {
 };
 
 export default function EditCategory({ category }: EditCategoryProps) {
+    const { t, localized, isRtl } = useTranslation();
     const nameEn = category.name_en || (typeof category.name === 'object' ? category.name?.en : category.name) || '';
     const nameAr = category.name_ar || (typeof category.name === 'object' ? category.name?.ar : '') || '';
     const descEn = category.description_en || (typeof category.description === 'object' ? category.description?.en : '') || '';
@@ -34,24 +36,26 @@ export default function EditCategory({ category }: EditCategoryProps) {
         put(`/categories/${category.id}`);
     };
 
+    const displayCategoryName = localized(category.name) || (isRtl ? nameAr : nameEn) || category.slug;
+
     return (
         <>
-            <Head title={`Edit ${nameEn} - Category`} />
+            <Head title={`${t('categories.edit_title')}: ${displayCategoryName}`} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6 max-w-3xl">
                 {/* Back button & Title */}
                 <div>
-                    <Button asChild variant="ghost" size="sm" className="mb-2 -ml-2 text-xs">
-                        <Link href="/categories">
-                            <ArrowLeft className="mr-1 size-3.5" />
-                            Back to Categories
+                    <Button asChild variant="ghost" size="sm" className="mb-2 -mx-2 text-xs">
+                        <Link href="/categories" prefetch={['mount', 'hover']} cacheFor="2m">
+                            <ArrowLeft className={`mr-1 size-3.5 ${isRtl ? 'rotate-180 ml-1 mr-0' : ''}`} />
+                            {t('common.back_to_categories')}
                         </Link>
                     </Button>
                     <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                        Edit Category
+                        {t('categories.edit_title')}
                     </h1>
                     <p className="text-muted-foreground mt-1 text-sm">
-                        Update bilingual Arabic and English taxonomy and display order.
+                        {t('categories.edit_desc')}
                     </p>
                 </div>
 
@@ -59,10 +63,10 @@ export default function EditCategory({ category }: EditCategoryProps) {
                     <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
                             <FolderTree className="size-5 text-primary" />
-                            Category Details
+                            {t('categories.info_title')}
                         </CardTitle>
                         <CardDescription>
-                            Editing category: {nameEn} ({category.slug})
+                            {isRtl ? `تعديل تصنيف: ${displayCategoryName} (${category.slug})` : `Editing category: ${displayCategoryName} (${category.slug})`}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -70,19 +74,20 @@ export default function EditCategory({ category }: EditCategoryProps) {
                             {/* Bilingual Name */}
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="name_en">Category Name (English) *</Label>
+                                    <Label htmlFor="name_en">{t('categories.name_en')}</Label>
                                     <Input
                                         id="name_en"
                                         value={data.name_en}
                                         onChange={(e) => setData('name_en', e.target.value)}
                                         placeholder="e.g. Cloud Infrastructure"
+                                        dir="ltr"
                                         required
                                     />
                                     <InputError message={errors.name_en} />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="name_ar">Category Name (Arabic) *</Label>
+                                    <Label htmlFor="name_ar">{t('categories.name_ar')}</Label>
                                     <Input
                                         id="name_ar"
                                         value={data.name_ar}
@@ -99,19 +104,21 @@ export default function EditCategory({ category }: EditCategoryProps) {
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div className="space-y-1.5">
                                     <Label htmlFor="slug">
-                                        URL Slug <span className="text-xs text-muted-foreground font-normal">(unique identifier)</span>
+                                        {t('categories.slug_label')}{' '}
+                                        <span className="text-xs text-muted-foreground font-normal">({category.slug})</span>
                                     </Label>
                                     <Input
                                         id="slug"
                                         value={data.slug}
                                         onChange={(e) => setData('slug', e.target.value)}
-                                        placeholder="e.g. cloud-infra"
+                                        placeholder="cloud-infra"
+                                        dir="ltr"
                                     />
                                     <InputError message={errors.slug} />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="order">Display Sort Order</Label>
+                                    <Label htmlFor="order">{t('categories.order_label')}</Label>
                                     <Input
                                         id="order"
                                         type="number"
@@ -126,20 +133,21 @@ export default function EditCategory({ category }: EditCategoryProps) {
 
                             {/* Bilingual Description */}
                             <div className="space-y-1.5">
-                                <Label htmlFor="description_en">Description (English)</Label>
+                                <Label htmlFor="description_en">{t('categories.desc_en')}</Label>
                                 <textarea
                                     id="description_en"
                                     rows={3}
                                     value={data.description_en}
                                     onChange={(e) => setData('description_en', e.target.value)}
                                     placeholder="Brief overview of this project sector..."
+                                    dir="ltr"
                                     className="w-full rounded-md border border-input bg-background p-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                 />
                                 <InputError message={errors.description_en} />
                             </div>
 
                             <div className="space-y-1.5">
-                                <Label htmlFor="description_ar">Description (Arabic)</Label>
+                                <Label htmlFor="description_ar">{t('categories.desc_ar')}</Label>
                                 <textarea
                                     id="description_ar"
                                     rows={3}
@@ -147,31 +155,31 @@ export default function EditCategory({ category }: EditCategoryProps) {
                                     value={data.description_ar}
                                     onChange={(e) => setData('description_ar', e.target.value)}
                                     placeholder="نبذة مختصرة عن هذا القطاع البرمجي..."
-                                    className="w-full rounded-md border border-input bg-background p-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring font-arabic"
+                                    className="w-full rounded-md border border-input bg-background p-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                 />
                                 <InputError message={errors.description_ar} />
                             </div>
 
                             {/* Active checkbox */}
-                            <div className="flex items-center space-x-2 pt-1">
+                            <div className="flex items-center gap-2 pt-1">
                                 <Checkbox
                                     id="is_active"
                                     checked={data.is_active}
                                     onCheckedChange={(checked) => setData('is_active', Boolean(checked))}
                                 />
                                 <Label htmlFor="is_active" className="text-sm font-medium cursor-pointer">
-                                    Active category (available for assignment in projects)
+                                    {t('categories.is_active_label')}
                                 </Label>
                             </div>
 
                             {/* Submit & Cancel */}
                             <div className="flex items-center justify-end gap-2.5 pt-4 border-t">
                                 <Button asChild variant="outline">
-                                    <Link href="/categories">Cancel</Link>
+                                    <Link href="/categories">{t('common.cancel')}</Link>
                                 </Button>
                                 <Button type="submit" disabled={processing} className="bg-primary hover:bg-primary/90">
-                                    <Save className="mr-1.5 size-4" />
-                                    {processing ? 'Saving...' : 'Update Category'}
+                                    <Save className={`size-4 ${isRtl ? 'ml-1.5' : 'mr-1.5'}`} />
+                                    {processing ? t('common.saving') : t('common.save_changes')}
                                 </Button>
                             </div>
                         </form>

@@ -17,6 +17,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslation } from '@/lib/i18n';
 import { dashboard } from '@/routes';
 import type { Auth, User } from '@/types/auth';
 import type {
@@ -62,6 +63,7 @@ export default function CrmIndex({
     selectedLeadId,
 }: CrmIndexProps) {
     const { auth } = usePage<{ auth: Auth }>().props;
+    const { t, isRtl } = useTranslation();
     const isAdmin = auth.user.role === 'admin';
 
     const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
@@ -185,15 +187,15 @@ export default function CrmIndex({
 
     return (
         <>
-            <Head title="CRM & Pipeline Management" />
+            <Head title={t('crm.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 {/* Header */}
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">CRM & Client Inquiries</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">{t('crm.title')}</h1>
                         <p className="text-sm text-muted-foreground mt-0.5">
-                            Manage incoming project requests from the website contact form and track deals through the pipeline.
+                            {t('crm.subtitle')}
                         </p>
                     </div>
 
@@ -208,7 +210,7 @@ export default function CrmIndex({
                                 className="h-8 gap-1.5 px-3 text-xs"
                             >
                                 <Kanban className="size-3.5" />
-                                Kanban
+                                {t('crm.kanban')}
                             </Button>
                             <Button
                                 type="button"
@@ -218,7 +220,7 @@ export default function CrmIndex({
                                 className="h-8 gap-1.5 px-3 text-xs"
                             >
                                 <TableIcon className="size-3.5" />
-                                Table
+                                {t('crm.table')}
                             </Button>
                         </div>
 
@@ -229,7 +231,7 @@ export default function CrmIndex({
                             className="h-8 gap-1.5 text-xs shadow-sm"
                         >
                             <Plus className="size-3.5" />
-                            Record Inquiry
+                            {t('crm.record_inquiry')}
                         </Button>
                     </div>
                 </div>
@@ -241,21 +243,27 @@ export default function CrmIndex({
                 <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-2xs md:flex-row md:items-center md:justify-between">
                     {/* Live Search Input */}
                     <div className="relative flex-1 max-w-sm">
-                        <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                        <Search
+                            className={`absolute top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none ${
+                                isRtl ? 'right-2.5' : 'left-2.5'
+                            }`}
+                        />
                         <Input
                             type="text"
-                            placeholder="Search by client, phone, company, or service..."
+                            placeholder={t('crm.search_placeholder')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="pl-9 pr-8 h-9 text-xs"
+                            className={`h-9 text-xs ${isRtl ? 'pr-9 pl-8' : 'pl-9 pr-8'}`}
                             autoComplete="off"
                         />
                         {search && (
                             <button
                                 type="button"
                                 onClick={() => setSearch('')}
-                                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                                title="Clear search"
+                                className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors ${
+                                    isRtl ? 'left-2.5' : 'right-2.5'
+                                }`}
+                                title={t('common.clear')}
                             >
                                 <X className="size-3.5" />
                             </button>
@@ -271,14 +279,14 @@ export default function CrmIndex({
                                 handleApplyFilters({ status: val });
                             }}
                         >
-                            <SelectTrigger className="h-9 w-[130px] text-xs">
-                                <SelectValue placeholder="Stage" />
+                            <SelectTrigger className="h-9 w-[135px] text-xs">
+                                <SelectValue placeholder={t('crm.stage')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Stages</SelectItem>
+                                <SelectItem value="all">{t('crm.all_stages')}</SelectItem>
                                 {statuses.map((s) => (
                                     <SelectItem key={s.value} value={s.value}>
-                                        {s.label}
+                                        {isRtl ? s.label_ar : s.label}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -292,14 +300,14 @@ export default function CrmIndex({
                                 handleApplyFilters({ priority: val });
                             }}
                         >
-                            <SelectTrigger className="h-9 w-[125px] text-xs">
-                                <SelectValue placeholder="Priority" />
+                            <SelectTrigger className="h-9 w-[130px] text-xs">
+                                <SelectValue placeholder={t('crm.priority')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Priorities</SelectItem>
+                                <SelectItem value="all">{t('crm.all_priorities')}</SelectItem>
                                 {priorities.map((p) => (
                                     <SelectItem key={p.value} value={p.value}>
-                                        {p.label}
+                                        {isRtl ? p.label_ar : p.label}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -314,11 +322,11 @@ export default function CrmIndex({
                             }}
                         >
                             <SelectTrigger className="h-9 w-[140px] text-xs">
-                                <SelectValue placeholder="Assignee" />
+                                <SelectValue placeholder={t('crm.assignee')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Reps</SelectItem>
-                                <SelectItem value="unassigned">Unassigned</SelectItem>
+                                <SelectItem value="all">{t('crm.all_reps')}</SelectItem>
+                                <SelectItem value="unassigned">{t('common.unassigned')}</SelectItem>
                                 {teamMembers.map((m) => (
                                     <SelectItem key={m.id} value={String(m.id)}>
                                         {m.name}
@@ -336,7 +344,7 @@ export default function CrmIndex({
                                 className="h-9 text-xs text-muted-foreground hover:text-foreground gap-1"
                             >
                                 <X className="size-3.5" />
-                                Reset
+                                {t('common.reset')}
                             </Button>
                         )}
                     </div>
