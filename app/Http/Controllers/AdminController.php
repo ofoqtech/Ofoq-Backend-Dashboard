@@ -77,6 +77,7 @@ class AdminController extends Controller
             'title_ar' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'status' => ['required', 'string', 'in:active,inactive'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:5120'],
         ]);
 
         $titleInput = $request->input('title');
@@ -84,6 +85,11 @@ class AdminController extends Controller
             'en' => (string) ($titleInput ?? ''),
             'ar' => (string) ($request->input('title_ar') ?? ''),
         ];
+
+        $avatarPath = null;
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
 
         User::create([
             'name' => $validated['name'],
@@ -93,6 +99,7 @@ class AdminController extends Controller
             'title' => $title,
             'phone' => $validated['phone'] ?? null,
             'status' => $validated['status'],
+            'avatar' => $avatarPath,
             'email_verified_at' => now(),
         ]);
 
@@ -135,6 +142,8 @@ class AdminController extends Controller
             'title_ar' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'status' => ['required', 'string', 'in:active,inactive'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:5120'],
+            'remove_avatar' => ['nullable', 'boolean'],
         ]);
 
         $titleInput = $request->input('title');
@@ -148,6 +157,14 @@ class AdminController extends Controller
         $admin->title = $title;
         $admin->phone = $validated['phone'] ?? null;
         $admin->status = $validated['status'];
+
+        if ($request->hasFile('avatar')) {
+            $admin->deleteAvatarFile();
+            $admin->avatar = $request->file('avatar')->store('avatars', 'public');
+        } elseif ($request->boolean('remove_avatar')) {
+            $admin->deleteAvatarFile();
+            $admin->avatar = null;
+        }
 
         if (! empty($validated['password'])) {
             $admin->password = Hash::make($validated['password']);
@@ -178,6 +195,7 @@ class AdminController extends Controller
             return back()->with('error', 'Cannot delete the only remaining administrator.');
         }
 
+        $admin->deleteAvatarFile();
         $admin->delete();
 
         return redirect()->route('admins.index')->with('success', 'Administrator deleted successfully.');

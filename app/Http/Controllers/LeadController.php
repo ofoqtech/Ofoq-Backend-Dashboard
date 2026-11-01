@@ -93,7 +93,7 @@ class LeadController extends Controller
 
         $teamMembers = User::query()
             ->where('status', 'active')
-            ->select('id', 'name', 'email', 'role')
+            ->select('id', 'name', 'email', 'role', 'avatar')
             ->orderBy('name')
             ->get();
 

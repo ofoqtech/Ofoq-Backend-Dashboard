@@ -140,7 +140,15 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
                                             {/* Assignee & Quick Actions */}
                                             <div className="flex items-center justify-between border-t pt-1 text-xs">
                                                 <div className="flex max-w-[140px] items-center gap-1.5 truncate text-muted-foreground">
-                                                    <UserIcon className="size-3 shrink-0" />
+                                                    {lead.assignee?.avatar ? (
+                                                        <img
+                                                            src={lead.assignee.avatar}
+                                                            alt={lead.assignee.name}
+                                                            className="size-3.5 rounded-full object-cover shrink-0"
+                                                        />
+                                                    ) : (
+                                                        <UserIcon className="size-3 shrink-0" />
+                                                    )}
                                                     <span className="truncate text-[11px]">
                                                         {lead.assignee?.name ??
                                                             t(

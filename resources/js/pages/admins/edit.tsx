@@ -1,6 +1,8 @@
+import { useState, useRef } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Info, Save, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Camera, Info, Save, Shield, ShieldCheck, Trash2, User as UserIcon } from 'lucide-react';
 import InputError from '@/components/input-error';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -23,6 +25,9 @@ type EditAdminProps = {
 
 export default function EditAdmin({ admin, isSelf }: EditAdminProps) {
     const { t, isRtl } = useTranslation();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
     const initialTitleEn =
         admin.title_en ||
         (typeof admin.title === 'object' ? admin.title?.en : admin.title) ||
@@ -32,7 +37,8 @@ export default function EditAdmin({ admin, isSelf }: EditAdminProps) {
         (typeof admin.title === 'object' ? admin.title?.ar : '') ||
         '';
 
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
+        _method: 'PUT',
         name: admin.name || '',
         email: admin.email || '',
         password: '',
@@ -40,11 +46,39 @@ export default function EditAdmin({ admin, isSelf }: EditAdminProps) {
         title_ar: initialTitleAr,
         phone: admin.phone || '',
         status: admin.status || 'active',
+        avatar: null as File | null,
+        remove_avatar: false,
     });
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setData((prev) => ({
+                ...prev,
+                avatar: file,
+                remove_avatar: false,
+            }));
+            setAvatarPreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleRemoveAvatar = () => {
+        setData((prev) => ({
+            ...prev,
+            avatar: null,
+            remove_avatar: true,
+        }));
+        setAvatarPreview(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(updateAdmin.url(admin.id));
+        post(updateAdmin.url(admin.id), {
+            forceFormData: true,
+        });
     };
 
     return (
@@ -100,6 +134,61 @@ export default function EditAdmin({ admin, isSelf }: EditAdminProps) {
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={submit} className="space-y-5">
+                            {/* Profile Image */}
+                            <div className="flex items-center gap-4 p-3 rounded-lg border bg-muted/20">
+                                <Avatar className="size-16 rounded-full border shadow-xs overflow-hidden">
+                                    {(!data.remove_avatar && (avatarPreview || admin.avatar)) && (
+                                        <AvatarImage
+                                            src={avatarPreview || admin.avatar}
+                                            alt={admin.name}
+                                            className="object-cover size-full"
+                                        />
+                                    )}
+                                    <AvatarFallback className="size-full text-lg font-bold bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20">
+                                        {data.name ? data.name.charAt(0).toUpperCase() : <Shield className="size-6" />}
+                                    </AvatarFallback>
+                                </Avatar>
+
+                                <div className="space-y-1">
+                                    <Label className="text-xs font-semibold">{t('profile.photo')}</Label>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/png,image/jpeg,image/webp,image/gif"
+                                            className="hidden"
+                                            onChange={handleFileChange}
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="h-8 text-xs gap-1.5"
+                                        >
+                                            <Camera className="size-3.5" />
+                                            {(avatarPreview || (admin.avatar && !data.remove_avatar))
+                                                ? t('profile.change_photo')
+                                                : t('profile.upload_photo')}
+                                        </Button>
+                                        {(avatarPreview || (admin.avatar && !data.remove_avatar)) && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={handleRemoveAvatar}
+                                                className="h-8 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 gap-1.5"
+                                            >
+                                                <Trash2 className="size-3.5" />
+                                                {t('profile.remove_photo')}
+                                            </Button>
+                                        )}
+                                    </div>
+                                    <p className="text-[11px] text-muted-foreground">{t('profile.photo_hint')}</p>
+                                    {errors.avatar && <InputError message={errors.avatar} />}
+                                </div>
+                            </div>
+
                             {/* Full Name */}
                             <div className="space-y-1.5">
                                 <Label htmlFor="name">

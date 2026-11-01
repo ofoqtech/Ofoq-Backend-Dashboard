@@ -64,7 +64,7 @@ class DashboardController extends Controller
             ->where('role', Role::Employee)
             ->latest()
             ->take(5)
-            ->get(['id', 'name', 'email', 'role', 'title', 'phone', 'status', 'created_at']);
+            ->get(['id', 'name', 'email', 'role', 'title', 'phone', 'status', 'avatar', 'created_at']);
 
         $recentLeads = Lead::query()
             ->with(['assignee', 'service'])

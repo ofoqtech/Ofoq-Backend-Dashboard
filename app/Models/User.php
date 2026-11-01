@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -24,6 +25,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property array{ar?: string, en?: string}|string|null $title
  * @property string|null $phone
  * @property string $status
+ * @property string|null $avatar
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $two_factor_secret
@@ -33,7 +35,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password', 'role', 'title', 'phone', 'status'])]
+#[Fillable(['name', 'email', 'password', 'role', 'title', 'phone', 'status', 'avatar'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
@@ -124,5 +126,38 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         }
 
         return (string) ($this->title ?? '');
+    }
+
+    public function getAvatarAttribute(?string $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        if (str_starts_with($value, '/storage/')) {
+            return $value;
+        }
+
+        if (preg_match('#^https?://[^/]+(/storage/.+)$#i', $value, $matches)) {
+            return $matches[1];
+        }
+
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+
+        return Storage::url($value);
+    }
+
+    public function deleteAvatarFile(): void
+    {
+        $rawAvatar = $this->getRawOriginal('avatar');
+        if ($rawAvatar) {
+            $relativePath = str_starts_with($rawAvatar, '/storage/')
+                ? substr($rawAvatar, 9)
+                : $rawAvatar;
+
+            Storage::disk('public')->delete($relativePath);
+        }
     }
 }

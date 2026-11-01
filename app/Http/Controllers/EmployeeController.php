@@ -80,6 +80,7 @@ class EmployeeController extends Controller
             'title_ar' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'status' => ['required', 'string', 'in:active,inactive'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:5120'],
         ]);
 
         $titleInput = $request->input('title');
@@ -87,6 +88,11 @@ class EmployeeController extends Controller
             'en' => (string) ($titleInput ?? ''),
             'ar' => (string) ($request->input('title_ar') ?? ''),
         ];
+
+        $avatarPath = null;
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
 
         User::create([
             'name' => $validated['name'],
@@ -96,6 +102,7 @@ class EmployeeController extends Controller
             'title' => $title,
             'phone' => $validated['phone'] ?? null,
             'status' => $validated['status'],
+            'avatar' => $avatarPath,
             'email_verified_at' => now(),
         ]);
 
@@ -138,6 +145,8 @@ class EmployeeController extends Controller
             'title_ar' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'status' => ['required', 'string', 'in:active,inactive'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:5120'],
+            'remove_avatar' => ['nullable', 'boolean'],
         ]);
 
         $titleInput = $request->input('title');
@@ -152,6 +161,14 @@ class EmployeeController extends Controller
         $employee->title = $title;
         $employee->phone = $validated['phone'] ?? null;
         $employee->status = $validated['status'];
+
+        if ($request->hasFile('avatar')) {
+            $employee->deleteAvatarFile();
+            $employee->avatar = $request->file('avatar')->store('avatars', 'public');
+        } elseif ($request->boolean('remove_avatar')) {
+            $employee->deleteAvatarFile();
+            $employee->avatar = null;
+        }
 
         if (! empty($validated['password'])) {
             $employee->password = Hash::make($validated['password']);
@@ -173,6 +190,7 @@ class EmployeeController extends Controller
             abort(404);
         }
 
+        $employee->deleteAvatarFile();
         $employee->delete();
 
         return redirect()->route('employees.index')->with('success', 'Employee deleted successfully.');

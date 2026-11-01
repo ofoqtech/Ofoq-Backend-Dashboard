@@ -418,6 +418,27 @@ const translations: Record<Locale, Record<string, string>> = {
         'categories.is_active_label':
             'Active category (available for assignment in projects)',
         'categories.save_btn': 'Save Category',
+
+        // Profile & Account Settings
+        'profile.settings': 'Profile Settings',
+        'profile.title': 'Profile Information',
+        'profile.desc': 'Update your photo, personal details, and contact information.',
+        'profile.photo': 'Profile Photo',
+        'profile.photo_hint': 'PNG, JPG, WEBP, or GIF up to 5MB. A square image is recommended.',
+        'profile.upload_photo': 'Upload Photo',
+        'profile.change_photo': 'Change Photo',
+        'profile.remove_photo': 'Remove Photo',
+        'profile.name': 'Full Name',
+        'profile.email': 'Email Address',
+        'profile.phone': 'Phone Number',
+        'profile.job_title': 'Job Title',
+        'profile.job_title_ar': 'Job Title (Arabic)',
+        'profile.role': 'Account Role',
+        'profile.status': 'Account Status',
+        'profile.unverified_email': 'Your email address is unverified.',
+        'profile.resend_verification': 'Click here to re-send the verification email.',
+        'profile.verification_sent': 'A new verification link has been sent to your email address.',
+        'profile.saved': 'Profile updated successfully.',
     },
     ar: {
         // Navigation & Shell
@@ -807,6 +828,30 @@ const translations: Record<Locale, Record<string, string>> = {
         'categories.desc_ar': 'الوصف (بالعربية)',
         'categories.is_active_label': 'تصنيف نشط (متاح لربط المشاريع به)',
         'categories.save_btn': 'حفظ التصنيف',
+
+        // Profile & Account Settings
+        'profile.settings': 'إعدادات الملف الشخصي',
+        'profile.title': 'بيانات الملف الشخصي',
+        'profile.desc':
+            'تحديث صورتك الشخصية، معلوماتك الأساسية وبيانات الاتصال الخاصة بك.',
+        'profile.photo': 'الصورة الشخصية',
+        'profile.photo_hint':
+            'صيغ PNG أو JPG أو WEBP أو GIF بحجم أقصى 5 ميجابايت. يُفضل استخدام صورة مربعة.',
+        'profile.upload_photo': 'رفع صورة شخصية',
+        'profile.change_photo': 'تغيير الصورة',
+        'profile.remove_photo': 'حذف الصورة',
+        'profile.name': 'الاسم الكامل',
+        'profile.email': 'البريد الإلكتروني',
+        'profile.phone': 'رقم الهاتف',
+        'profile.job_title': 'المسمى الوظيفي',
+        'profile.job_title_ar': 'المسمى الوظيفي (بالعربية)',
+        'profile.role': 'نوع الحساب / الصلاحية',
+        'profile.status': 'حالة الحساب',
+        'profile.unverified_email': 'بريدك الإلكتروني غير مفعّل بعد.',
+        'profile.resend_verification': 'انقر هنا لإعادة إرسال رابط التفعيل.',
+        'profile.verification_sent':
+            'تم إرسال رابط تفعيل جديد إلى بريدك الإلكتروني.',
+        'profile.saved': 'تم حفظ بيانات الملف الشخصي بنجاح.',
     },
 };
 

@@ -30,17 +30,46 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validated = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->fill([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+        ]);
+
+        if (array_key_exists('title', $validated) || array_key_exists('title_ar', $validated)) {
+            $titleInput = $request->input('title');
+            if (is_array($titleInput)) {
+                $user->title = $titleInput;
+            } elseif ($request->has('title_ar') || is_string($titleInput)) {
+                $currentTitle = is_array($user->title) ? $user->title : [];
+                $user->title = [
+                    'en' => (string) ($titleInput ?? ($currentTitle['en'] ?? '')),
+                    'ar' => (string) ($request->input('title_ar') ?? ($currentTitle['ar'] ?? '')),
+                ];
+            }
         }
 
-        $request->user()->save();
+        if ($request->hasFile('avatar')) {
+            $user->deleteAvatarFile();
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $path;
+        } elseif ($request->boolean('remove_avatar')) {
+            $user->deleteAvatarFile();
+            $user->avatar = null;
+        }
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
 
-        return to_route('profile.edit');
+        return to_route('profile.edit')->with('success', __('Profile updated.'));
     }
 
     /**

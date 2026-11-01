@@ -11,6 +11,7 @@ import {
     Users,
     X,
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -303,10 +304,18 @@ export default function EmployeesIndex({
                                                 >
                                                     <td className="px-6 py-4 text-start">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                                                                {employee.name
-                                                                    .charAt(0)
-                                                                    .toUpperCase()}
+                                                            <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-primary/10">
+                                                                {employee.avatar ? (
+                                                                    <img
+                                                                        src={employee.avatar}
+                                                                        alt={employee.name}
+                                                                        className="size-full object-cover"
+                                                                    />
+                                                                ) : (
+                                                                    <span className="text-xs font-bold text-primary">
+                                                                        {employee.name.charAt(0).toUpperCase()}
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                             <div>
                                                                 <div className="flex items-center gap-1.5 font-semibold text-foreground">

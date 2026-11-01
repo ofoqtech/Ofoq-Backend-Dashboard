@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 test('profile page is displayed', function () {
     $user = User::factory()->create();
@@ -82,4 +84,54 @@ test('correct password must be provided to delete account', function () {
         ->assertRedirect(route('profile.edit'));
 
     expect($user->fresh())->not->toBeNull();
+});
+
+test('user can upload a profile avatar image', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+
+    $file = UploadedFile::fake()->image('avatar.jpg', 200, 200);
+
+    $response = $this
+        ->actingAs($user)
+        ->post(route('profile.update'), [
+            '_method' => 'PATCH',
+            'name' => 'Avatar User',
+            'email' => $user->email,
+            'avatar' => $file,
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('profile.edit'));
+
+    $user->refresh();
+    expect($user->avatar)->not->toBeNull();
+    $raw = $user->getRawOriginal('avatar');
+    Storage::disk('public')->assertExists($raw);
+});
+
+test('user can remove their profile avatar', function () {
+    Storage::fake('public');
+    $user = User::factory()->create([
+        'avatar' => 'avatars/fake_old.jpg',
+    ]);
+    Storage::disk('public')->put('avatars/fake_old.jpg', 'content');
+
+    $response = $this
+        ->actingAs($user)
+        ->post(route('profile.update'), [
+            '_method' => 'PATCH',
+            'name' => $user->name,
+            'email' => $user->email,
+            'remove_avatar' => true,
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('profile.edit'));
+
+    $user->refresh();
+    expect($user->avatar)->toBeNull();
+    Storage::disk('public')->assertMissing('avatars/fake_old.jpg');
 });

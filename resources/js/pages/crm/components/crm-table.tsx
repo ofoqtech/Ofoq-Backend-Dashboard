@@ -159,7 +159,15 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
 
                                 <td className="px-4 py-3 text-start whitespace-nowrap">
                                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                        <UserIcon className="size-3.5 shrink-0" />
+                                        {lead.assignee?.avatar ? (
+                                            <img
+                                                src={lead.assignee.avatar}
+                                                alt={lead.assignee.name}
+                                                className="size-4 rounded-full object-cover shrink-0"
+                                            />
+                                        ) : (
+                                            <UserIcon className="size-3.5 shrink-0" />
+                                        )}
                                         <span>
                                             {lead.assignee?.name ??
                                                 t('common.unassigned')}

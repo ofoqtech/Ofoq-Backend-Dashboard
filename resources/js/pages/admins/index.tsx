@@ -12,6 +12,7 @@ import {
     Trash2,
     X,
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -298,8 +299,16 @@ export default function AdminsIndex({
                                                 >
                                                     <td className="px-6 py-4 text-start">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-xs font-bold text-amber-600 ring-1 ring-amber-500/20">
-                                                                <Shield className="size-4" />
+                                                            <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20">
+                                                                {admin.avatar ? (
+                                                                    <img
+                                                                        src={admin.avatar}
+                                                                        alt={admin.name}
+                                                                        className="size-full object-cover"
+                                                                    />
+                                                                ) : (
+                                                                    <Shield className="size-4" />
+                                                                )}
                                                             </div>
                                                             <div>
                                                                 <div className="flex items-center gap-1.5 font-semibold text-foreground">

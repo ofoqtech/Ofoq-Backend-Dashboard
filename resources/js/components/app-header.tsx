@@ -217,13 +217,17 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                     className="size-10 rounded-full p-1"
                                 >
                                     <Avatar className="size-8 overflow-hidden rounded-full">
-                                        <AvatarImage
-                                            src={auth.user?.avatar}
-                                            alt={auth.user?.name}
-                                        />
-                                        <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                            {getInitials(auth.user?.name ?? '')}
-                                        </AvatarFallback>
+                                        {auth.user?.avatar ? (
+                                            <img
+                                                src={auth.user.avatar}
+                                                alt={auth.user.name}
+                                                className="size-full object-cover rounded-full"
+                                            />
+                                        ) : (
+                                            <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                {getInitials(auth.user?.name ?? '')}
+                                            </AvatarFallback>
+                                        )}
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>

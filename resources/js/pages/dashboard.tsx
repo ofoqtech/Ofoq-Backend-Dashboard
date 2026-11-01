@@ -15,6 +15,7 @@ import {
     UserCheck,
     Users,
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -507,10 +508,18 @@ export default function Dashboard({
                                             className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
                                         >
                                             <div className="flex min-w-0 items-center gap-3">
-                                                <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                                                    {emp.name
-                                                        .charAt(0)
-                                                        .toUpperCase()}
+                                                <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-primary/10">
+                                                    {emp.avatar ? (
+                                                        <img
+                                                            src={emp.avatar}
+                                                            alt={emp.name}
+                                                            className="size-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-xs font-bold text-primary">
+                                                            {emp.name.charAt(0).toUpperCase()}
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 <div className="min-w-0">
                                                     <div className="flex items-center gap-1.5">
