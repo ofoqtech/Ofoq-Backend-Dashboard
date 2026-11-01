@@ -131,9 +131,8 @@ export default function CrmIndex({
             const emailMatch = lead.email?.toLowerCase().includes(term);
             const companyMatch = lead.company?.toLowerCase().includes(term);
             const serviceMatch = (lead.service_name_snapshot || lead.service?.name_en || lead.service?.name_ar)?.toLowerCase().includes(term);
-            const budgetMatch = lead.budget_range_snapshot?.toLowerCase().includes(term);
             const assigneeMatch = lead.assignee?.name?.toLowerCase().includes(term);
-            return nameMatch || phoneMatch || emailMatch || companyMatch || serviceMatch || budgetMatch || assigneeMatch;
+            return nameMatch || phoneMatch || emailMatch || companyMatch || serviceMatch || assigneeMatch;
         });
     }, [leads, search]);
 
@@ -150,9 +149,8 @@ export default function CrmIndex({
                     const emailMatch = lead.email?.toLowerCase().includes(term);
                     const companyMatch = lead.company?.toLowerCase().includes(term);
                     const serviceMatch = (lead.service_name_snapshot || lead.service?.name_en || lead.service?.name_ar)?.toLowerCase().includes(term);
-                    const budgetMatch = lead.budget_range_snapshot?.toLowerCase().includes(term);
                     const assigneeMatch = lead.assignee?.name?.toLowerCase().includes(term);
-                    return nameMatch || phoneMatch || emailMatch || companyMatch || serviceMatch || budgetMatch || assigneeMatch;
+                    return nameMatch || phoneMatch || emailMatch || companyMatch || serviceMatch || assigneeMatch;
                 }),
             };
         }

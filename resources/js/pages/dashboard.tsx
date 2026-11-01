@@ -229,14 +229,6 @@ export default function Dashboard({ stats, recentProjects, recentEmployees, rece
                                                     <span className="truncate">
                                                         {isRtl ? (lead.service?.name_ar || lead.service_name_snapshot) : (lead.service?.name_en || lead.service_name_snapshot)}
                                                     </span>
-                                                    {lead.budget_range_snapshot && (
-                                                        <>
-                                                            <span>&bull;</span>
-                                                            <span className="truncate text-[11px]">
-                                                                {lead.budget_range_snapshot}
-                                                            </span>
-                                                        </>
-                                                    )}
                                                 </div>
                                             </div>
                                         </div>

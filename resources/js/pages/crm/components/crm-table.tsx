@@ -56,7 +56,7 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                         <tr>
                             <th className="px-4 py-3 text-start">{t('crm.client_company')}</th>
                             <th className="px-4 py-3 text-start">{t('crm.contact')}</th>
-                            <th className="px-4 py-3 text-start">{t('crm.service_budget')}</th>
+                            <th className="px-4 py-3 text-start">{t('crm.service_requested')}</th>
                             <th className="px-4 py-3 text-start">{t('crm.stage')}</th>
                             <th className="px-4 py-3 text-start">{t('crm.priority')}</th>
                             <th className="px-4 py-3 text-start">{t('crm.assignee')}</th>
@@ -119,11 +119,6 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                     <div className="font-medium text-xs text-foreground truncate max-w-[200px]">
                                         {getServiceLabel(lead)}
                                     </div>
-                                    {lead.budget_range_snapshot && (
-                                        <div className="text-[11px] text-muted-foreground truncate max-w-[200px]">
-                                            {lead.budget_range_snapshot}
-                                        </div>
-                                    )}
                                 </td>
 
                                 <td className="px-4 py-3 whitespace-nowrap text-start">

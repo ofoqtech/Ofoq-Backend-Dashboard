@@ -44,7 +44,6 @@ export function CreateLeadDialog({
     const [email, setEmail] = useState('');
     const [company, setCompany] = useState('');
     const [selectedServiceId, setSelectedServiceId] = useState<string>('');
-    const [selectedBudgetId, setSelectedBudgetId] = useState<string>('');
     const [priority, setPriority] = useState('high');
     const [assignedTo, setAssignedTo] = useState('unassigned');
     const [internalNotes, setInternalNotes] = useState('');
@@ -52,21 +51,12 @@ export function CreateLeadDialog({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    const activeService = services.find((s) => String(s.id) === selectedServiceId);
-    const availableBudgets = activeService?.budgets ?? [];
-
-    const handleServiceChange = (serviceId: string) => {
-        setSelectedServiceId(serviceId);
-        setSelectedBudgetId('');
-    };
-
     const resetForm = () => {
         setName('');
         setPhone('');
         setEmail('');
         setCompany('');
         setSelectedServiceId('');
-        setSelectedBudgetId('');
         setPriority('high');
         setAssignedTo('unassigned');
         setInternalNotes('');
@@ -87,7 +77,6 @@ export function CreateLeadDialog({
                 email: email || null,
                 company: company || null,
                 service_id: selectedServiceId ? Number(selectedServiceId) : null,
-                service_budget_id: selectedBudgetId ? Number(selectedBudgetId) : null,
                 priority,
                 assigned_to: assignedTo !== 'unassigned' ? Number(assignedTo) : null,
                 internal_notes: internalNotes || null,
@@ -178,51 +167,23 @@ export function CreateLeadDialog({
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                            <Label>{t('crm.service_requested')}</Label>
-                            <Select
-                                value={selectedServiceId}
-                                onValueChange={handleServiceChange}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder={t('crm.select_service')} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {services.map((s) => (
-                                        <SelectItem key={s.id} value={String(s.id)}>
-                                            {isRtl ? (s.name_ar || s.name_en) : (s.name_en || s.name_ar)}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <Label>{t('crm.budget_option')}</Label>
-                            <Select
-                                value={selectedBudgetId}
-                                onValueChange={setSelectedBudgetId}
-                                disabled={!selectedServiceId || availableBudgets.length === 0}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue
-                                        placeholder={
-                                            selectedServiceId
-                                                ? t('crm.select_budget')
-                                                : t('crm.select_service_first')
-                                        }
-                                    />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {availableBudgets.map((b) => (
-                                        <SelectItem key={b.id} value={String(b.id)}>
-                                            {isRtl ? (b.type_ar || b.type_en) : (b.type_en || b.type_ar)} ({b.range})
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                    <div className="space-y-1.5">
+                        <Label>{t('crm.service_requested')}</Label>
+                        <Select
+                            value={selectedServiceId}
+                            onValueChange={setSelectedServiceId}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder={t('crm.select_service')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {services.map((s) => (
+                                    <SelectItem key={s.id} value={String(s.id)}>
+                                        {isRtl ? (s.name_ar || s.name_en) : (s.name_en || s.name_ar)}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

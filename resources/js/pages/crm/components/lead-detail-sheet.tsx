@@ -386,17 +386,10 @@ export function LeadDetailSheet({
                             </h4>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                                <div>
+                                <div className="sm:col-span-2">
                                     <span className="text-xs text-muted-foreground">{t('crm.service_requested')}</span>
                                     <p className="font-semibold text-foreground mt-0.5">
                                         {getServiceLabel()}
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <span className="text-xs text-muted-foreground">{t('crm.budget_range')}</span>
-                                    <p className="font-medium text-foreground mt-0.5">
-                                        {lead.budget_range_snapshot || t('common.not_specified')}
                                     </p>
                                 </div>
 

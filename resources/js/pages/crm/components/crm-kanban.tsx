@@ -122,16 +122,11 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
                                                 )}
                                             </div>
 
-                                            {/* Service & Budget pill */}
-                                            <div className="rounded-md bg-muted/60 p-2 text-xs space-y-1">
+                                            {/* Service pill */}
+                                            <div className="rounded-md bg-muted/60 p-2 text-xs">
                                                 <div className="font-medium text-foreground truncate">
                                                     {getServiceLabel(lead)}
                                                 </div>
-                                                {lead.budget_range_snapshot && (
-                                                    <div className="text-[11px] text-muted-foreground truncate">
-                                                        {lead.budget_range_snapshot}
-                                                    </div>
-                                                )}
                                             </div>
 
                                             {/* Assignee & Quick Actions */}
