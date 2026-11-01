@@ -55,11 +55,13 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
     };
 
     return (
-        <div className="flex gap-4 overflow-x-auto pb-6 pt-1">
+        <div className="flex gap-4 overflow-x-auto pt-1 pb-6">
             {stageKeys.map((key) => {
                 const stage = pipeline[key];
                 const leads = stage.leads;
-                const stageTitle = isRtl ? (stage.label_ar || stage.label) : stage.label;
+                const stageTitle = isRtl
+                    ? stage.label_ar || stage.label
+                    : stage.label;
 
                 return (
                     <div
@@ -69,11 +71,11 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
                         {/* Column Header */}
                         <div
                             className={`flex items-center justify-between border-t-4 ${getStageAccentColor(
-                                stage.status
-                            )} -mt-3 -mx-3 px-3 pt-3 pb-2 mb-2 bg-card rounded-t-xl border-b`}
+                                stage.status,
+                            )} -mx-3 -mt-3 mb-2 rounded-t-xl border-b bg-card px-3 pt-3 pb-2`}
                         >
                             <div className="flex items-center gap-2">
-                                <span className="font-semibold text-sm tracking-tight text-foreground">
+                                <span className="text-sm font-semibold tracking-tight text-foreground">
                                     {stageTitle}
                                 </span>
                             </div>
@@ -83,7 +85,7 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
                         </div>
 
                         {/* Cards List */}
-                        <div className="flex flex-col gap-2.5 overflow-y-auto max-h-[calc(100vh-280px)] pr-1">
+                        <div className="flex max-h-[calc(100vh-280px)] flex-col gap-2.5 overflow-y-auto pr-1">
                             {leads.length === 0 ? (
                                 <div className="rounded-lg border border-dashed p-6 text-center text-xs text-muted-foreground">
                                     {t('crm.no_leads_stage')}
@@ -95,7 +97,7 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
                                         onClick={() => onSelectLead(lead)}
                                         className="group cursor-pointer border bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm"
                                     >
-                                        <CardContent className="p-3.5 space-y-2.5">
+                                        <CardContent className="space-y-2.5 p-3.5">
                                             {/* Priority & Time */}
                                             <div className="flex items-center justify-between text-[11px]">
                                                 <span
@@ -103,19 +105,25 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
                                                 >
                                                     {getPriorityLabel(lead)}
                                                 </span>
-                                                <span className="text-muted-foreground flex items-center gap-1">
+                                                <span className="flex items-center gap-1 text-muted-foreground">
                                                     <Calendar className="size-3" />
-                                                    {formatDate(lead.created_at, { month: 'short', day: 'numeric' })}
+                                                    {formatDate(
+                                                        lead.created_at,
+                                                        {
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                        },
+                                                    )}
                                                 </span>
                                             </div>
 
                                             {/* Name & Company */}
                                             <div>
-                                                <h4 className="font-bold text-sm text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                                                <h4 className="line-clamp-1 text-sm font-bold text-foreground transition-colors group-hover:text-primary">
                                                     {lead.name}
                                                 </h4>
                                                 {lead.company && (
-                                                    <p className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                                                    <p className="mt-0.5 line-clamp-1 flex items-center gap-1 text-xs text-muted-foreground">
                                                         <Building2 className="size-3 shrink-0" />
                                                         {lead.company}
                                                     </p>
@@ -124,37 +132,44 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
 
                                             {/* Service pill */}
                                             <div className="rounded-md bg-muted/60 p-2 text-xs">
-                                                <div className="font-medium text-foreground truncate">
+                                                <div className="truncate font-medium text-foreground">
                                                     {getServiceLabel(lead)}
                                                 </div>
                                             </div>
 
                                             {/* Assignee & Quick Actions */}
-                                            <div className="flex items-center justify-between pt-1 border-t text-xs">
-                                                <div className="flex items-center gap-1.5 text-muted-foreground truncate max-w-[140px]">
+                                            <div className="flex items-center justify-between border-t pt-1 text-xs">
+                                                <div className="flex max-w-[140px] items-center gap-1.5 truncate text-muted-foreground">
                                                     <UserIcon className="size-3 shrink-0" />
                                                     <span className="truncate text-[11px]">
-                                                        {lead.assignee?.name ?? t('common.unassigned')}
+                                                        {lead.assignee?.name ??
+                                                            t(
+                                                                'common.unassigned',
+                                                            )}
                                                     </span>
                                                 </div>
 
                                                 <div
                                                     className="flex items-center gap-1"
-                                                    onClick={(e) => e.stopPropagation()}
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
                                                 >
                                                     <a
                                                         href={lead.whatsapp_url}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        title={t('crm.chat_whatsapp')}
-                                                        className="flex size-6 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-colors"
+                                                        title={t(
+                                                            'crm.chat_whatsapp',
+                                                        )}
+                                                        className="flex size-6 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 transition-colors hover:bg-emerald-500 hover:text-white"
                                                     >
                                                         <MessageCircle className="size-3.5" />
                                                     </a>
                                                     <a
                                                         href={`tel:${lead.phone}`}
                                                         title={t('crm.call')}
-                                                        className="flex size-6 items-center justify-center rounded-md bg-muted text-muted-foreground hover:bg-foreground hover:text-background transition-colors"
+                                                        className="flex size-6 items-center justify-center rounded-md bg-muted text-muted-foreground transition-colors hover:bg-foreground hover:text-background"
                                                     >
                                                         <Phone className="size-3.5" />
                                                     </a>

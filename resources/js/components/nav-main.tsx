@@ -16,7 +16,9 @@ export function NavMain({ items }: { items: NavItem[] }) {
 
     return (
         <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel className="text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/70">{t('nav.platform')}</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-xs font-semibold tracking-wider text-sidebar-foreground/70 uppercase">
+                {t('nav.platform')}
+            </SidebarGroupLabel>
             <SidebarMenu className="gap-1.5">
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
@@ -24,21 +26,26 @@ export function NavMain({ items }: { items: NavItem[] }) {
                             asChild
                             isActive={isCurrentUrl(item.href)}
                             tooltip={{ children: item.title }}
-                            className="h-10 text-sm font-medium px-3 transition-colors"
+                            className="h-10 px-3 text-sm font-medium transition-colors"
                         >
                             <Link
                                 href={item.href}
-                                prefetch={['mount', 'hover']}
+                                prefetch
                                 cacheFor="2m"
-                                className="flex items-center w-full gap-3 text-start"
+                                className="flex w-full items-center gap-3 text-start"
                             >
-                                {item.icon && <item.icon className="h-4.5 w-4.5 shrink-0" />}
-                                <span className="flex-1 truncate text-sm font-medium">{item.title}</span>
-                                {item.badge != null && Number(item.badge) > 0 && (
-                                    <span className="ms-auto inline-flex items-center justify-center rounded-full bg-emerald-500/90 px-2 py-0.5 text-xs font-bold text-white shadow-sm ring-1 ring-emerald-400/20">
-                                        {item.badge}
-                                    </span>
+                                {item.icon && (
+                                    <item.icon className="h-4.5 w-4.5 shrink-0" />
                                 )}
+                                <span className="flex-1 truncate text-sm font-medium">
+                                    {item.title}
+                                </span>
+                                {item.badge != null &&
+                                    Number(item.badge) > 0 && (
+                                        <span className="ms-auto inline-flex items-center justify-center rounded-full bg-emerald-500/90 px-2 py-0.5 text-xs font-bold text-white shadow-sm ring-1 ring-emerald-400/20">
+                                            {item.badge}
+                                        </span>
+                                    )}
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

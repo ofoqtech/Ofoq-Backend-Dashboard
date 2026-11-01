@@ -76,9 +76,12 @@ export function CreateLeadDialog({
                 phone,
                 email: email || null,
                 company: company || null,
-                service_id: selectedServiceId ? Number(selectedServiceId) : null,
+                service_id: selectedServiceId
+                    ? Number(selectedServiceId)
+                    : null,
                 priority,
-                assigned_to: assignedTo !== 'unassigned' ? Number(assignedTo) : null,
+                assigned_to:
+                    assignedTo !== 'unassigned' ? Number(assignedTo) : null,
                 internal_notes: internalNotes || null,
                 source,
             },
@@ -92,7 +95,7 @@ export function CreateLeadDialog({
                     setErrors(errs);
                     setIsSubmitting(false);
                 },
-            }
+            },
         );
     };
 
@@ -107,10 +110,11 @@ export function CreateLeadDialog({
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4 py-2">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <div className="space-y-1.5">
                             <Label htmlFor="lead-name">
-                                {t('crm.client_name')} <span className="text-destructive">*</span>
+                                {t('crm.client_name')}{' '}
+                                <span className="text-destructive">*</span>
                             </Label>
                             <Input
                                 id="lead-name"
@@ -120,13 +124,16 @@ export function CreateLeadDialog({
                                 required
                             />
                             {errors.name && (
-                                <p className="text-xs text-destructive">{errors.name}</p>
+                                <p className="text-xs text-destructive">
+                                    {errors.name}
+                                </p>
                             )}
                         </div>
 
                         <div className="space-y-1.5">
                             <Label htmlFor="lead-phone">
-                                {t('crm.mobile_phone')} <span className="text-destructive">*</span>
+                                {t('crm.mobile_phone')}{' '}
+                                <span className="text-destructive">*</span>
                             </Label>
                             <Input
                                 id="lead-phone"
@@ -136,14 +143,18 @@ export function CreateLeadDialog({
                                 required
                             />
                             {errors.phone && (
-                                <p className="text-xs text-destructive">{errors.phone}</p>
+                                <p className="text-xs text-destructive">
+                                    {errors.phone}
+                                </p>
                             )}
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <div className="space-y-1.5">
-                            <Label htmlFor="lead-email">{t('crm.email_address')}</Label>
+                            <Label htmlFor="lead-email">
+                                {t('crm.email_address')}
+                            </Label>
                             <Input
                                 id="lead-email"
                                 type="email"
@@ -152,12 +163,16 @@ export function CreateLeadDialog({
                                 placeholder="client@company.com"
                             />
                             {errors.email && (
-                                <p className="text-xs text-destructive">{errors.email}</p>
+                                <p className="text-xs text-destructive">
+                                    {errors.email}
+                                </p>
                             )}
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label htmlFor="lead-company">{t('crm.company_business')}</Label>
+                            <Label htmlFor="lead-company">
+                                {t('crm.company_business')}
+                            </Label>
                             <Input
                                 id="lead-company"
                                 value={company}
@@ -174,28 +189,38 @@ export function CreateLeadDialog({
                             onValueChange={setSelectedServiceId}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder={t('crm.select_service')} />
+                                <SelectValue
+                                    placeholder={t('crm.select_service')}
+                                />
                             </SelectTrigger>
                             <SelectContent>
                                 {services.map((s) => (
                                     <SelectItem key={s.id} value={String(s.id)}>
-                                        {isRtl ? (s.name_ar || s.name_en) : (s.name_en || s.name_ar)}
+                                        {isRtl
+                                            ? s.name_ar || s.name_en
+                                            : s.name_en || s.name_ar}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <div className="space-y-1.5">
                             <Label>{t('crm.priority')}</Label>
-                            <Select value={priority} onValueChange={setPriority}>
+                            <Select
+                                value={priority}
+                                onValueChange={setPriority}
+                            >
                                 <SelectTrigger>
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {priorities.map((p) => (
-                                        <SelectItem key={p.value} value={p.value}>
+                                        <SelectItem
+                                            key={p.value}
+                                            value={p.value}
+                                        >
                                             {isRtl ? p.label_ar : p.label}
                                         </SelectItem>
                                     ))}
@@ -205,14 +230,22 @@ export function CreateLeadDialog({
 
                         <div className="space-y-1.5">
                             <Label>{t('crm.assignee')}</Label>
-                            <Select value={assignedTo} onValueChange={setAssignedTo}>
+                            <Select
+                                value={assignedTo}
+                                onValueChange={setAssignedTo}
+                            >
                                 <SelectTrigger>
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="unassigned">{t('common.unassigned')}</SelectItem>
+                                    <SelectItem value="unassigned">
+                                        {t('common.unassigned')}
+                                    </SelectItem>
                                     {teamMembers.map((m) => (
-                                        <SelectItem key={m.id} value={String(m.id)}>
+                                        <SelectItem
+                                            key={m.id}
+                                            value={String(m.id)}
+                                        >
                                             {m.name}
                                         </SelectItem>
                                     ))}
@@ -227,25 +260,37 @@ export function CreateLeadDialog({
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="direct_call">{t('crm.source_call')}</SelectItem>
-                                    <SelectItem value="whatsapp_direct">{t('crm.source_whatsapp')}</SelectItem>
-                                    <SelectItem value="walk_in">{t('crm.source_walk_in')}</SelectItem>
-                                    <SelectItem value="referral">{t('crm.source_referral')}</SelectItem>
-                                    <SelectItem value="event">{t('crm.source_event')}</SelectItem>
+                                    <SelectItem value="direct_call">
+                                        {t('crm.source_call')}
+                                    </SelectItem>
+                                    <SelectItem value="whatsapp_direct">
+                                        {t('crm.source_whatsapp')}
+                                    </SelectItem>
+                                    <SelectItem value="walk_in">
+                                        {t('crm.source_walk_in')}
+                                    </SelectItem>
+                                    <SelectItem value="referral">
+                                        {t('crm.source_referral')}
+                                    </SelectItem>
+                                    <SelectItem value="event">
+                                        {t('crm.source_event')}
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                     </div>
 
                     <div className="space-y-1.5">
-                        <Label htmlFor="lead-notes">{t('crm.initial_notes')}</Label>
+                        <Label htmlFor="lead-notes">
+                            {t('crm.initial_notes')}
+                        </Label>
                         <textarea
                             id="lead-notes"
                             value={internalNotes}
                             onChange={(e) => setInternalNotes(e.target.value)}
                             placeholder="Key features discussed, deadlines, or technical notes..."
                             rows={3}
-                            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-xs shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-xs shadow-xs placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                         />
                     </div>
 
@@ -262,7 +307,9 @@ export function CreateLeadDialog({
                             {t('common.cancel')}
                         </Button>
                         <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? t('common.creating') : t('crm.record_inquiry')}
+                            {isSubmitting
+                                ? t('common.creating')
+                                : t('crm.record_inquiry')}
                         </Button>
                     </DialogFooter>
                 </form>

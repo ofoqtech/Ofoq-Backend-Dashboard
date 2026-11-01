@@ -60,20 +60,30 @@ export function CrmStats({ analytics }: CrmStatsProps) {
                 <Card
                     key={stat.title}
                     className={`relative overflow-hidden border transition-all duration-200 hover:shadow-sm ${
-                        stat.highlight ? 'border-amber-400/50 bg-amber-500/[0.03]' : ''
+                        stat.highlight
+                            ? 'border-amber-400/50 bg-amber-500/[0.03]'
+                            : ''
                     }`}
                 >
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-muted-foreground">{stat.title}</span>
-                            <div className={`flex size-8 items-center justify-center rounded-lg ${stat.bg}`}>
+                            <span className="text-xs font-medium text-muted-foreground">
+                                {stat.title}
+                            </span>
+                            <div
+                                className={`flex size-8 items-center justify-center rounded-lg ${stat.bg}`}
+                            >
                                 <stat.icon className={`size-4 ${stat.color}`} />
                             </div>
                         </div>
                         <div className="mt-2 flex items-baseline gap-2">
-                            <span className="text-2xl font-bold tracking-tight">{stat.value}</span>
+                            <span className="text-2xl font-bold tracking-tight">
+                                {stat.value}
+                            </span>
                         </div>
-                        <p className="mt-1 truncate text-xs text-muted-foreground">{stat.subtitle}</p>
+                        <p className="mt-1 truncate text-xs text-muted-foreground">
+                            {stat.subtitle}
+                        </p>
                     </CardContent>
                 </Card>
             ))}

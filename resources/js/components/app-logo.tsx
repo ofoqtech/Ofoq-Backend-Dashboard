@@ -8,13 +8,13 @@ export default function AppLogo() {
             <img
                 src="/logo dark.jpeg"
                 alt="Ofoq Technology"
-                className="size-8 rounded-lg object-contain bg-white/10 p-0.5 border border-white/20 shrink-0"
+                className="size-8 shrink-0 rounded-lg border border-white/20 bg-white/10 object-contain p-0.5"
             />
-            <div className="flex flex-col text-start min-w-0">
-                <span className="text-sm font-bold leading-tight tracking-tight text-sidebar-foreground truncate">
+            <div className="flex min-w-0 flex-col text-start">
+                <span className="truncate text-sm leading-tight font-bold tracking-tight text-sidebar-foreground">
                     {isRtl ? 'شركة أفق للتكنولوجيا' : 'Ofoq Technology'}
                 </span>
-                <span className="text-xs text-sidebar-primary font-medium tracking-wide">
+                <span className="text-xs font-medium tracking-wide text-sidebar-primary">
                     {isRtl ? 'لوحة إدارة العمليات' : 'Operations Dashboard'}
                 </span>
             </div>

@@ -72,7 +72,10 @@ export type Project = {
     gallery?: string[] | null;
     images?: ProjectImage[];
     technologies?: string[] | null;
-    metrics?: { ar?: ProjectMetric[]; en?: ProjectMetric[] } | ProjectMetric[] | null;
+    metrics?:
+        | { ar?: ProjectMetric[]; en?: ProjectMetric[] }
+        | ProjectMetric[]
+        | null;
     metrics_ar?: ProjectMetric[] | null;
     metrics_en?: ProjectMetric[] | null;
     features?: { ar?: string[]; en?: string[] } | string[] | null;

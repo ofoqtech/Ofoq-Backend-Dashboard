@@ -44,7 +44,17 @@ export interface LeadActivity {
     id: number;
     lead_id: number;
     user_id?: number | null;
-    type: 'created' | 'status_change' | 'priority_change' | 'assigned' | 'note' | 'call' | 'whatsapp' | 'email' | 'meeting' | 'proposal_sent';
+    type:
+        | 'created'
+        | 'status_change'
+        | 'priority_change'
+        | 'assigned'
+        | 'note'
+        | 'call'
+        | 'whatsapp'
+        | 'email'
+        | 'meeting'
+        | 'proposal_sent';
     content: string;
     metadata?: Record<string, unknown> | null;
     created_at: string;
@@ -115,4 +125,3 @@ export interface PriorityOption {
     label_ar: string;
     color: string;
 }
-

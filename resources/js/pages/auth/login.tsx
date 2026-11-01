@@ -72,7 +72,9 @@ export default function Login({ status, canResetPassword }: Props) {
                             id="password"
                             name="password"
                             value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
+                            onChange={(e) =>
+                                setData('password', e.target.value)
+                            }
                             required
                             tabIndex={2}
                             autoComplete="current-password"
@@ -86,10 +88,15 @@ export default function Login({ status, canResetPassword }: Props) {
                             id="remember"
                             name="remember"
                             checked={data.remember}
-                            onCheckedChange={(checked) => setData('remember', Boolean(checked))}
+                            onCheckedChange={(checked) =>
+                                setData('remember', Boolean(checked))
+                            }
                             tabIndex={3}
                         />
-                        <Label htmlFor="remember" className="text-xs font-normal cursor-pointer">
+                        <Label
+                            htmlFor="remember"
+                            className="cursor-pointer text-xs font-normal"
+                        >
                             Keep me signed in
                         </Label>
                     </div>

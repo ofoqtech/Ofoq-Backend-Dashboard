@@ -1,5 +1,12 @@
 import { Link, usePage } from '@inertiajs/react';
-import { FolderKanban, FolderTree, Inbox, LayoutGrid, ShieldCheck, Users } from 'lucide-react';
+import {
+    FolderKanban,
+    FolderTree,
+    Inbox,
+    LayoutGrid,
+    ShieldCheck,
+    Users,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -21,7 +28,10 @@ import { index as projectsIndex } from '@/routes/projects';
 import type { Auth, NavItem } from '@/types';
 
 export function AppSidebar() {
-    const { auth, crm } = usePage<{ auth: Auth; crm?: { newLeadsCount?: number } }>().props;
+    const { auth, crm } = usePage<{
+        auth: Auth;
+        crm?: { newLeadsCount?: number };
+    }>().props;
     const { t, isRtl } = useTranslation();
     const isAdmin = auth?.user?.role === 'admin';
 
@@ -68,12 +78,16 @@ export function AppSidebar() {
     ];
 
     return (
-        <Sidebar collapsible="icon" variant="inset" side={isRtl ? 'right' : 'left'}>
+        <Sidebar
+            collapsible="icon"
+            variant="inset"
+            side={isRtl ? 'right' : 'left'}
+        >
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch={['mount', 'hover']} cacheFor="2m">
+                            <Link href={dashboard()} prefetch cacheFor="2m">
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

@@ -14,7 +14,13 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -48,7 +54,9 @@ export default function AdminsIndex({
     filters,
     currentAdminId,
 }: AdminsIndexProps) {
-    const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
+    const { flash } = usePage<{
+        flash?: { success?: string; error?: string };
+    }>().props;
     const { t, isRtl, localized } = useTranslation();
 
     const [search, setSearch] = useState(filters.search || '');
@@ -67,8 +75,15 @@ export default function AdminsIndex({
             if (search.trim() !== currentFilterSearch.trim()) {
                 router.get(
                     adminsIndex.url(),
-                    { search: search.trim() || undefined, status: status || undefined },
-                    { preserveState: true, preserveScroll: true, replace: true }
+                    {
+                        search: search.trim() || undefined,
+                        status: status || undefined,
+                    },
+                    {
+                        preserveState: true,
+                        preserveScroll: true,
+                        replace: true,
+                    },
                 );
             }
         }, 250);
@@ -81,7 +96,7 @@ export default function AdminsIndex({
         router.get(
             adminsIndex.url(),
             { search: search.trim() || undefined, status: status || undefined },
-            { preserveState: true, replace: true }
+            { preserveState: true, replace: true },
         );
     };
 
@@ -95,9 +110,21 @@ export default function AdminsIndex({
     const getAdminTitle = (admin: User | null | undefined) => {
         if (!admin) return '';
         if (isRtl) {
-            return admin.title_ar || (typeof admin.title === 'object' ? admin.title?.ar : '') || admin.title_en || (typeof admin.title === 'object' ? admin.title?.en : admin.title) || 'مدير النظام';
+            return (
+                admin.title_ar ||
+                (typeof admin.title === 'object' ? admin.title?.ar : '') ||
+                admin.title_en ||
+                (typeof admin.title === 'object'
+                    ? admin.title?.en
+                    : admin.title) ||
+                'مدير النظام'
+            );
         }
-        return admin.title_en || (typeof admin.title === 'object' ? admin.title?.en : admin.title) || 'System Administrator';
+        return (
+            admin.title_en ||
+            (typeof admin.title === 'object' ? admin.title?.en : admin.title) ||
+            'System Administrator'
+        );
     };
 
     const totalAdminsCount = admins.total;
@@ -126,20 +153,29 @@ export default function AdminsIndex({
                             <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
                                 {t('admins.title')}
                             </h1>
-                            <Badge variant="secondary" className="gap-1 bg-amber-500/10 text-amber-600 border-amber-500/20">
+                            <Badge
+                                variant="secondary"
+                                className="gap-1 border-amber-500/20 bg-amber-500/10 text-amber-600"
+                            >
                                 <ShieldCheck className="size-3" />
                                 {t('admins.security_access')}
                             </Badge>
                         </div>
-                        <p className="text-muted-foreground mt-1 text-sm">
+                        <p className="mt-1 text-sm text-muted-foreground">
                             {t('admins.subtitle')}
                         </p>
                     </div>
 
                     <div className="flex items-center gap-2.5">
                         <Button asChild size="sm">
-                            <Link href={createAdmin()} prefetch="hover" cacheFor="1m">
-                                <Plus className={`size-4 ${isRtl ? 'ml-1.5' : 'mr-1.5'}`} />
+                            <Link
+                                href={createAdmin()}
+                                prefetch="hover"
+                                cacheFor="1m"
+                            >
+                                <Plus
+                                    className={`size-4 ${isRtl ? 'ml-1.5' : 'mr-1.5'}`}
+                                />
                                 {t('admins.add_admin')}
                             </Link>
                         </Button>
@@ -149,14 +185,21 @@ export default function AdminsIndex({
                 {/* Search Card */}
                 <Card>
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-base font-semibold">{t('admins.filter_title')}</CardTitle>
-                        <CardDescription>{t('admins.filter_desc')}</CardDescription>
+                        <CardTitle className="text-base font-semibold">
+                            {t('admins.filter_title')}
+                        </CardTitle>
+                        <CardDescription>
+                            {t('admins.filter_desc')}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <form
+                            onSubmit={handleSearch}
+                            className="flex flex-col gap-3 sm:flex-row sm:items-center"
+                        >
                             <div className="relative flex-1">
                                 <Search
-                                    className={`text-muted-foreground absolute top-1/2 size-4 -translate-y-1/2 pointer-events-none ${
+                                    className={`pointer-events-none absolute top-1/2 size-4 -translate-y-1/2 text-muted-foreground ${
                                         isRtl ? 'right-3' : 'left-3'
                                     }`}
                                 />
@@ -164,14 +207,16 @@ export default function AdminsIndex({
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder={t('admins.search_placeholder')}
-                                    className={isRtl ? 'pr-9 pl-8' : 'pl-9 pr-8'}
+                                    className={
+                                        isRtl ? 'pr-9 pl-8' : 'pr-8 pl-9'
+                                    }
                                     autoComplete="off"
                                 />
                                 {search && (
                                     <button
                                         type="button"
                                         onClick={() => setSearch('')}
-                                        className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors ${
+                                        className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground ${
                                             isRtl ? 'left-2.5' : 'right-2.5'
                                         }`}
                                         title={t('common.clear')}
@@ -182,7 +227,11 @@ export default function AdminsIndex({
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <Button type="submit" variant="secondary" size="sm">
+                                <Button
+                                    type="submit"
+                                    variant="secondary"
+                                    size="sm"
+                                >
                                     {t('common.search')}
                                 </Button>
                                 {search && (
@@ -208,107 +257,179 @@ export default function AdminsIndex({
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
                             <table className="w-full text-start text-sm">
-                                <thead className="border-b bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                <thead className="border-b bg-muted/40 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                     <tr>
-                                        <th className="px-6 py-3.5 text-start">{t('admins.admin_col')}</th>
-                                        <th className="px-6 py-3.5 text-start">{t('admins.title_col')}</th>
-                                        <th className="px-6 py-3.5 text-start">{t('common.phone')}</th>
-                                        <th className="px-6 py-3.5 text-start">{t('common.status')}</th>
-                                        <th className="px-6 py-3.5 text-end">{t('common.actions')}</th>
+                                        <th className="px-6 py-3.5 text-start">
+                                            {t('admins.admin_col')}
+                                        </th>
+                                        <th className="px-6 py-3.5 text-start">
+                                            {t('admins.title_col')}
+                                        </th>
+                                        <th className="px-6 py-3.5 text-start">
+                                            {t('common.phone')}
+                                        </th>
+                                        <th className="px-6 py-3.5 text-start">
+                                            {t('common.status')}
+                                        </th>
+                                        <th className="px-6 py-3.5 text-end">
+                                            {t('common.actions')}
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border/60">
                                     {admins.data.length === 0 ? (
                                         <tr>
-                                            <td colSpan={5} className="px-6 py-10 text-center text-muted-foreground">
+                                            <td
+                                                colSpan={5}
+                                                className="px-6 py-10 text-center text-muted-foreground"
+                                            >
                                                 {t('admins.no_admins_found')}
                                             </td>
                                         </tr>
                                     ) : (
                                         admins.data.map((admin) => {
-                                            const isSelf = currentAdminId === admin.id;
+                                            const isSelf =
+                                                currentAdminId === admin.id;
 
                                             return (
-                                                <tr key={admin.id} className="hover:bg-muted/30 transition-colors">
+                                                <tr
+                                                    key={admin.id}
+                                                    className="transition-colors hover:bg-muted/30"
+                                                >
                                                     <td className="px-6 py-4 text-start">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="size-9 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold text-xs shrink-0 ring-1 ring-amber-500/20">
+                                                            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-xs font-bold text-amber-600 ring-1 ring-amber-500/20">
                                                                 <Shield className="size-4" />
                                                             </div>
                                                             <div>
-                                                                <div className="font-semibold text-foreground flex items-center gap-1.5">
+                                                                <div className="flex items-center gap-1.5 font-semibold text-foreground">
                                                                     {admin.name}
                                                                     {isSelf && (
-                                                                        <Badge variant="outline" className="text-[10px] py-0 px-1.5 h-4 border-primary text-primary">
-                                                                            {t('common.you')}
+                                                                        <Badge
+                                                                            variant="outline"
+                                                                            className="h-4 border-primary px-1.5 py-0 text-[10px] text-primary"
+                                                                        >
+                                                                            {t(
+                                                                                'common.you',
+                                                                            )}
                                                                         </Badge>
                                                                     )}
                                                                 </div>
-                                                                <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                                                                <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                                                                     <Mail className="size-3" />
-                                                                    {admin.email}
+                                                                    {
+                                                                        admin.email
+                                                                    }
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </td>
 
                                                     <td className="px-6 py-4 text-start">
-                                                        <div className="font-medium text-foreground text-xs">
-                                                            {getAdminTitle(admin)}
+                                                        <div className="text-xs font-medium text-foreground">
+                                                            {getAdminTitle(
+                                                                admin,
+                                                            )}
                                                         </div>
                                                     </td>
 
                                                     <td className="px-6 py-4 text-start">
                                                         {admin.phone ? (
-                                                            <span className="text-xs flex items-center gap-1 text-muted-foreground font-mono">
+                                                            <span className="flex items-center gap-1 font-mono text-xs text-muted-foreground">
                                                                 <Phone className="size-3" />
                                                                 {admin.phone}
                                                             </span>
                                                         ) : (
-                                                            <span className="text-xs text-muted-foreground/60">—</span>
+                                                            <span className="text-xs text-muted-foreground/60">
+                                                                —
+                                                            </span>
                                                         )}
                                                     </td>
 
                                                     <td className="px-6 py-4 text-start">
                                                         <Badge
-                                                            variant={admin.status === 'active' ? 'default' : 'secondary'}
+                                                            variant={
+                                                                admin.status ===
+                                                                'active'
+                                                                    ? 'default'
+                                                                    : 'secondary'
+                                                            }
                                                             className={`gap-1 text-xs capitalize ${
-                                                                admin.status === 'active'
-                                                                    ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                                                                admin.status ===
+                                                                'active'
+                                                                    ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600'
                                                                     : 'bg-muted text-muted-foreground'
                                                             }`}
                                                         >
                                                             <span
                                                                 className={`size-1.5 rounded-full ${
-                                                                    admin.status === 'active' ? 'bg-emerald-500' : 'bg-muted-foreground'
+                                                                    admin.status ===
+                                                                    'active'
+                                                                        ? 'bg-emerald-500'
+                                                                        : 'bg-muted-foreground'
                                                                 }`}
                                                             />
-                                                            {admin.status === 'active' ? t('common.active') : t('common.inactive')}
+                                                            {admin.status ===
+                                                            'active'
+                                                                ? t(
+                                                                      'common.active',
+                                                                  )
+                                                                : t(
+                                                                      'common.inactive',
+                                                                  )}
                                                         </Badge>
                                                     </td>
 
                                                     <td className="px-6 py-4 text-end">
                                                         <div className="flex items-center justify-end gap-1.5">
-                                                            <Button asChild variant="ghost" size="sm" className="size-8 p-0" title={t('common.edit')}>
-                                                                <Link href={editAdmin(admin.id)}>
+                                                            <Button
+                                                                asChild
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                className="size-8 p-0"
+                                                                title={t(
+                                                                    'common.edit',
+                                                                )}
+                                                            >
+                                                                <Link
+                                                                    href={editAdmin(
+                                                                        admin.id,
+                                                                    )}
+                                                                >
                                                                     <Edit3 className="size-3.5" />
-                                                                    <span className="sr-only">{t('common.edit')}</span>
+                                                                    <span className="sr-only">
+                                                                        {t(
+                                                                            'common.edit',
+                                                                        )}
+                                                                    </span>
                                                                 </Link>
                                                             </Button>
 
-                                                            {!isSelf && totalAdminsCount > 1 && (
-                                                                <Button
-                                                                    type="button"
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    className="size-8 p-0 text-muted-foreground hover:text-destructive"
-                                                                    title={t('common.delete')}
-                                                                    onClick={() => setAdminToDelete(admin)}
-                                                                >
-                                                                    <Trash2 className="size-3.5" />
-                                                                    <span className="sr-only">{t('common.delete')}</span>
-                                                                </Button>
-                                                            )}
+                                                            {!isSelf &&
+                                                                totalAdminsCount >
+                                                                    1 && (
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        className="size-8 p-0 text-muted-foreground hover:text-destructive"
+                                                                        title={t(
+                                                                            'common.delete',
+                                                                        )}
+                                                                        onClick={() =>
+                                                                            setAdminToDelete(
+                                                                                admin,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <Trash2 className="size-3.5" />
+                                                                        <span className="sr-only">
+                                                                            {t(
+                                                                                'common.delete',
+                                                                            )}
+                                                                        </span>
+                                                                    </Button>
+                                                                )}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -325,14 +446,18 @@ export default function AdminsIndex({
                 {admins.last_page > 1 && (
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <div>
-                            {t('common.showing')} {admins.from} {t('common.to')} {admins.to} {t('common.of')} {admins.total} {t('nav.admins')}
+                            {t('common.showing')} {admins.from} {t('common.to')}{' '}
+                            {admins.to} {t('common.of')} {admins.total}{' '}
+                            {t('nav.admins')}
                         </div>
                         <div className="flex gap-2">
                             {admins.links.map((link, idx) => (
                                 <Button
                                     key={idx}
                                     asChild
-                                    variant={link.active ? 'default' : 'outline'}
+                                    variant={
+                                        link.active ? 'default' : 'outline'
+                                    }
                                     size="sm"
                                     disabled={!link.url}
                                 >
@@ -341,7 +466,9 @@ export default function AdminsIndex({
                                         prefetch="hover"
                                         cacheFor="1m"
                                         preserveScroll
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: link.label,
+                                        }}
                                     />
                                 </Button>
                             ))}
@@ -351,19 +478,27 @@ export default function AdminsIndex({
             </div>
 
             {/* Delete Confirmation Modal */}
-            <Dialog open={!!adminToDelete} onOpenChange={(open) => !open && setAdminToDelete(null)}>
+            <Dialog
+                open={!!adminToDelete}
+                onOpenChange={(open) => !open && setAdminToDelete(null)}
+            >
                 <DialogContent>
                     <DialogHeader>
-                        <div className="flex items-center gap-2 text-destructive mb-1">
+                        <div className="mb-1 flex items-center gap-2 text-destructive">
                             <ShieldAlert className="size-5" />
                             <DialogTitle>{t('common.confirm')}</DialogTitle>
                         </div>
                         <DialogDescription>
-                            Are you sure you want to revoke administrative access and delete <strong>{adminToDelete?.name}</strong>?
+                            Are you sure you want to revoke administrative
+                            access and delete{' '}
+                            <strong>{adminToDelete?.name}</strong>?
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="gap-2">
-                        <Button variant="outline" onClick={() => setAdminToDelete(null)}>
+                        <Button
+                            variant="outline"
+                            onClick={() => setAdminToDelete(null)}
+                        >
                             {t('common.cancel')}
                         </Button>
                         <Button variant="destructive" onClick={confirmDelete}>

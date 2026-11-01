@@ -70,7 +70,11 @@ export function Breadcrumbs({
                                             </BreadcrumbPage>
                                         ) : (
                                             <BreadcrumbLink asChild>
-                                                <Link href={item.href} prefetch="hover" cacheFor="1m">
+                                                <Link
+                                                    href={item.href}
+                                                    prefetch="hover"
+                                                    cacheFor="1m"
+                                                >
                                                     {translated}
                                                 </Link>
                                             </BreadcrumbLink>

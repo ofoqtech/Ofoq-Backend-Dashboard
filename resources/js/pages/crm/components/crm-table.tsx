@@ -40,8 +40,10 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
     if (leads.length === 0) {
         return (
             <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center">
-                <p className="text-sm font-medium text-foreground">{t('crm.no_leads_found')}</p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-sm font-medium text-foreground">
+                    {t('crm.no_leads_found')}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
                     {t('crm.no_leads_hint')}
                 </p>
             </div>
@@ -52,16 +54,32 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
         <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
             <div className="overflow-x-auto">
                 <table className="w-full text-start text-sm">
-                    <thead className="border-b bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    <thead className="border-b bg-muted/40 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                         <tr>
-                            <th className="px-4 py-3 text-start">{t('crm.client_company')}</th>
-                            <th className="px-4 py-3 text-start">{t('crm.contact')}</th>
-                            <th className="px-4 py-3 text-start">{t('crm.service_requested')}</th>
-                            <th className="px-4 py-3 text-start">{t('crm.stage')}</th>
-                            <th className="px-4 py-3 text-start">{t('crm.priority')}</th>
-                            <th className="px-4 py-3 text-start">{t('crm.assignee')}</th>
-                            <th className="px-4 py-3 text-start">{t('crm.submitted')}</th>
-                            <th className="px-4 py-3 text-end">{t('common.actions')}</th>
+                            <th className="px-4 py-3 text-start">
+                                {t('crm.client_company')}
+                            </th>
+                            <th className="px-4 py-3 text-start">
+                                {t('crm.contact')}
+                            </th>
+                            <th className="px-4 py-3 text-start">
+                                {t('crm.service_requested')}
+                            </th>
+                            <th className="px-4 py-3 text-start">
+                                {t('crm.stage')}
+                            </th>
+                            <th className="px-4 py-3 text-start">
+                                {t('crm.priority')}
+                            </th>
+                            <th className="px-4 py-3 text-start">
+                                {t('crm.assignee')}
+                            </th>
+                            <th className="px-4 py-3 text-start">
+                                {t('crm.submitted')}
+                            </th>
+                            <th className="px-4 py-3 text-end">
+                                {t('common.actions')}
+                            </th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -72,11 +90,11 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                 className="group cursor-pointer transition-colors hover:bg-muted/50"
                             >
                                 <td className="px-4 py-3 text-start">
-                                    <div className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                                    <div className="font-semibold text-foreground transition-colors group-hover:text-primary">
                                         {lead.name}
                                     </div>
                                     {lead.company && (
-                                        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                                        <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                                             <Building2 className="size-3 shrink-0" />
                                             {lead.company}
                                         </div>
@@ -85,7 +103,9 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
 
                                 <td className="px-4 py-3 text-start">
                                     <div className="flex items-center gap-2">
-                                        <span className="font-mono text-xs">{lead.phone}</span>
+                                        <span className="font-mono text-xs">
+                                            {lead.phone}
+                                        </span>
                                         <div
                                             className="flex items-center gap-1"
                                             onClick={(e) => e.stopPropagation()}
@@ -95,33 +115,33 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 title={t('crm.chat_whatsapp')}
-                                                className="flex size-6 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-colors"
+                                                className="flex size-6 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 transition-colors hover:bg-emerald-500 hover:text-white"
                                             >
                                                 <MessageCircle className="size-3.5" />
                                             </a>
                                             <a
                                                 href={`tel:${lead.phone}`}
                                                 title={t('crm.call')}
-                                                className="flex size-6 items-center justify-center rounded-md bg-muted text-muted-foreground hover:bg-foreground hover:text-background transition-colors"
+                                                className="flex size-6 items-center justify-center rounded-md bg-muted text-muted-foreground transition-colors hover:bg-foreground hover:text-background"
                                             >
                                                 <Phone className="size-3.5" />
                                             </a>
                                         </div>
                                     </div>
                                     {lead.email && (
-                                        <div className="text-xs text-muted-foreground mt-0.5 truncate max-w-[180px]">
+                                        <div className="mt-0.5 max-w-[180px] truncate text-xs text-muted-foreground">
                                             {lead.email}
                                         </div>
                                     )}
                                 </td>
 
                                 <td className="px-4 py-3 text-start">
-                                    <div className="font-medium text-xs text-foreground truncate max-w-[200px]">
+                                    <div className="max-w-[200px] truncate text-xs font-medium text-foreground">
                                         {getServiceLabel(lead)}
                                     </div>
                                 </td>
 
-                                <td className="px-4 py-3 whitespace-nowrap text-start">
+                                <td className="px-4 py-3 text-start whitespace-nowrap">
                                     <span
                                         className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ${lead.status_color}`}
                                     >
@@ -129,7 +149,7 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                     </span>
                                 </td>
 
-                                <td className="px-4 py-3 whitespace-nowrap text-start">
+                                <td className="px-4 py-3 text-start whitespace-nowrap">
                                     <span
                                         className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${lead.priority_color}`}
                                     >
@@ -137,14 +157,17 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                     </span>
                                 </td>
 
-                                <td className="px-4 py-3 whitespace-nowrap text-start">
+                                <td className="px-4 py-3 text-start whitespace-nowrap">
                                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                         <UserIcon className="size-3.5 shrink-0" />
-                                        <span>{lead.assignee?.name ?? t('common.unassigned')}</span>
+                                        <span>
+                                            {lead.assignee?.name ??
+                                                t('common.unassigned')}
+                                        </span>
                                     </div>
                                 </td>
 
-                                <td className="px-4 py-3 whitespace-nowrap text-xs text-muted-foreground text-start">
+                                <td className="px-4 py-3 text-start text-xs whitespace-nowrap text-muted-foreground">
                                     {formatDate(lead.created_at)}
                                 </td>
 
@@ -159,7 +182,9 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                         }}
                                     >
                                         {t('common.details')}
-                                        <ChevronRight className={`size-3.5 ${isRtl ? 'rotate-180' : ''}`} />
+                                        <ChevronRight
+                                            className={`size-3.5 ${isRtl ? 'rotate-180' : ''}`}
+                                        />
                                     </Button>
                                 </td>
                             </tr>

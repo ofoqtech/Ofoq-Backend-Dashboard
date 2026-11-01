@@ -5,7 +5,10 @@ import ProjectForm from '@/components/projects/project-form';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
 import { dashboard } from '@/routes';
-import { index as projectsIndex, store as storeProject } from '@/routes/projects';
+import {
+    index as projectsIndex,
+    store as storeProject,
+} from '@/routes/projects';
 import type { ProjectCategory } from '@/types';
 
 type CreateProjectProps = {
@@ -29,18 +32,25 @@ export default function CreateProject({ categories }: CreateProjectProps) {
         <>
             <Head title={t('projects.add_title')} />
 
-            <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6 max-w-5xl">
+            <div className="flex h-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-6">
                 <div>
-                    <Button asChild variant="ghost" size="sm" className="mb-2 -mx-2 text-xs">
-                        <Link href={projectsIndex()} prefetch={['mount', 'hover']} cacheFor="2m">
-                            <ArrowLeft className={`mr-1 size-3.5 ${isRtl ? 'rotate-180 ml-1 mr-0' : ''}`} />
+                    <Button
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        className="-mx-2 mb-2 text-xs"
+                    >
+                        <Link href={projectsIndex()} prefetch cacheFor="2m">
+                            <ArrowLeft
+                                className={`mr-1 size-3.5 ${isRtl ? 'mr-0 ml-1 rotate-180' : ''}`}
+                            />
                             {t('common.back_to_projects')}
                         </Link>
                     </Button>
                     <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
                         {t('projects.add_title')}
                     </h1>
-                    <p className="text-muted-foreground mt-1 text-sm">
+                    <p className="mt-1 text-sm text-muted-foreground">
                         {t('projects.add_desc')}
                     </p>
                 </div>
@@ -72,4 +82,3 @@ CreateProject.layout = {
         },
     ],
 };
-

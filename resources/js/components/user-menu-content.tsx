@@ -38,7 +38,7 @@ export function UserMenuContent({ user }: Props) {
             <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                     <Link
-                        className="flex w-full items-center gap-2 cursor-pointer"
+                        className="flex w-full cursor-pointer items-center gap-2"
                         href={edit()}
                         prefetch
                         onClick={cleanup}
@@ -50,7 +50,7 @@ export function UserMenuContent({ user }: Props) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-                className="flex w-full items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
+                className="flex w-full cursor-pointer items-center gap-2 text-destructive focus:text-destructive"
                 onSelect={handleLogout}
                 data-test="logout-button"
             >

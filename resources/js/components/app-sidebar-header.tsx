@@ -42,7 +42,12 @@ export function AppSidebarHeader({
                     <span className="sr-only">Toggle theme</span>
                 </Button>
 
-                <Button asChild variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-foreground">
+                <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                >
                     <a
                         href="http://localhost:5173"
                         target="_blank"

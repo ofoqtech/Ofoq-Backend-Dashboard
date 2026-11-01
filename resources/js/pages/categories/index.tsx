@@ -11,7 +11,13 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -38,11 +44,15 @@ export default function CategoriesIndex({
     filters,
     canManageCategories,
 }: CategoriesIndexProps) {
-    const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
+    const { flash } = usePage<{
+        flash?: { success?: string; error?: string };
+    }>().props;
     const { t, isRtl, localized } = useTranslation();
 
     const [search, setSearch] = useState(filters.search || '');
-    const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+    const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
+        null,
+    );
 
     // Keep search in sync if filters.search changes externally
     useEffect(() => {
@@ -57,7 +67,11 @@ export default function CategoriesIndex({
                 router.get(
                     '/categories',
                     { search: search.trim() || undefined },
-                    { preserveState: true, preserveScroll: true, replace: true }
+                    {
+                        preserveState: true,
+                        preserveScroll: true,
+                        replace: true,
+                    },
                 );
             }
         }, 250);
@@ -70,7 +84,7 @@ export default function CategoriesIndex({
         router.get(
             '/categories',
             { search: search.trim() || undefined },
-            { preserveState: true, replace: true }
+            { preserveState: true, replace: true },
         );
     };
 
@@ -99,18 +113,28 @@ export default function CategoriesIndex({
         );
     };
 
-    const getCategoryDescription = (cat: Category | null | undefined): string => {
+    const getCategoryDescription = (
+        cat: Category | null | undefined,
+    ): string => {
         if (!cat) return '';
         if (isRtl) {
             return (
                 cat.description_ar ||
-                (typeof cat.description === 'object' ? cat.description?.ar : '') ||
+                (typeof cat.description === 'object'
+                    ? cat.description?.ar
+                    : '') ||
                 cat.description_en ||
-                (typeof cat.description === 'object' ? cat.description?.en : '') ||
+                (typeof cat.description === 'object'
+                    ? cat.description?.en
+                    : '') ||
                 ''
             );
         }
-        return cat.description_en || (typeof cat.description === 'object' ? cat.description?.en : '') || '';
+        return (
+            cat.description_en ||
+            (typeof cat.description === 'object' ? cat.description?.en : '') ||
+            ''
+        );
     };
 
     return (
@@ -137,12 +161,15 @@ export default function CategoriesIndex({
                             <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
                                 {t('categories.title')}
                             </h1>
-                            <Badge variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
+                            <Badge
+                                variant="secondary"
+                                className="gap-1 border-primary/20 bg-primary/10 text-primary"
+                            >
                                 <FolderTree className="size-3" />
                                 {t('categories.bilingual_taxonomy')}
                             </Badge>
                         </div>
-                        <p className="text-muted-foreground mt-1 text-sm">
+                        <p className="mt-1 text-sm text-muted-foreground">
                             {t('categories.subtitle')}
                         </p>
                     </div>
@@ -150,8 +177,14 @@ export default function CategoriesIndex({
                     {canManageCategories && (
                         <div className="flex items-center gap-2.5">
                             <Button asChild size="sm">
-                                <Link href="/categories/create" prefetch="hover" cacheFor="1m">
-                                    <Plus className={`size-4 ${isRtl ? 'ml-1.5' : 'mr-1.5'}`} />
+                                <Link
+                                    href="/categories/create"
+                                    prefetch="hover"
+                                    cacheFor="1m"
+                                >
+                                    <Plus
+                                        className={`size-4 ${isRtl ? 'ml-1.5' : 'mr-1.5'}`}
+                                    />
                                     {t('categories.add_category')}
                                 </Link>
                             </Button>
@@ -162,29 +195,40 @@ export default function CategoriesIndex({
                 {/* Search Card */}
                 <Card>
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-base font-semibold">{t('categories.filter_title')}</CardTitle>
-                        <CardDescription>{t('categories.filter_desc')}</CardDescription>
+                        <CardTitle className="text-base font-semibold">
+                            {t('categories.filter_title')}
+                        </CardTitle>
+                        <CardDescription>
+                            {t('categories.filter_desc')}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <form
+                            onSubmit={handleSearch}
+                            className="flex flex-col gap-3 sm:flex-row sm:items-center"
+                        >
                             <div className="relative flex-1">
                                 <Search
-                                    className={`text-muted-foreground absolute top-1/2 size-4 -translate-y-1/2 pointer-events-none ${
+                                    className={`pointer-events-none absolute top-1/2 size-4 -translate-y-1/2 text-muted-foreground ${
                                         isRtl ? 'right-3' : 'left-3'
                                     }`}
                                 />
                                 <Input
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    placeholder={t('categories.search_placeholder')}
-                                    className={isRtl ? 'pr-9 pl-8' : 'pl-9 pr-8'}
+                                    placeholder={t(
+                                        'categories.search_placeholder',
+                                    )}
+                                    className={
+                                        isRtl ? 'pr-9 pl-8' : 'pr-8 pl-9'
+                                    }
                                     autoComplete="off"
                                 />
                                 {search && (
                                     <button
                                         type="button"
                                         onClick={() => setSearch('')}
-                                        className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors ${
+                                        className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground ${
                                             isRtl ? 'left-2.5' : 'right-2.5'
                                         }`}
                                         title={t('common.clear')}
@@ -195,7 +239,11 @@ export default function CategoriesIndex({
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <Button type="submit" variant="secondary" size="sm">
+                                <Button
+                                    type="submit"
+                                    variant="secondary"
+                                    size="sm"
+                                >
                                     {t('common.search')}
                                 </Button>
                                 {search && (
@@ -221,40 +269,63 @@ export default function CategoriesIndex({
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
                             <table className="w-full text-start text-sm">
-                                <thead className="border-b bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                <thead className="border-b bg-muted/40 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                     <tr>
-                                        <th className="px-6 py-3.5 text-start">{t('common.name')}</th>
-                                        <th className="px-6 py-3.5 text-start">{t('categories.slug')}</th>
-                                        <th className="px-6 py-3.5 text-start">{t('categories.linked_projects')}</th>
-                                        <th className="px-6 py-3.5 text-start">{t('categories.order')}</th>
-                                        <th className="px-6 py-3.5 text-start">{t('common.status')}</th>
+                                        <th className="px-6 py-3.5 text-start">
+                                            {t('common.name')}
+                                        </th>
+                                        <th className="px-6 py-3.5 text-start">
+                                            {t('categories.slug')}
+                                        </th>
+                                        <th className="px-6 py-3.5 text-start">
+                                            {t('categories.linked_projects')}
+                                        </th>
+                                        <th className="px-6 py-3.5 text-start">
+                                            {t('categories.order')}
+                                        </th>
+                                        <th className="px-6 py-3.5 text-start">
+                                            {t('common.status')}
+                                        </th>
                                         {canManageCategories && (
-                                            <th className="px-6 py-3.5 text-end">{t('common.actions')}</th>
+                                            <th className="px-6 py-3.5 text-end">
+                                                {t('common.actions')}
+                                            </th>
                                         )}
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border/60">
                                     {categories.data.length === 0 ? (
                                         <tr>
-                                            <td colSpan={canManageCategories ? 6 : 5} className="px-6 py-10 text-center text-muted-foreground">
-                                                {t('categories.no_categories_found')}
+                                            <td
+                                                colSpan={
+                                                    canManageCategories ? 6 : 5
+                                                }
+                                                className="px-6 py-10 text-center text-muted-foreground"
+                                            >
+                                                {t(
+                                                    'categories.no_categories_found',
+                                                )}
                                             </td>
                                         </tr>
                                     ) : (
                                         categories.data.map((cat) => {
                                             const name = getCategoryName(cat);
-                                            const desc = getCategoryDescription(cat);
+                                            const desc =
+                                                getCategoryDescription(cat);
 
                                             return (
-                                                <tr key={cat.id} className="hover:bg-muted/30 transition-colors">
+                                                <tr
+                                                    key={cat.id}
+                                                    className="transition-colors hover:bg-muted/30"
+                                                >
                                                     <td className="px-6 py-4 text-start">
                                                         <div className="space-y-1">
-                                                            <div className="font-semibold text-foreground text-sm flex items-center gap-2">
+                                                            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                                                                 <FolderTree className="size-4 text-[#20B8D5]" />
                                                                 {name}
                                                             </div>
                                                             {desc && (
-                                                                <div className="text-[11px] text-muted-foreground line-clamp-1 max-w-md">
+                                                                <div className="line-clamp-1 max-w-md text-[11px] text-muted-foreground">
                                                                     {desc}
                                                                 </div>
                                                             )}
@@ -262,49 +333,80 @@ export default function CategoriesIndex({
                                                     </td>
 
                                                     <td className="px-6 py-4 text-start">
-                                                        <code className="text-xs bg-muted px-2 py-0.5 rounded font-mono text-muted-foreground">
+                                                        <code className="rounded bg-muted px-2 py-0.5 font-mono text-xs text-muted-foreground">
                                                             {cat.slug}
                                                         </code>
                                                     </td>
 
                                                     <td className="px-6 py-4 text-start">
-                                                        <Badge variant="outline" className="gap-1 text-xs">
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="gap-1 text-xs"
+                                                        >
                                                             <FolderKanban className="size-3 text-muted-foreground" />
-                                                            {cat.projects_count ?? 0} {t('nav.projects')}
+                                                            {cat.projects_count ??
+                                                                0}{' '}
+                                                            {t('nav.projects')}
                                                         </Badge>
                                                     </td>
 
                                                     <td className="px-6 py-4 text-start">
-                                                        <span className="text-xs font-mono text-muted-foreground">
+                                                        <span className="font-mono text-xs text-muted-foreground">
                                                             #{cat.order}
                                                         </span>
                                                     </td>
 
                                                     <td className="px-6 py-4 text-start">
                                                         <Badge
-                                                            variant={cat.is_active ? 'default' : 'secondary'}
+                                                            variant={
+                                                                cat.is_active
+                                                                    ? 'default'
+                                                                    : 'secondary'
+                                                            }
                                                             className={`gap-1 text-xs ${
                                                                 cat.is_active
-                                                                    ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                                                                    ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600'
                                                                     : 'bg-muted text-muted-foreground'
                                                             }`}
                                                         >
                                                             <span
                                                                 className={`size-1.5 rounded-full ${
-                                                                    cat.is_active ? 'bg-emerald-500' : 'bg-muted-foreground'
+                                                                    cat.is_active
+                                                                        ? 'bg-emerald-500'
+                                                                        : 'bg-muted-foreground'
                                                                 }`}
                                                             />
-                                                            {cat.is_active ? t('common.active') : t('common.inactive')}
+                                                            {cat.is_active
+                                                                ? t(
+                                                                      'common.active',
+                                                                  )
+                                                                : t(
+                                                                      'common.inactive',
+                                                                  )}
                                                         </Badge>
                                                     </td>
 
                                                     {canManageCategories && (
                                                         <td className="px-6 py-4 text-end">
                                                             <div className="flex items-center justify-end gap-1.5">
-                                                                <Button asChild variant="ghost" size="sm" className="size-8 p-0" title={t('common.edit')}>
-                                                                    <Link href={`/categories/${cat.id}/edit`}>
+                                                                <Button
+                                                                    asChild
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    className="size-8 p-0"
+                                                                    title={t(
+                                                                        'common.edit',
+                                                                    )}
+                                                                >
+                                                                    <Link
+                                                                        href={`/categories/${cat.id}/edit`}
+                                                                    >
                                                                         <Edit3 className="size-3.5" />
-                                                                        <span className="sr-only">{t('common.edit')}</span>
+                                                                        <span className="sr-only">
+                                                                            {t(
+                                                                                'common.edit',
+                                                                            )}
+                                                                        </span>
                                                                     </Link>
                                                                 </Button>
 
@@ -313,11 +415,21 @@ export default function CategoriesIndex({
                                                                     variant="ghost"
                                                                     size="sm"
                                                                     className="size-8 p-0 text-muted-foreground hover:text-destructive"
-                                                                    title={t('common.delete')}
-                                                                    onClick={() => setCategoryToDelete(cat)}
+                                                                    title={t(
+                                                                        'common.delete',
+                                                                    )}
+                                                                    onClick={() =>
+                                                                        setCategoryToDelete(
+                                                                            cat,
+                                                                        )
+                                                                    }
                                                                 >
                                                                     <Trash2 className="size-3.5" />
-                                                                    <span className="sr-only">{t('common.delete')}</span>
+                                                                    <span className="sr-only">
+                                                                        {t(
+                                                                            'common.delete',
+                                                                        )}
+                                                                    </span>
                                                                 </Button>
                                                             </div>
                                                         </td>
@@ -336,14 +448,18 @@ export default function CategoriesIndex({
                 {categories.last_page > 1 && (
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <div>
-                            {t('common.showing')} {categories.from} {t('common.to')} {categories.to} {t('common.of')} {categories.total} {t('nav.categories')}
+                            {t('common.showing')} {categories.from}{' '}
+                            {t('common.to')} {categories.to} {t('common.of')}{' '}
+                            {categories.total} {t('nav.categories')}
                         </div>
                         <div className="flex gap-2">
                             {categories.links.map((link, idx) => (
                                 <Button
                                     key={idx}
                                     asChild
-                                    variant={link.active ? 'default' : 'outline'}
+                                    variant={
+                                        link.active ? 'default' : 'outline'
+                                    }
                                     size="sm"
                                     disabled={!link.url}
                                 >
@@ -352,7 +468,9 @@ export default function CategoriesIndex({
                                         prefetch="hover"
                                         cacheFor="1m"
                                         preserveScroll
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: link.label,
+                                        }}
                                     />
                                 </Button>
                             ))}
@@ -362,7 +480,10 @@ export default function CategoriesIndex({
             </div>
 
             {/* Delete Confirmation Modal */}
-            <Dialog open={!!categoryToDelete} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
+            <Dialog
+                open={!!categoryToDelete}
+                onOpenChange={(open) => !open && setCategoryToDelete(null)}
+            >
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{t('common.confirm')}</DialogTitle>
@@ -374,7 +495,8 @@ export default function CategoriesIndex({
                                             ? `هل أنت متأكد من رغبتك في حذف تصنيف "${getCategoryName(categoryToDelete)}"`
                                             : `Are you sure you want to delete category "${getCategoryName(categoryToDelete)}"?`}
                                     </span>
-                                    {categoryToDelete.projects_count && categoryToDelete.projects_count > 0 ? (
+                                    {categoryToDelete.projects_count &&
+                                    categoryToDelete.projects_count > 0 ? (
                                         <span className="mt-2 block font-medium text-destructive">
                                             {isRtl
                                                 ? `تحذير: هذا التصنيف مرتبط حالياً بعدد ${categoryToDelete.projects_count} مشروع. يرجى نقل المشاريع أولاً قبل الحذف.`
@@ -382,7 +504,9 @@ export default function CategoriesIndex({
                                         </span>
                                     ) : (
                                         <span className="mt-1 block text-muted-foreground">
-                                            {isRtl ? 'لا يمكن التراجع عن هذا الإجراء.' : 'This action cannot be undone.'}
+                                            {isRtl
+                                                ? 'لا يمكن التراجع عن هذا الإجراء.'
+                                                : 'This action cannot be undone.'}
                                         </span>
                                     )}
                                 </>
@@ -390,13 +514,20 @@ export default function CategoriesIndex({
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="gap-2">
-                        <Button variant="outline" onClick={() => setCategoryToDelete(null)}>
+                        <Button
+                            variant="outline"
+                            onClick={() => setCategoryToDelete(null)}
+                        >
                             {t('common.cancel')}
                         </Button>
                         <Button
                             variant="destructive"
                             onClick={confirmDelete}
-                            disabled={categoryToDelete ? (categoryToDelete.projects_count ?? 0) > 0 : false}
+                            disabled={
+                                categoryToDelete
+                                    ? (categoryToDelete.projects_count ?? 0) > 0
+                                    : false
+                            }
                         >
                             {t('common.delete')}
                         </Button>

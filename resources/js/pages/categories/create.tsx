@@ -2,7 +2,13 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, FolderTree, Save } from 'lucide-react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,12 +36,19 @@ export default function CreateCategory() {
         <>
             <Head title={t('categories.add_title')} />
 
-            <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6 max-w-3xl">
+            <div className="flex h-full max-w-3xl flex-1 flex-col gap-6 p-4 md:p-6">
                 {/* Back button & Title */}
                 <div>
-                    <Button asChild variant="ghost" size="sm" className="mb-2 -mx-2 text-xs">
-                        <Link href="/categories" prefetch={['mount', 'hover']} cacheFor="2m">
-                            <ArrowLeft className={`mr-1 size-3.5 ${isRtl ? 'rotate-180 ml-1 mr-0' : ''}`} />
+                    <Button
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        className="-mx-2 mb-2 text-xs"
+                    >
+                        <Link href="/categories" prefetch cacheFor="2m">
+                            <ArrowLeft
+                                className={`mr-1 size-3.5 ${isRtl ? 'mr-0 ml-1 rotate-180' : ''}`}
+                            />
                             {t('common.back_to_categories')}
                         </Link>
                     </Button>
@@ -44,14 +57,14 @@ export default function CreateCategory() {
                             {t('categories.add_title')}
                         </h1>
                     </div>
-                    <p className="text-muted-foreground mt-1 text-sm">
+                    <p className="mt-1 text-sm text-muted-foreground">
                         {t('categories.add_desc')}
                     </p>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                             <FolderTree className="size-5 text-primary" />
                             {t('categories.info_title')}
                         </CardTitle>
@@ -64,11 +77,15 @@ export default function CreateCategory() {
                             {/* Bilingual Name */}
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="name_en">{t('categories.name_en')}</Label>
+                                    <Label htmlFor="name_en">
+                                        {t('categories.name_en')}
+                                    </Label>
                                     <Input
                                         id="name_en"
                                         value={data.name_en}
-                                        onChange={(e) => setData('name_en', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('name_en', e.target.value)
+                                        }
                                         placeholder="e.g. Cloud Infrastructure"
                                         dir="ltr"
                                         required
@@ -77,11 +94,15 @@ export default function CreateCategory() {
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="name_ar">{t('categories.name_ar')}</Label>
+                                    <Label htmlFor="name_ar">
+                                        {t('categories.name_ar')}
+                                    </Label>
                                     <Input
                                         id="name_ar"
                                         value={data.name_ar}
-                                        onChange={(e) => setData('name_ar', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('name_ar', e.target.value)
+                                        }
                                         placeholder="مثال: البنية التحتية السحابية"
                                         dir="rtl"
                                         required
@@ -95,12 +116,16 @@ export default function CreateCategory() {
                                 <div className="space-y-1.5">
                                     <Label htmlFor="slug">
                                         {t('categories.slug_label')}{' '}
-                                        <span className="text-xs text-muted-foreground font-normal">{t('categories.slug_hint')}</span>
+                                        <span className="text-xs font-normal text-muted-foreground">
+                                            {t('categories.slug_hint')}
+                                        </span>
                                     </Label>
                                     <Input
                                         id="slug"
                                         value={data.slug}
-                                        onChange={(e) => setData('slug', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('slug', e.target.value)
+                                        }
                                         placeholder="cloud-infra"
                                         dir="ltr"
                                     />
@@ -108,13 +133,20 @@ export default function CreateCategory() {
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="order">{t('categories.order_label')}</Label>
+                                    <Label htmlFor="order">
+                                        {t('categories.order_label')}
+                                    </Label>
                                     <Input
                                         id="order"
                                         type="number"
                                         min={0}
                                         value={data.order}
-                                        onChange={(e) => setData('order', parseInt(e.target.value) || 0)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'order',
+                                                parseInt(e.target.value) || 0,
+                                            )
+                                        }
                                         placeholder="0"
                                     />
                                     <InputError message={errors.order} />
@@ -123,29 +155,43 @@ export default function CreateCategory() {
 
                             {/* Bilingual Description */}
                             <div className="space-y-1.5">
-                                <Label htmlFor="description_en">{t('categories.desc_en')}</Label>
+                                <Label htmlFor="description_en">
+                                    {t('categories.desc_en')}
+                                </Label>
                                 <textarea
                                     id="description_en"
                                     rows={3}
                                     value={data.description_en}
-                                    onChange={(e) => setData('description_en', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'description_en',
+                                            e.target.value,
+                                        )
+                                    }
                                     placeholder="Brief overview of this project sector..."
                                     dir="ltr"
-                                    className="w-full rounded-md border border-input bg-background p-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    className="w-full rounded-md border border-input bg-background p-3 text-sm text-foreground shadow-xs focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                                 />
                                 <InputError message={errors.description_en} />
                             </div>
 
                             <div className="space-y-1.5">
-                                <Label htmlFor="description_ar">{t('categories.desc_ar')}</Label>
+                                <Label htmlFor="description_ar">
+                                    {t('categories.desc_ar')}
+                                </Label>
                                 <textarea
                                     id="description_ar"
                                     rows={3}
                                     dir="rtl"
                                     value={data.description_ar}
-                                    onChange={(e) => setData('description_ar', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'description_ar',
+                                            e.target.value,
+                                        )
+                                    }
                                     placeholder="نبذة مختصرة عن هذا القطاع البرمجي..."
-                                    className="w-full rounded-md border border-input bg-background p-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    className="w-full rounded-md border border-input bg-background p-3 text-sm text-foreground shadow-xs focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                                 />
                                 <InputError message={errors.description_ar} />
                             </div>
@@ -155,21 +201,36 @@ export default function CreateCategory() {
                                 <Checkbox
                                     id="is_active"
                                     checked={data.is_active}
-                                    onCheckedChange={(checked) => setData('is_active', Boolean(checked))}
+                                    onCheckedChange={(checked) =>
+                                        setData('is_active', Boolean(checked))
+                                    }
                                 />
-                                <Label htmlFor="is_active" className="text-sm font-medium cursor-pointer">
+                                <Label
+                                    htmlFor="is_active"
+                                    className="cursor-pointer text-sm font-medium"
+                                >
                                     {t('categories.is_active_label')}
                                 </Label>
                             </div>
 
                             {/* Submit & Cancel */}
-                            <div className="flex items-center justify-end gap-2.5 pt-4 border-t">
+                            <div className="flex items-center justify-end gap-2.5 border-t pt-4">
                                 <Button asChild variant="outline">
-                                    <Link href="/categories">{t('common.cancel')}</Link>
+                                    <Link href="/categories">
+                                        {t('common.cancel')}
+                                    </Link>
                                 </Button>
-                                <Button type="submit" disabled={processing} className="bg-primary hover:bg-primary/90">
-                                    <Save className={`size-4 ${isRtl ? 'ml-1.5' : 'mr-1.5'}`} />
-                                    {processing ? t('common.saving') : t('categories.save_btn')}
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="bg-primary hover:bg-primary/90"
+                                >
+                                    <Save
+                                        className={`size-4 ${isRtl ? 'ml-1.5' : 'mr-1.5'}`}
+                                    />
+                                    {processing
+                                        ? t('common.saving')
+                                        : t('categories.save_btn')}
                                 </Button>
                             </div>
                         </form>
@@ -196,4 +257,3 @@ CreateCategory.layout = {
         },
     ],
 };
-

@@ -68,9 +68,15 @@ export default function CrmIndex({
 
     const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
     const [search, setSearch] = useState(filters.search || '');
-    const [selectedStatus, setSelectedStatus] = useState(filters.status || 'all');
-    const [selectedPriority, setSelectedPriority] = useState(filters.priority || 'all');
-    const [selectedAssignee, setSelectedAssignee] = useState(filters.assigned_to || 'all');
+    const [selectedStatus, setSelectedStatus] = useState(
+        filters.status || 'all',
+    );
+    const [selectedPriority, setSelectedPriority] = useState(
+        filters.priority || 'all',
+    );
+    const [selectedAssignee, setSelectedAssignee] = useState(
+        filters.assigned_to || 'all',
+    );
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [activeLead, setActiveLead] = useState<Lead | null>(null);
 
@@ -101,18 +107,31 @@ export default function CrmIndex({
 
     const handleApplyFilters = (newFilters: Partial<typeof filters>) => {
         const queryParams = {
-            search: newFilters.search !== undefined ? newFilters.search : search,
-            status: newFilters.status !== undefined ? newFilters.status : selectedStatus,
-            priority: newFilters.priority !== undefined ? newFilters.priority : selectedPriority,
-            assigned_to: newFilters.assigned_to !== undefined ? newFilters.assigned_to : selectedAssignee,
+            search:
+                newFilters.search !== undefined ? newFilters.search : search,
+            status:
+                newFilters.status !== undefined
+                    ? newFilters.status
+                    : selectedStatus,
+            priority:
+                newFilters.priority !== undefined
+                    ? newFilters.priority
+                    : selectedPriority,
+            assigned_to:
+                newFilters.assigned_to !== undefined
+                    ? newFilters.assigned_to
+                    : selectedAssignee,
         };
 
         // Filter out defaults
         const cleanParams: Record<string, string> = {};
         if (queryParams.search) cleanParams.search = queryParams.search;
-        if (queryParams.status && queryParams.status !== 'all') cleanParams.status = queryParams.status;
-        if (queryParams.priority && queryParams.priority !== 'all') cleanParams.priority = queryParams.priority;
-        if (queryParams.assigned_to && queryParams.assigned_to !== 'all') cleanParams.assigned_to = queryParams.assigned_to;
+        if (queryParams.status && queryParams.status !== 'all')
+            cleanParams.status = queryParams.status;
+        if (queryParams.priority && queryParams.priority !== 'all')
+            cleanParams.priority = queryParams.priority;
+        if (queryParams.assigned_to && queryParams.assigned_to !== 'all')
+            cleanParams.assigned_to = queryParams.assigned_to;
 
         router.get('/crm', cleanParams, {
             preserveState: true,
@@ -130,9 +149,24 @@ export default function CrmIndex({
             const phoneMatch = lead.phone?.toLowerCase().includes(term);
             const emailMatch = lead.email?.toLowerCase().includes(term);
             const companyMatch = lead.company?.toLowerCase().includes(term);
-            const serviceMatch = (lead.service_name_snapshot || lead.service?.name_en || lead.service?.name_ar)?.toLowerCase().includes(term);
-            const assigneeMatch = lead.assignee?.name?.toLowerCase().includes(term);
-            return nameMatch || phoneMatch || emailMatch || companyMatch || serviceMatch || assigneeMatch;
+            const serviceMatch = (
+                lead.service_name_snapshot ||
+                lead.service?.name_en ||
+                lead.service?.name_ar
+            )
+                ?.toLowerCase()
+                .includes(term);
+            const assigneeMatch = lead.assignee?.name
+                ?.toLowerCase()
+                .includes(term);
+            return (
+                nameMatch ||
+                phoneMatch ||
+                emailMatch ||
+                companyMatch ||
+                serviceMatch ||
+                assigneeMatch
+            );
         });
     }, [leads, search]);
 
@@ -147,10 +181,27 @@ export default function CrmIndex({
                     const nameMatch = lead.name?.toLowerCase().includes(term);
                     const phoneMatch = lead.phone?.toLowerCase().includes(term);
                     const emailMatch = lead.email?.toLowerCase().includes(term);
-                    const companyMatch = lead.company?.toLowerCase().includes(term);
-                    const serviceMatch = (lead.service_name_snapshot || lead.service?.name_en || lead.service?.name_ar)?.toLowerCase().includes(term);
-                    const assigneeMatch = lead.assignee?.name?.toLowerCase().includes(term);
-                    return nameMatch || phoneMatch || emailMatch || companyMatch || serviceMatch || assigneeMatch;
+                    const companyMatch = lead.company
+                        ?.toLowerCase()
+                        .includes(term);
+                    const serviceMatch = (
+                        lead.service_name_snapshot ||
+                        lead.service?.name_en ||
+                        lead.service?.name_ar
+                    )
+                        ?.toLowerCase()
+                        .includes(term);
+                    const assigneeMatch = lead.assignee?.name
+                        ?.toLowerCase()
+                        .includes(term);
+                    return (
+                        nameMatch ||
+                        phoneMatch ||
+                        emailMatch ||
+                        companyMatch ||
+                        serviceMatch ||
+                        assigneeMatch
+                    );
                 }),
             };
         }
@@ -174,7 +225,11 @@ export default function CrmIndex({
         setSelectedStatus('all');
         setSelectedPriority('all');
         setSelectedAssignee('all');
-        router.get('/crm', {}, { preserveState: true, preserveScroll: true, replace: true });
+        router.get(
+            '/crm',
+            {},
+            { preserveState: true, preserveScroll: true, replace: true },
+        );
     };
 
     const hasActiveFilters =
@@ -191,8 +246,10 @@ export default function CrmIndex({
                 {/* Header */}
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">{t('crm.title')}</h1>
-                        <p className="text-sm text-muted-foreground mt-0.5">
+                        <h1 className="text-2xl font-bold tracking-tight">
+                            {t('crm.title')}
+                        </h1>
+                        <p className="mt-0.5 text-sm text-muted-foreground">
                             {t('crm.subtitle')}
                         </p>
                     </div>
@@ -202,7 +259,9 @@ export default function CrmIndex({
                         <div className="flex items-center rounded-lg border bg-muted p-0.5">
                             <Button
                                 type="button"
-                                variant={viewMode === 'kanban' ? 'default' : 'ghost'}
+                                variant={
+                                    viewMode === 'kanban' ? 'default' : 'ghost'
+                                }
                                 size="sm"
                                 onClick={() => setViewMode('kanban')}
                                 className="h-8 gap-1.5 px-3 text-xs"
@@ -212,7 +271,9 @@ export default function CrmIndex({
                             </Button>
                             <Button
                                 type="button"
-                                variant={viewMode === 'table' ? 'default' : 'ghost'}
+                                variant={
+                                    viewMode === 'table' ? 'default' : 'ghost'
+                                }
                                 size="sm"
                                 onClick={() => setViewMode('table')}
                                 className="h-8 gap-1.5 px-3 text-xs"
@@ -240,9 +301,9 @@ export default function CrmIndex({
                 {/* Search & Filter Toolbar */}
                 <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-2xs md:flex-row md:items-center md:justify-between">
                     {/* Live Search Input */}
-                    <div className="relative flex-1 max-w-sm">
+                    <div className="relative max-w-sm flex-1">
                         <Search
-                            className={`absolute top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none ${
+                            className={`pointer-events-none absolute top-1/2 size-4 -translate-y-1/2 text-muted-foreground ${
                                 isRtl ? 'right-2.5' : 'left-2.5'
                             }`}
                         />
@@ -251,14 +312,14 @@ export default function CrmIndex({
                             placeholder={t('crm.search_placeholder')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className={`h-9 text-xs ${isRtl ? 'pr-9 pl-8' : 'pl-9 pr-8'}`}
+                            className={`h-9 text-xs ${isRtl ? 'pr-9 pl-8' : 'pr-8 pl-9'}`}
                             autoComplete="off"
                         />
                         {search && (
                             <button
                                 type="button"
                                 onClick={() => setSearch('')}
-                                className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors ${
+                                className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground ${
                                     isRtl ? 'left-2.5' : 'right-2.5'
                                 }`}
                                 title={t('common.clear')}
@@ -281,7 +342,9 @@ export default function CrmIndex({
                                 <SelectValue placeholder={t('crm.stage')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">{t('crm.all_stages')}</SelectItem>
+                                <SelectItem value="all">
+                                    {t('crm.all_stages')}
+                                </SelectItem>
                                 {statuses.map((s) => (
                                     <SelectItem key={s.value} value={s.value}>
                                         {isRtl ? s.label_ar : s.label}
@@ -302,7 +365,9 @@ export default function CrmIndex({
                                 <SelectValue placeholder={t('crm.priority')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">{t('crm.all_priorities')}</SelectItem>
+                                <SelectItem value="all">
+                                    {t('crm.all_priorities')}
+                                </SelectItem>
                                 {priorities.map((p) => (
                                     <SelectItem key={p.value} value={p.value}>
                                         {isRtl ? p.label_ar : p.label}
@@ -323,8 +388,12 @@ export default function CrmIndex({
                                 <SelectValue placeholder={t('crm.assignee')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">{t('crm.all_reps')}</SelectItem>
-                                <SelectItem value="unassigned">{t('common.unassigned')}</SelectItem>
+                                <SelectItem value="all">
+                                    {t('crm.all_reps')}
+                                </SelectItem>
+                                <SelectItem value="unassigned">
+                                    {t('common.unassigned')}
+                                </SelectItem>
                                 {teamMembers.map((m) => (
                                     <SelectItem key={m.id} value={String(m.id)}>
                                         {m.name}
@@ -339,7 +408,7 @@ export default function CrmIndex({
                                 variant="ghost"
                                 size="sm"
                                 onClick={handleResetFilters}
-                                className="h-9 text-xs text-muted-foreground hover:text-foreground gap-1"
+                                className="h-9 gap-1 text-xs text-muted-foreground hover:text-foreground"
                             >
                                 <X className="size-3.5" />
                                 {t('common.reset')}
