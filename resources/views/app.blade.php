@@ -39,6 +39,8 @@
 
         <link rel="icon" href="/logo dark.jpeg" type="image/jpeg">
         <link rel="apple-touch-icon" href="/logo dark.jpeg">
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#0081FB">
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

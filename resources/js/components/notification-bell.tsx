@@ -1,0 +1,391 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, router, usePage } from '@inertiajs/react';
+import {
+    Bell,
+    BellOff,
+    BellRing,
+    Check,
+    Volume2,
+    VolumeX,
+    ExternalLink,
+    Trash2,
+    Clock,
+    User,
+    Building2,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useTranslation } from '@/lib/i18n';
+import {
+    getNotificationPermission,
+    requestNotificationPermission,
+    showLeadNotification,
+    playNotificationChime,
+    type RealtimeLead,
+} from '@/lib/notifications';
+import { ChannelBadge } from '@/components/channel-badge';
+
+const STORAGE_KEY_HISTORY = 'ofoq_notifications_history';
+const STORAGE_KEY_SOUND = 'ofoq_sound_enabled';
+
+export function NotificationBell() {
+    const { isRtl, t } = useTranslation();
+    const { url } = usePage();
+
+    const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
+        if (typeof window === 'undefined') return true;
+        const saved = localStorage.getItem(STORAGE_KEY_SOUND);
+        return saved !== null ? saved === 'true' : true;
+    });
+
+    const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>('default');
+    const [history, setHistory] = useState<RealtimeLead[]>(() => {
+        if (typeof window === 'undefined') return [];
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY_HISTORY);
+            return saved ? JSON.parse(saved) : [];
+        } catch {
+            return [];
+        }
+    });
+
+    const [unreadCount, setUnreadCount] = useState<number>(0);
+    const lastLeadIdRef = useRef<number | null>(null);
+    const isInitialMount = useRef(true);
+
+    // Synchronize permission status on mount
+    useEffect(() => {
+        setPermission(getNotificationPermission());
+    }, []);
+
+    const toggleSound = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const next = !soundEnabled;
+        setSoundEnabled(next);
+        localStorage.setItem(STORAGE_KEY_SOUND, String(next));
+        if (next) {
+            playNotificationChime();
+        }
+    };
+
+    const handleEnablePush = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        const result = await requestNotificationPermission();
+        setPermission(result);
+        if (result === 'granted') {
+            setSoundEnabled(true);
+            localStorage.setItem(STORAGE_KEY_SOUND, 'true');
+        }
+    };
+
+    const handleClearHistory = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setHistory([]);
+        setUnreadCount(0);
+        localStorage.removeItem(STORAGE_KEY_HISTORY);
+    };
+
+    const handleOpenDropdown = (open: boolean) => {
+        if (open) {
+            setUnreadCount(0);
+        }
+    };
+
+    const handleSelectLead = (leadId: number) => {
+        window.location.href = `/crm?selected=${leadId}`;
+    };
+
+    // Background Realtime Lead Poller (every 4.5 seconds)
+    useEffect(() => {
+        let isMounted = true;
+
+        const checkNewLeads = async () => {
+            try {
+                const params = lastLeadIdRef.current !== null ? `?last_id=${lastLeadIdRef.current}` : '';
+                const response = await fetch(`/crm/realtime-check${params}`, {
+                    headers: {
+                        Accept: 'application/json',
+                    },
+                });
+
+                if (!response.ok) return;
+
+                const data: {
+                    latest_id: number;
+                    new_leads: RealtimeLead[];
+                    recent_history?: RealtimeLead[];
+                } = await response.json();
+
+                if (!isMounted) return;
+
+                // First load: initialize watermark and load recent history if local history is empty
+                if (isInitialMount.current) {
+                    lastLeadIdRef.current = data.latest_id;
+                    isInitialMount.current = false;
+
+                    if (data.recent_history && data.recent_history.length > 0) {
+                        setHistory((prev) => {
+                            // Merge and keep sorted newest to oldest
+                            const existingIds = new Set(prev.map((item) => item.id));
+                            const additions = data.recent_history!.filter((item) => !existingIds.has(item.id));
+                            const merged = [...prev, ...additions].sort((a, b) => b.id - a.id).slice(0, 30);
+                            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(merged));
+                            return merged;
+                        });
+                    }
+                    return;
+                }
+
+                // If new leads arrived since last poll
+                if (data.new_leads && data.new_leads.length > 0) {
+                    lastLeadIdRef.current = data.latest_id;
+
+                    // 1. Play chime sound and trigger push/toast notification
+                    data.new_leads.forEach((lead) => {
+                        showLeadNotification(lead, {
+                            soundEnabled,
+                            isRtl,
+                            onSelect: (leadId) => {
+                                handleSelectLead(leadId);
+                            },
+                        });
+                    });
+
+                    // 2. Add new leads to the top of the history (newest to oldest)
+                    setHistory((prev) => {
+                        const newIds = new Set(data.new_leads.map((n) => n.id));
+                        const filteredOld = prev.filter((item) => !newIds.has(item.id));
+                        const updated = [...data.new_leads, ...filteredOld].sort((a, b) => b.id - a.id).slice(0, 30);
+                        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(updated));
+                        return updated;
+                    });
+
+                    setUnreadCount((prev) => prev + data.new_leads.length);
+
+                    // 3. Live refresh the Kanban board if on /crm
+                    if (window.location.pathname.startsWith('/crm')) {
+                        router.reload({
+                            only: ['leads', 'pipeline', 'analytics'],
+                        });
+                    }
+                } else if (data.latest_id > (lastLeadIdRef.current || 0)) {
+                    lastLeadIdRef.current = data.latest_id;
+                }
+            } catch {
+                // Quiet retry on next tick
+            }
+        };
+
+        // Initial check immediately
+        checkNewLeads();
+
+        // Polling every 4500ms
+        const interval = setInterval(checkNewLeads, 4500);
+
+        return () => {
+            isMounted = false;
+            clearInterval(interval);
+        };
+    }, [soundEnabled, isRtl, url]);
+
+    const isPushGranted = permission === 'granted';
+    const isPushDenied = permission === 'denied';
+
+    return (
+        <DropdownMenu onOpenChange={handleOpenDropdown}>
+            <DropdownMenuTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="relative size-8 p-0 text-muted-foreground hover:text-foreground"
+                    title={
+                        isPushGranted && soundEnabled
+                            ? (isRtl ? 'التنبيهات اللحظية والصوتية مفعلة' : 'Real-time Sound & Alerts Active')
+                            : (isRtl ? 'الإشعارات وسجل الطلبات' : 'Notifications & Inquiry History')
+                    }
+                >
+                    {soundEnabled ? (
+                        <Bell className="size-4 text-primary" />
+                    ) : (
+                        <BellOff className="size-4 text-muted-foreground" />
+                    )}
+
+                    {/* Unread count badge */}
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold text-white shadow-xs animate-bounce">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                    )}
+
+                    {/* Live green dot when no unread but sound active */}
+                    {unreadCount === 0 && isPushGranted && soundEnabled && (
+                        <span className="absolute top-1 right-1 flex size-2">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                            <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+                        </span>
+                    )}
+
+                    {!soundEnabled && unreadCount === 0 && (
+                        <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-amber-500" />
+                    )}
+                </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+                align={isRtl ? 'start' : 'end'}
+                className="w-80 sm:w-96 p-0 text-xs shadow-xl rounded-xl border-border/80 overflow-hidden"
+            >
+                {/* Header with Title, Sound Toggle & Clear */}
+                <div className="flex items-center justify-between border-b bg-muted/40 px-3.5 py-2.5">
+                    <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                            <BellRing className="size-4 text-primary" />
+                            {isRtl ? 'الإشعارات' : 'Notifications'}
+                        </span>
+                        {history.length > 0 && (
+                            <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+                                {history.length}
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                        {/* Sound Toggle Button */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={toggleSound}
+                            className="size-7 text-muted-foreground hover:text-foreground"
+                            title={
+                                soundEnabled
+                                    ? (isRtl ? 'كتم نغمة الصوت' : 'Mute Chime Sound')
+                                    : (isRtl ? 'تشغيل نغمة الصوت' : 'Enable Chime Sound')
+                            }
+                        >
+                            {soundEnabled ? (
+                                <Volume2 className="size-3.5 text-emerald-500" />
+                            ) : (
+                                <VolumeX className="size-3.5 text-muted-foreground" />
+                            )}
+                        </Button>
+
+                        {/* Clear History Button */}
+                        {history.length > 0 && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={handleClearHistory}
+                                className="size-7 text-muted-foreground hover:text-destructive"
+                                title={isRtl ? 'مسح سجل الإشعارات' : 'Clear notification history'}
+                            >
+                                <Trash2 className="size-3.5" />
+                            </Button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Browser Push Permission Banner (if not granted yet) */}
+                {!isPushGranted && !isPushDenied && (
+                    <div className="border-b bg-primary/5 px-3.5 py-2 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 text-[11px] text-foreground font-medium">
+                            <BellRing className="size-3.5 text-primary shrink-0" />
+                            <span>
+                                {isRtl ? 'تفعيل إشعارات المتصفح والموبايل' : 'Enable Mobile & Browser Push'}
+                            </span>
+                        </div>
+                        <Button
+                            size="sm"
+                            variant="default"
+                            onClick={handleEnablePush}
+                            className="h-6 text-[10px] px-2 font-semibold shadow-none"
+                        >
+                            {isRtl ? 'تفعيل الآن' : 'Enable'}
+                        </Button>
+                    </div>
+                )}
+
+                {/* Notifications History List (Newest to Oldest) */}
+                <div className="max-h-80 overflow-y-auto divide-y divide-border/40">
+                    {history.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-8 px-4 text-center text-muted-foreground">
+                            <div className="flex size-10 items-center justify-center rounded-full bg-muted/60 mb-2">
+                                <Bell className="size-5 text-muted-foreground/60" />
+                            </div>
+                            <p className="text-xs font-medium text-foreground">
+                                {isRtl ? 'لا توجد إشعارات سابقة' : 'No notifications yet'}
+                            </p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">
+                                {isRtl
+                                    ? 'ستظهر هنا جميع طلبات واستفسارات العملاء الجديدة فور وصولها'
+                                    : 'New incoming client inquiries will appear here instantly'}
+                            </p>
+                        </div>
+                    ) : (
+                        history.map((lead) => {
+                            const platform = isRtl
+                                ? (lead.channel_label_ar || lead.channel || 'الموقع')
+                                : (lead.channel_label || lead.channel || 'Website');
+
+                            return (
+                                <div
+                                    key={lead.id}
+                                    onClick={() => handleSelectLead(lead.id)}
+                                    className="group flex flex-col gap-1 p-3 cursor-pointer transition-colors hover:bg-muted/60 active:bg-muted"
+                                >
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                            <span className="font-semibold text-foreground text-xs truncate">
+                                                {lead.name}
+                                            </span>
+                                            {lead.company && (
+                                                <span className="text-[11px] text-muted-foreground truncate hidden sm:inline">
+                                                    · {lead.company}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <ChannelBadge channelKey={lead.channel} size="sm" />
+                                    </div>
+
+                                    <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-0.5">
+                                        <span className="truncate max-w-[200px]">
+                                            {lead.service_name_snapshot || (isRtl ? 'استفسار عام' : 'General Inquiry')}
+                                        </span>
+
+                                        <span className="flex items-center gap-1 text-[10px] shrink-0 text-muted-foreground/80 font-mono">
+                                            <Clock className="size-2.5" />
+                                            {lead.created_at || (isRtl ? 'الآن' : 'Just now')}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+
+                {/* Footer Link to Notifications History Page */}
+                <div className="border-t bg-muted/30 p-2 text-center">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full h-7 text-xs font-medium text-primary hover:text-primary gap-1.5 justify-center"
+                        asChild
+                    >
+                        <Link href="/notifications">
+                            <span>{isRtl ? 'عرض سجل الإشعارات بالكامل ➔' : 'View Full Notification History ➔'}</span>
+                        </Link>
+                    </Button>
+                </div>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}

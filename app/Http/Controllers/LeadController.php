@@ -8,6 +8,7 @@ use App\Models\Lead;
 use App\Models\Service;
 use App\Models\ServiceBudget;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -383,6 +384,86 @@ class LeadController extends Controller
         );
 
         return back()->with('success', 'Note recorded in timeline.');
+    }
+
+    /**
+     * Check for new incoming leads since a given ID (for real-time sound and push notifications).
+     */
+    public function realtimeCheck(Request $request): JsonResponse
+    {
+        Gate::authorize('viewAny', Lead::class);
+
+        $lastId = $request->query('last_id');
+        $user = $request->user();
+
+        // If no last_id is provided, initialize client watermark to the current max ID and return recent history
+        if ($lastId === null || $lastId === '') {
+            $latestId = (int) (Lead::query()->max('id') ?? 0);
+
+            $recentQuery = Lead::query()->latest('id')->limit(15);
+            if ($user->role === 'employee') {
+                $recentQuery->where(function ($q) use ($user) {
+                    $q->where('assigned_to', $user->id)
+                        ->orWhereNull('assigned_to');
+                });
+            }
+
+            $recentHistory = $recentQuery->get()->map(function (Lead $lead) {
+                return [
+                    'id' => $lead->id,
+                    'name' => $lead->name,
+                    'phone' => $lead->phone,
+                    'company' => $lead->company,
+                    'channel' => $lead->channel,
+                    'channel_label' => $lead->channel_label,
+                    'channel_label_ar' => $lead->channel_label_ar,
+                    'service_name_snapshot' => $lead->service_name_snapshot,
+                    'created_at' => $lead->created_at->diffForHumans(),
+                ];
+            });
+
+            return response()->json([
+                'latest_id' => $latestId,
+                'new_leads' => [],
+                'recent_history' => $recentHistory,
+            ]);
+        }
+
+        $query = Lead::query()
+            ->where('id', '>', (int) $lastId)
+            ->latest('id')
+            ->limit(10);
+
+        // If employee, limit to unassigned leads or assigned to this employee
+        if ($user->role === 'employee') {
+            $query->where(function ($q) use ($user) {
+                $q->where('assigned_to', $user->id)
+                    ->orWhereNull('assigned_to');
+            });
+        }
+
+        $newLeads = $query->get()->map(function (Lead $lead) {
+            return [
+                'id' => $lead->id,
+                'name' => $lead->name,
+                'phone' => $lead->phone,
+                'company' => $lead->company,
+                'channel' => $lead->channel,
+                'channel_label' => $lead->channel_label,
+                'channel_label_ar' => $lead->channel_label_ar,
+                'service_name_snapshot' => $lead->service_name_snapshot,
+                'created_at' => $lead->created_at->diffForHumans(),
+            ];
+        });
+
+        $currentMaxId = $newLeads->isNotEmpty()
+            ? max($newLeads->pluck('id')->all())
+            : (int) $lastId;
+
+        return response()->json([
+            'latest_id' => $currentMaxId,
+            'new_leads' => $newLeads,
+        ]);
     }
 
     /**

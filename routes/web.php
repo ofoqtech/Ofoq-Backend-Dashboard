@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // CRM & Lead Pipeline Management
     Route::get('crm', [LeadController::class, 'index'])->name('crm.index');
+    Route::get('crm/realtime-check', [LeadController::class, 'realtimeCheck'])->name('crm.realtime-check');
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('crm', [LeadController::class, 'store'])->name('crm.store');
     Route::patch('crm/{lead}/status', [LeadController::class, 'updateStatus'])->name('crm.update-status');
     Route::patch('crm/{lead}/priority', [LeadController::class, 'updatePriority'])->name('crm.update-priority');

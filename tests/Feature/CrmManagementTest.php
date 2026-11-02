@@ -303,3 +303,32 @@ test('admin can delete lead while employee cannot', function () {
 
     expect(Lead::find($lead->id))->toBeNull();
 });
+
+test('authenticated user can poll realtime leads for sound and push notifications', function () {
+    $admin = User::factory()->admin()->create();
+
+    // 1. Initial watermark request without last_id
+    $initialResponse = $this->actingAs($admin)->getJson(route('crm.realtime-check'));
+    $initialResponse->assertOk()
+        ->assertJsonStructure(['latest_id', 'new_leads']);
+
+    $initialMax = $initialResponse->json('latest_id');
+
+    // 2. Create a new lead
+    $newLead = Lead::create([
+        'name' => 'Realtime Notification Test Lead',
+        'phone' => '+201299887766',
+        'status' => LeadStatus::New,
+        'priority' => LeadPriority::High,
+        'source' => 'tiktok',
+        'utm_source' => 'tiktok',
+    ]);
+
+    // 3. Poll with last_id = initialMax
+    $pollResponse = $this->actingAs($admin)->getJson(route('crm.realtime-check', ['last_id' => $initialMax]));
+    $pollResponse->assertOk()
+        ->assertJsonFragment(['name' => 'Realtime Notification Test Lead'])
+        ->assertJsonCount(1, 'new_leads');
+
+    expect($pollResponse->json('latest_id'))->toBe($newLead->id);
+});

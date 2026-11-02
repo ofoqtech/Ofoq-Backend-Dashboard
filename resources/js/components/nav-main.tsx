@@ -37,12 +37,12 @@ export function NavMain({ items }: { items: NavItem[] }) {
                                 {item.icon && (
                                     <item.icon className="h-4.5 w-4.5 shrink-0" />
                                 )}
-                                <span className="flex-1 truncate text-sm font-medium">
+                                <span className="flex-1 truncate text-sm font-medium group-data-[collapsible=icon]:hidden">
                                     {item.title}
                                 </span>
                                 {item.badge != null &&
                                     Number(item.badge) > 0 && (
-                                        <span className="ms-auto inline-flex items-center justify-center rounded-full bg-emerald-500/90 px-2 py-0.5 text-xs font-bold text-white shadow-sm ring-1 ring-emerald-400/20">
+                                        <span className="ms-auto inline-flex items-center justify-center rounded-full bg-emerald-500/90 px-2 py-0.5 text-xs font-bold text-white shadow-sm ring-1 ring-emerald-400/20 group-data-[collapsible=icon]:hidden">
                                             {item.badge}
                                         </span>
                                     )}

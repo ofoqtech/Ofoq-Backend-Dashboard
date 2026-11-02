@@ -1,5 +1,6 @@
-import { Link, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import {
+    Bell,
     FolderKanban,
     FolderTree,
     Inbox,
@@ -19,6 +20,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from '@/components/ui/sidebar';
 import { useTranslation } from '@/lib/i18n';
 import { dashboard } from '@/routes';
@@ -33,6 +35,7 @@ export function AppSidebar() {
         crm?: { newLeadsCount?: number };
     }>().props;
     const { t, isRtl } = useTranslation();
+    const { toggleSidebar } = useSidebar();
     const isAdmin = auth?.user?.role === 'admin';
 
     const mainNavItems: NavItem[] = [
@@ -47,14 +50,19 @@ export function AppSidebar() {
             icon: Inbox,
             badge: crm?.newLeadsCount ?? 0,
         },
+        {
+            title: t('nav.notifications'),
+            href: '/notifications',
+            icon: Bell,
+        },
         ...(isAdmin
             ? [
-                  {
-                      title: t('nav.admins'),
-                      href: adminsIndex(),
-                      icon: ShieldCheck,
-                  },
-              ]
+                {
+                    title: t('nav.admins'),
+                    href: adminsIndex(),
+                    icon: ShieldCheck,
+                },
+            ]
             : []),
         {
             title: t('nav.employees'),
@@ -63,12 +71,12 @@ export function AppSidebar() {
         },
         ...(isAdmin
             ? [
-                  {
-                      title: t('nav.categories'),
-                      href: '/categories',
-                      icon: FolderTree,
-                  },
-              ]
+                {
+                    title: t('nav.categories'),
+                    href: '/categories',
+                    icon: FolderTree,
+                },
+            ]
             : []),
         {
             title: t('nav.projects'),
@@ -86,10 +94,15 @@ export function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch cacheFor="2m">
-                                <AppLogo />
-                            </Link>
+                        <SidebarMenuButton
+                            size="lg"
+                            onClick={toggleSidebar}
+                            className="cursor-pointer transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:scale-[0.98]"
+                            tooltip={{
+                                children: isRtl ? 'تبديل القائمة الجانبية' : 'Toggle Sidebar',
+                            }}
+                        >
+                            <AppLogo />
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

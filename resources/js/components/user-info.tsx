@@ -26,7 +26,7 @@ export function UserInfo({
                     </AvatarFallback>
                 )}
             </Avatar>
-            <div className="grid flex-1 text-start text-sm leading-tight">
+            <div className="grid flex-1 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-medium">{user.name}</span>
                 {showEmail && (
                     <span className="truncate text-xs text-muted-foreground">
