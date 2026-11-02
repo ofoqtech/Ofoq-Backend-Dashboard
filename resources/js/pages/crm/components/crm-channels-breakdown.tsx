@@ -24,10 +24,10 @@ export function CrmChannelsBreakdown({
     return (
         <div className="space-y-2">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <div className="flex items-center gap-2.5">
+                    <h3 className="text-sm font-semibold text-foreground tracking-tight">
                         {t('crm.channels_breakdown')}
-                    </span>
+                    </h3>
                     {selectedChannel && (
                         <button
                             type="button"
