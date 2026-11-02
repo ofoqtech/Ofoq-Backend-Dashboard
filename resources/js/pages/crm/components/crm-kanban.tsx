@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from '@/lib/i18n';
 import type { Lead, PipelineStage } from '@/types/crm';
+import { ChannelBadge } from './channel-badge';
 
 interface CrmKanbanProps {
     pipeline: Record<string, PipelineStage>;
@@ -98,14 +99,17 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
                                         className="group cursor-pointer border bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm"
                                     >
                                         <CardContent className="space-y-2.5 p-3.5">
-                                            {/* Priority & Time */}
+                                            {/* Priority, Channel & Time */}
                                             <div className="flex items-center justify-between text-[11px]">
-                                                <span
-                                                    className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${lead.priority_color}`}
-                                                >
-                                                    {getPriorityLabel(lead)}
-                                                </span>
-                                                <span className="flex items-center gap-1 text-muted-foreground">
+                                                <div className="flex items-center gap-1.5 flex-wrap">
+                                                    <span
+                                                        className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${lead.priority_color}`}
+                                                    >
+                                                        {getPriorityLabel(lead)}
+                                                    </span>
+                                                    <ChannelBadge lead={lead} size="sm" />
+                                                </div>
+                                                <span className="flex items-center gap-1 text-muted-foreground shrink-0">
                                                     <Calendar className="size-3" />
                                                     {formatDate(
                                                         lead.created_at,

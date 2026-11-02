@@ -8,6 +8,7 @@ import {
     FileText,
     FolderPlus,
     Mail,
+    Megaphone,
     MessageCircle,
     Phone,
     PlusCircle,
@@ -43,6 +44,7 @@ import {
 } from '@/components/ui/sheet';
 import { useTranslation } from '@/lib/i18n';
 import type { Lead, PriorityOption, StatusOption } from '@/types/crm';
+import { ChannelBadge } from './channel-badge';
 import type { User } from '@/types/auth';
 
 interface LeadDetailSheetProps {
@@ -474,12 +476,95 @@ export function LeadDetailSheet({
                                     <span className="text-xs text-muted-foreground">
                                         {t('crm.inquiry_source')}
                                     </span>
-                                    <p className="mt-0.5 flex items-center gap-1.5 text-foreground">
-                                        <Tag className="size-3.5 text-muted-foreground" />
-                                        <span className="capitalize">
-                                            {lead.source?.replace('_', ' ')}
+                                    <div className="mt-0.5 flex items-center gap-1.5 text-foreground">
+                                        <ChannelBadge lead={lead} size="sm" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Marketing & Ad Attribution Section */}
+                            <div className="mt-3 rounded-lg border bg-muted/30 p-3 text-xs space-y-2.5">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-semibold text-foreground flex items-center gap-1.5 text-xs">
+                                        <Megaphone className="size-3.5 text-primary" />
+                                        {t('crm.marketing_attribution')}
+                                    </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
+                                    <div>
+                                        <span className="text-muted-foreground block text-[11px]">
+                                            {t('crm.channel')}
                                         </span>
-                                    </p>
+                                        <span className="font-medium text-foreground">
+                                            {isRtl ? (lead.channel_label_ar || lead.channel) : (lead.channel_label || lead.channel)}
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <span className="text-muted-foreground block text-[11px]">
+                                            {t('crm.form_signed')}
+                                        </span>
+                                        <span className="font-medium text-foreground flex items-center gap-1">
+                                            <FileText className="size-3 text-muted-foreground" />
+                                            {lead.form_name || lead.source?.replace('_', ' ') || 'Website Form'}
+                                        </span>
+                                    </div>
+
+                                    {lead.utm_campaign && (
+                                        <div>
+                                            <span className="text-muted-foreground block text-[11px]">
+                                                {t('crm.campaign')}
+                                            </span>
+                                            <span className="font-mono text-[11px] font-semibold text-primary">
+                                                {lead.utm_campaign}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {lead.utm_medium && (
+                                        <div>
+                                            <span className="text-muted-foreground block text-[11px]">
+                                                {t('crm.medium')}
+                                            </span>
+                                            <span className="font-mono text-[11px] text-foreground">
+                                                {lead.utm_medium}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {lead.utm_content && (
+                                        <div className="sm:col-span-2">
+                                            <span className="text-muted-foreground block text-[11px]">
+                                                {t('crm.ad_content')}
+                                            </span>
+                                            <span className="font-mono text-[11px] text-foreground">
+                                                {lead.utm_content}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {lead.landing_page && (
+                                        <div className="sm:col-span-2">
+                                            <span className="text-muted-foreground block text-[11px]">
+                                                {t('crm.landing_page')}
+                                            </span>
+                                            <span className="font-mono text-[10px] text-muted-foreground truncate block" title={lead.landing_page}>
+                                                {lead.landing_page}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {lead.referrer && (
+                                        <div className="sm:col-span-2">
+                                            <span className="text-muted-foreground block text-[11px]">
+                                                {t('crm.referrer')}
+                                            </span>
+                                            <span className="font-mono text-[10px] text-muted-foreground truncate block" title={lead.referrer}>
+                                                {lead.referrer}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

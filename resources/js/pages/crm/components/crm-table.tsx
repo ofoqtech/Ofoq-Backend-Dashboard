@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
 import type { Lead } from '@/types/crm';
+import { ChannelBadge } from './channel-badge';
 
 interface CrmTableProps {
     leads: Lead[];
@@ -64,6 +65,9 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                             </th>
                             <th className="px-4 py-3 text-start">
                                 {t('crm.service_requested')}
+                            </th>
+                            <th className="px-4 py-3 text-start">
+                                {t('crm.channel')}
                             </th>
                             <th className="px-4 py-3 text-start">
                                 {t('crm.stage')}
@@ -138,6 +142,17 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
                                 <td className="px-4 py-3 text-start">
                                     <div className="max-w-[200px] truncate text-xs font-medium text-foreground">
                                         {getServiceLabel(lead)}
+                                    </div>
+                                </td>
+
+                                <td className="px-4 py-3 text-start whitespace-nowrap">
+                                    <div className="flex flex-col gap-0.5 items-start">
+                                        <ChannelBadge lead={lead} size="sm" />
+                                        {lead.utm_campaign && (
+                                            <span className="text-[10px] font-mono text-muted-foreground truncate max-w-[130px]" title={lead.utm_campaign}>
+                                                {lead.utm_campaign}
+                                            </span>
+                                        )}
                                     </div>
                                 </td>
 

@@ -48,6 +48,7 @@ export function CreateLeadDialog({
     const [assignedTo, setAssignedTo] = useState('unassigned');
     const [internalNotes, setInternalNotes] = useState('');
     const [source, setSource] = useState('direct_call');
+    const [campaign, setCampaign] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -61,6 +62,7 @@ export function CreateLeadDialog({
         setAssignedTo('unassigned');
         setInternalNotes('');
         setSource('direct_call');
+        setCampaign('');
         setErrors({});
     };
 
@@ -68,6 +70,16 @@ export function CreateLeadDialog({
         e.preventDefault();
         setIsSubmitting(true);
         setErrors({});
+
+        const isSocialOrAd = [
+            'meta',
+            'tiktok',
+            'snapchat',
+            'linkedin',
+            'google',
+            'facebook',
+            'instagram',
+        ].includes(source);
 
         router.post(
             '/crm',
@@ -84,6 +96,8 @@ export function CreateLeadDialog({
                     assignedTo !== 'unassigned' ? Number(assignedTo) : null,
                 internal_notes: internalNotes || null,
                 source,
+                utm_source: isSocialOrAd ? source : null,
+                utm_campaign: campaign || null,
             },
             {
                 onSuccess: () => {
@@ -260,17 +274,32 @@ export function CreateLeadDialog({
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
+                                    <SelectItem value="meta">
+                                        {isRtl ? 'ميتا (فيسبوك، ماسنجر، انستغرام)' : 'Meta (Facebook, Messenger, Instagram)'}
+                                    </SelectItem>
+                                    <SelectItem value="tiktok">
+                                        {isRtl ? 'تيك توك (إعلانات / محتوى)' : 'TikTok'}
+                                    </SelectItem>
+                                    <SelectItem value="snapchat">
+                                        {isRtl ? 'سناب شات' : 'Snapchat'}
+                                    </SelectItem>
+                                    <SelectItem value="linkedin">
+                                        {isRtl ? 'لينكد إن' : 'LinkedIn'}
+                                    </SelectItem>
+                                    <SelectItem value="google">
+                                        {isRtl ? 'إعلانات جوجل / بحث' : 'Google Ads'}
+                                    </SelectItem>
                                     <SelectItem value="direct_call">
                                         {t('crm.source_call')}
                                     </SelectItem>
                                     <SelectItem value="whatsapp_direct">
                                         {t('crm.source_whatsapp')}
                                     </SelectItem>
-                                    <SelectItem value="walk_in">
-                                        {t('crm.source_walk_in')}
-                                    </SelectItem>
                                     <SelectItem value="referral">
                                         {t('crm.source_referral')}
+                                    </SelectItem>
+                                    <SelectItem value="walk_in">
+                                        {t('crm.source_walk_in')}
                                     </SelectItem>
                                     <SelectItem value="event">
                                         {t('crm.source_event')}
@@ -279,6 +308,32 @@ export function CreateLeadDialog({
                             </Select>
                         </div>
                     </div>
+
+                    {[
+                        'meta',
+                        'tiktok',
+                        'snapchat',
+                        'linkedin',
+                        'google',
+                        'facebook',
+                        'instagram',
+                    ].includes(source) && (
+                        <div className="space-y-1.5 rounded-lg border border-primary/20 bg-primary/5 p-3">
+                            <Label
+                                htmlFor="lead-campaign"
+                                className="text-xs font-semibold"
+                            >
+                                {t('crm.campaign_name')}
+                            </Label>
+                            <Input
+                                id="lead-campaign"
+                                value={campaign}
+                                onChange={(e) => setCampaign(e.target.value)}
+                                placeholder="e.g. Ramadan Promo 2026, Healthcare Campaign..."
+                                className="h-8 bg-background text-xs"
+                            />
+                        </div>
+                    )}
 
                     <div className="space-y-1.5">
                         <Label htmlFor="lead-notes">

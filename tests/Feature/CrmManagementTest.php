@@ -87,6 +87,77 @@ test('public client can submit get in touch service form and triggers lead creat
     );
 });
 
+test('submitting service form stores marketing attribution and auto-detects referer platform', function () {
+    Notification::fake();
+
+    $service = Service::firstOrCreate(
+        ['slug' => 'test-marketing-service'],
+        ['name' => ['en' => 'Marketing Service', 'ar' => 'خدمة تسويقية'], 'order' => 1, 'is_active' => true]
+    );
+
+    // Test with explicit UTM parameters and form name
+    $payload = [
+        'name' => 'TikTok User Lead',
+        'mobile' => '+201122334455',
+        'service_id' => $service->id,
+        'utm_source' => 'tiktok',
+        'utm_medium' => 'cpc',
+        'utm_campaign' => 'eid_campaign_2026',
+        'utm_content' => 'video_creative_02',
+        'form_name' => 'summer_landing_page',
+        'landing_page' => 'https://ofoq.tech/summer-deals?utm_source=tiktok',
+    ];
+
+    $response = $this->postJson('/api/service-form', $payload);
+    $response->assertCreated();
+
+    $lead = Lead::where('phone', '+201122334455')->first();
+    expect($lead)->not->toBeNull()
+        ->and($lead->utm_source)->toBe('tiktok')
+        ->and($lead->utm_campaign)->toBe('eid_campaign_2026')
+        ->and($lead->form_name)->toBe('summer_landing_page')
+        ->and($lead->channel)->toBe('tiktok');
+
+    // Test with referer auto-detection when UTM is omitted (Instagram -> Meta channel)
+    $autoPayload = [
+        'name' => 'Instagram Organic Lead',
+        'mobile' => '+201199887766',
+        'service_id' => $service->id,
+    ];
+
+    $autoResponse = $this->withHeader('referer', 'https://l.instagram.com/')
+        ->postJson('/api/service-form', $autoPayload);
+    $autoResponse->assertCreated();
+
+    $autoLead = Lead::where('phone', '+201199887766')->first();
+    expect($autoLead)->not->toBeNull()
+        ->and($autoLead->channel)->toBe('meta');
+
+    // Test with Snapchat lead
+    $snapPayload = [
+        'name' => 'Snapchat User Lead',
+        'mobile' => '+201144556677',
+        'service_id' => $service->id,
+        'utm_source' => 'snapshot',
+    ];
+    $snapResponse = $this->postJson('/api/service-form', $snapPayload);
+    $snapResponse->assertCreated();
+    $snapLead = Lead::where('phone', '+201144556677')->first();
+    expect($snapLead->channel)->toBe('snapchat');
+
+    // Test with LinkedIn lead
+    $liPayload = [
+        'name' => 'LinkedIn B2B Lead',
+        'mobile' => '+201155667788',
+        'service_id' => $service->id,
+        'utm_source' => 'linkedin',
+    ];
+    $liResponse = $this->postJson('/api/service-form', $liPayload);
+    $liResponse->assertCreated();
+    $liLead = Lead::where('phone', '+201155667788')->first();
+    expect($liLead->channel)->toBe('linkedin');
+});
+
 test('submitting service form validates required name mobile and service_id', function () {
     $response = $this->postJson('/api/service-form', []);
 

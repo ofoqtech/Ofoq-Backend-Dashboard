@@ -79,6 +79,16 @@ export interface Lead {
     contacted_at?: string | null;
     next_follow_up_at?: string | null;
     source: string;
+    utm_source?: string | null;
+    utm_medium?: string | null;
+    utm_campaign?: string | null;
+    utm_content?: string | null;
+    form_name?: string | null;
+    landing_page?: string | null;
+    referrer?: string | null;
+    channel?: string;
+    channel_label?: string;
+    channel_label_ar?: string;
     ip_address?: string | null;
     created_at: string;
     updated_at: string;
@@ -95,6 +105,16 @@ export interface Lead {
     activities?: LeadActivity[];
 }
 
+export interface ChannelAnalytic {
+    key: string;
+    name: string;
+    name_ar: string;
+    count: number;
+    percentage: number;
+    color: string;
+    badge_class: string;
+}
+
 export interface CrmAnalytics {
     total_leads: number;
     new_leads: number;
@@ -102,6 +122,7 @@ export interface CrmAnalytics {
     won: number;
     lost: number;
     conversion_rate: number;
+    channels?: ChannelAnalytic[];
 }
 
 export interface PipelineStage {

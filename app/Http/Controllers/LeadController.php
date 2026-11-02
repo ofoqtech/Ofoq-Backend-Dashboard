@@ -91,6 +91,88 @@ class LeadController extends Controller
         $lostCount = (int) ($leadCounts[LeadStatus::Lost->value] ?? 0);
         $conversionRate = $totalLeads > 0 ? round(($wonCount / $totalLeads) * 100, 1) : 0;
 
+        // Marketing Acquisition Channels Breakdown:
+        // 1. Meta (Facebook, Messenger, Instagram)
+        // 2. TikTok
+        // 3. Snapchat (snapshot)
+        // 4. LinkedIn
+        // 5. Google Ads
+        // 6. Direct & Other Sources
+        $channelCounts = [];
+        foreach ($allLeadsForPipeline as $lead) {
+            $ch = $lead->channel;
+            $channelCounts[$ch] = ($channelCounts[$ch] ?? 0) + 1;
+        }
+
+        $metaCount = ($channelCounts['meta'] ?? 0)
+            + ($channelCounts['facebook'] ?? 0)
+            + ($channelCounts['instagram'] ?? 0)
+            + ($channelCounts['messenger'] ?? 0);
+        $tiktokCount = $channelCounts['tiktok'] ?? 0;
+        $snapchatCount = ($channelCounts['snapchat'] ?? 0) + ($channelCounts['snapshot'] ?? 0);
+        $linkedinCount = $channelCounts['linkedin'] ?? 0;
+        $googleCount = ($channelCounts['google'] ?? 0) + ($channelCounts['google_ads'] ?? 0);
+
+        $trackedTotal = $metaCount + $tiktokCount + $snapchatCount + $linkedinCount + $googleCount;
+        $otherCount = max(0, $totalLeads - $trackedTotal);
+
+        $channelsData = [
+            [
+                'key' => 'meta',
+                'name' => 'Meta (Facebook, Messenger, Instagram)',
+                'name_ar' => 'ميتا (فيسبوك، ماسنجر، انستغرام)',
+                'count' => $metaCount,
+                'percentage' => $totalLeads > 0 ? round(($metaCount / $totalLeads) * 100, 1) : 0,
+                'color' => '#0081FB',
+                'badge_class' => 'bg-blue-600/10 text-[#0081FB] border-blue-500/20',
+            ],
+            [
+                'key' => 'tiktok',
+                'name' => 'TikTok',
+                'name_ar' => 'تيك توك',
+                'count' => $tiktokCount,
+                'percentage' => $totalLeads > 0 ? round(($tiktokCount / $totalLeads) * 100, 1) : 0,
+                'color' => '#000000',
+                'badge_class' => 'bg-neutral-900/10 text-neutral-900 dark:text-neutral-100 border-neutral-700/20',
+            ],
+            [
+                'key' => 'snapchat',
+                'name' => 'Snapchat',
+                'name_ar' => 'سناب شات',
+                'count' => $snapchatCount,
+                'percentage' => $totalLeads > 0 ? round(($snapchatCount / $totalLeads) * 100, 1) : 0,
+                'color' => '#E5C000',
+                'badge_class' => 'bg-amber-400/15 text-amber-700 dark:text-yellow-400 border-amber-400/30',
+            ],
+            [
+                'key' => 'linkedin',
+                'name' => 'LinkedIn',
+                'name_ar' => 'لينكد إن',
+                'count' => $linkedinCount,
+                'percentage' => $totalLeads > 0 ? round(($linkedinCount / $totalLeads) * 100, 1) : 0,
+                'color' => '#0A66C2',
+                'badge_class' => 'bg-sky-600/10 text-[#0A66C2] border-sky-600/20',
+            ],
+            [
+                'key' => 'google',
+                'name' => 'Google Ads',
+                'name_ar' => 'إعلانات جوجل',
+                'count' => $googleCount,
+                'percentage' => $totalLeads > 0 ? round(($googleCount / $totalLeads) * 100, 1) : 0,
+                'color' => '#4285F4',
+                'badge_class' => 'bg-sky-500/10 text-sky-600 border-sky-500/20',
+            ],
+            [
+                'key' => 'other',
+                'name' => 'Direct & Other Sources',
+                'name_ar' => 'مباشر ومصادر أخرى',
+                'count' => $otherCount,
+                'percentage' => $totalLeads > 0 ? round(($otherCount / $totalLeads) * 100, 1) : 0,
+                'color' => '#64748B',
+                'badge_class' => 'bg-slate-500/10 text-slate-600 border-slate-500/20',
+            ],
+        ];
+
         $teamMembers = User::query()
             ->where('status', 'active')
             ->select('id', 'name', 'email', 'role', 'avatar')
@@ -113,6 +195,7 @@ class LeadController extends Controller
                 'won' => $wonCount,
                 'lost' => $lostCount,
                 'conversion_rate' => $conversionRate,
+                'channels' => $channelsData,
             ],
             'statuses' => collect(LeadStatus::cases())->map(fn (LeadStatus $s) => [
                 'value' => $s->value,
@@ -156,6 +239,10 @@ class LeadController extends Controller
             'assigned_to' => ['nullable', 'exists:users,id'],
             'internal_notes' => ['nullable', 'string', 'max:2000'],
             'source' => ['nullable', 'string', 'max:60'],
+            'utm_source' => ['nullable', 'string', 'max:100'],
+            'utm_medium' => ['nullable', 'string', 'max:100'],
+            'utm_campaign' => ['nullable', 'string', 'max:150'],
+            'form_name' => ['nullable', 'string', 'max:120'],
         ]);
 
         $service = ! empty($validated['service_id']) ? Service::find($validated['service_id']) : null;
@@ -175,6 +262,10 @@ class LeadController extends Controller
             'assigned_to' => $validated['assigned_to'] ?? null,
             'internal_notes' => $validated['internal_notes'] ?? null,
             'source' => $validated['source'] ?? 'dashboard',
+            'utm_source' => $validated['utm_source'] ?? null,
+            'utm_medium' => $validated['utm_medium'] ?? null,
+            'utm_campaign' => $validated['utm_campaign'] ?? null,
+            'form_name' => $validated['form_name'] ?? null,
             'ip_address' => $request->ip(),
         ]);
 

@@ -29,6 +29,7 @@ import type {
     StatusOption,
 } from '@/types/crm';
 import { CreateLeadDialog } from './components/create-lead-dialog';
+import { CrmChannelsBreakdown } from './components/crm-channels-breakdown';
 import { CrmKanban } from './components/crm-kanban';
 import { CrmStats } from './components/crm-stats';
 import { CrmTable } from './components/crm-table';
@@ -77,6 +78,7 @@ export default function CrmIndex({
     const [selectedAssignee, setSelectedAssignee] = useState(
         filters.assigned_to || 'all',
     );
+    const [selectedChannel, setSelectedChannel] = useState<string>('');
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [activeLead, setActiveLead] = useState<Lead | null>(null);
 
@@ -140,11 +142,49 @@ export default function CrmIndex({
         });
     };
 
-    // Instant in-memory search filtering for 0ms response on every keystroke
+    // Instant in-memory search & channel filtering for 0ms response
     const filteredLeads = useMemo(() => {
-        if (!search.trim()) return leads;
-        const term = search.toLowerCase().trim();
         return leads.filter((lead) => {
+            // Channel filter
+            if (selectedChannel) {
+                if (selectedChannel === 'other') {
+                    if (
+                        [
+                            'meta',
+                            'facebook',
+                            'instagram',
+                            'messenger',
+                            'tiktok',
+                            'snapchat',
+                            'snapshot',
+                            'linkedin',
+                            'google',
+                        ].includes(lead.channel || '')
+                    ) {
+                        return false;
+                    }
+                } else if (selectedChannel === 'meta') {
+                    if (
+                        ![
+                            'meta',
+                            'facebook',
+                            'instagram',
+                            'messenger',
+                        ].includes(lead.channel || '')
+                    ) {
+                        return false;
+                    }
+                } else if (selectedChannel === 'snapchat') {
+                    if (!['snapchat', 'snapshot'].includes(lead.channel || '')) {
+                        return false;
+                    }
+                } else if (lead.channel !== selectedChannel) {
+                    return false;
+                }
+            }
+
+            if (!search.trim()) return true;
+            const term = search.toLowerCase().trim();
             const nameMatch = lead.name?.toLowerCase().includes(term);
             const phoneMatch = lead.phone?.toLowerCase().includes(term);
             const emailMatch = lead.email?.toLowerCase().includes(term);
@@ -159,16 +199,27 @@ export default function CrmIndex({
             const assigneeMatch = lead.assignee?.name
                 ?.toLowerCase()
                 .includes(term);
+            const campaignMatch = lead.utm_campaign
+                ?.toLowerCase()
+                .includes(term);
+            const formMatch = lead.form_name?.toLowerCase().includes(term);
+            const channelMatch = (lead.channel || '')
+                .toLowerCase()
+                .includes(term);
+
             return (
                 nameMatch ||
                 phoneMatch ||
                 emailMatch ||
                 companyMatch ||
                 serviceMatch ||
-                assigneeMatch
+                assigneeMatch ||
+                campaignMatch ||
+                formMatch ||
+                channelMatch
             );
         });
-    }, [leads, search]);
+    }, [leads, search, selectedChannel]);
 
     const filteredPipeline = useMemo(() => {
         const res: Record<string, PipelineStage> = {};
@@ -176,6 +227,44 @@ export default function CrmIndex({
             res[key] = {
                 ...pipeline[key],
                 leads: pipeline[key].leads.filter((lead) => {
+                    // Channel filter
+                    if (selectedChannel) {
+                        if (selectedChannel === 'other') {
+                            if (
+                                [
+                                    'meta',
+                                    'facebook',
+                                    'instagram',
+                                    'messenger',
+                                    'tiktok',
+                                    'snapchat',
+                                    'snapshot',
+                                    'linkedin',
+                                    'google',
+                                ].includes(lead.channel || '')
+                            ) {
+                                return false;
+                            }
+                        } else if (selectedChannel === 'meta') {
+                            if (
+                                ![
+                                    'meta',
+                                    'facebook',
+                                    'instagram',
+                                    'messenger',
+                                ].includes(lead.channel || '')
+                            ) {
+                                return false;
+                            }
+                        } else if (selectedChannel === 'snapchat') {
+                            if (!['snapchat', 'snapshot'].includes(lead.channel || '')) {
+                                return false;
+                            }
+                        } else if (lead.channel !== selectedChannel) {
+                            return false;
+                        }
+                    }
+
                     if (!search.trim()) return true;
                     const term = search.toLowerCase().trim();
                     const nameMatch = lead.name?.toLowerCase().includes(term);
@@ -194,19 +283,32 @@ export default function CrmIndex({
                     const assigneeMatch = lead.assignee?.name
                         ?.toLowerCase()
                         .includes(term);
+                    const campaignMatch = lead.utm_campaign
+                        ?.toLowerCase()
+                        .includes(term);
+                    const formMatch = lead.form_name
+                        ?.toLowerCase()
+                        .includes(term);
+                    const channelMatch = (lead.channel || '')
+                        .toLowerCase()
+                        .includes(term);
+
                     return (
                         nameMatch ||
                         phoneMatch ||
                         emailMatch ||
                         companyMatch ||
                         serviceMatch ||
-                        assigneeMatch
+                        assigneeMatch ||
+                        campaignMatch ||
+                        formMatch ||
+                        channelMatch
                     );
                 }),
             };
         }
         return res;
-    }, [pipeline, search]);
+    }, [pipeline, search, selectedChannel]);
 
     // Live debounced server search (synchronizes backend & URL without requiring Enter)
     useEffect(() => {
@@ -225,6 +327,7 @@ export default function CrmIndex({
         setSelectedStatus('all');
         setSelectedPriority('all');
         setSelectedAssignee('all');
+        setSelectedChannel('');
         router.get(
             '/crm',
             {},
@@ -236,7 +339,8 @@ export default function CrmIndex({
         search !== '' ||
         selectedStatus !== 'all' ||
         selectedPriority !== 'all' ||
-        selectedAssignee !== 'all';
+        selectedAssignee !== 'all' ||
+        selectedChannel !== '';
 
     return (
         <>
@@ -297,6 +401,13 @@ export default function CrmIndex({
 
                 {/* KPI Analytics */}
                 <CrmStats analytics={analytics} />
+
+                {/* Acquisition Channels Breakdown */}
+                <CrmChannelsBreakdown
+                    channels={analytics.channels || []}
+                    selectedChannel={selectedChannel}
+                    onSelectChannel={setSelectedChannel}
+                />
 
                 {/* Search & Filter Toolbar */}
                 <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-2xs md:flex-row md:items-center md:justify-between">
