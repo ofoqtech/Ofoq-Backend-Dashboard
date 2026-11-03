@@ -4,6 +4,7 @@ import {
     Bell,
     BellOff,
     BellRing,
+    CheckCheck,
     Clock,
     Trash2,
     UserCheck,
@@ -28,6 +29,35 @@ import { ChannelBadge } from '@/components/channel-badge';
 
 const STORAGE_KEY_HISTORY = 'ofoq_notifications_history';
 const STORAGE_KEY_SOUND = 'ofoq_sound_enabled';
+
+function getCsrfToken(): string {
+    if (typeof document === 'undefined') return '';
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    if (meta) {
+        const token = meta.getAttribute('content');
+        if (token) return token;
+    }
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+}
+
+async function markNotificationsAsRead(leadId?: number): Promise<void> {
+    const token = getCsrfToken();
+    try {
+        await fetch('/notifications/mark-as-read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'X-CSRF-TOKEN': token,
+                'X-XSRF-TOKEN': token,
+            },
+            body: JSON.stringify(leadId ? { lead_id: leadId } : {}),
+        });
+    } catch {
+        // Quiet catch to prevent unhandled promise rejections
+    }
+}
 
 export function NotificationBell() {
     const { isRtl } = useTranslation();
@@ -89,15 +119,47 @@ export function NotificationBell() {
         setHistory([]);
         setUnreadCount(0);
         localStorage.removeItem(STORAGE_KEY_HISTORY);
+        void markNotificationsAsRead();
     };
 
-    const handleOpenDropdown = (open: boolean) => {
-        if (open) {
-            setUnreadCount(0);
+    const handleMarkAllAsRead = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setUnreadCount(0);
+        setHistory((prev) =>
+            prev.map((item) => ({ ...item, is_unread: false })),
+        );
+        try {
+            const current = localStorage.getItem(STORAGE_KEY_HISTORY);
+            if (current) {
+                const parsed: RealtimeLead[] = JSON.parse(current);
+                const updated = parsed.map((item) => ({
+                    ...item,
+                    is_unread: false,
+                }));
+                localStorage.setItem(
+                    STORAGE_KEY_HISTORY,
+                    JSON.stringify(updated),
+                );
+            }
+        } catch {
+            // ignore
         }
+        void markNotificationsAsRead();
+    };
+
+    const handleOpenDropdown = () => {
+        // Optional open callback
     };
 
     const handleSelectLead = (leadId: number) => {
+        void markNotificationsAsRead(leadId);
+        setHistory((prev) =>
+            prev.map((item) =>
+                item.id === leadId ? { ...item, is_unread: false } : item,
+            ),
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
         window.location.href = `/crm?selected=${leadId}`;
     };
 
@@ -134,28 +196,38 @@ export function NotificationBell() {
                 const data: {
                     latest_id: number;
                     latest_activity_id?: number;
+                    unread_count?: number;
                     new_leads: RealtimeLead[];
                     recent_history?: RealtimeLead[];
                 } = await response.json();
 
                 if (!isMounted) return;
 
-                // First load: initialize watermark and load recent history if local history is empty
+                // First load: initialize watermark and load recent history
                 if (isInitialMount.current) {
                     lastLeadIdRef.current = data.latest_id;
                     lastActivityIdRef.current = data.latest_activity_id ?? null;
                     isInitialMount.current = false;
 
+                    if (typeof data.unread_count === 'number') {
+                        setUnreadCount(data.unread_count);
+                    }
+
                     if (data.recent_history && data.recent_history.length > 0) {
                         setHistory((prev) => {
-                            // Merge and keep sorted newest to oldest
-                            const existingIds = new Set(
-                                prev.map((item) => item.id),
+                            const incomingMap = new Map(
+                                data.recent_history!.map((item) => [
+                                    item.id,
+                                    item,
+                                ]),
                             );
-                            const additions = data.recent_history!.filter(
-                                (item) => !existingIds.has(item.id),
+                            const oldFiltered = prev.filter(
+                                (item) => !incomingMap.has(item.id),
                             );
-                            const merged = [...prev, ...additions]
+                            const merged = [
+                                ...data.recent_history!,
+                                ...oldFiltered,
+                            ]
                                 .sort((a, b) => b.id - a.id)
                                 .slice(0, 30);
                             localStorage.setItem(
@@ -202,7 +274,11 @@ export function NotificationBell() {
                         return updated;
                     });
 
-                    setUnreadCount((prev) => prev + data.new_leads.length);
+                    if (typeof data.unread_count === 'number') {
+                        setUnreadCount(data.unread_count);
+                    } else {
+                        setUnreadCount((prev) => prev + data.new_leads.length);
+                    }
 
                     // 3. Live refresh the Kanban board if on /crm
                     if (window.location.pathname.startsWith('/crm')) {
@@ -211,6 +287,9 @@ export function NotificationBell() {
                         });
                     }
                 } else {
+                    if (typeof data.unread_count === 'number') {
+                        setUnreadCount(data.unread_count);
+                    }
                     if (data.latest_id > (lastLeadIdRef.current || 0)) {
                         lastLeadIdRef.current = data.latest_id;
                     }
@@ -311,6 +390,23 @@ export function NotificationBell() {
                     </div>
 
                     <div className="flex items-center gap-1">
+                        {/* Mark All As Read Button */}
+                        {unreadCount > 0 && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={handleMarkAllAsRead}
+                                className="size-7 text-muted-foreground hover:text-primary"
+                                title={
+                                    isRtl
+                                        ? 'تحديد الكل كمقروء'
+                                        : 'Mark all as read'
+                                }
+                            >
+                                <CheckCheck className="size-3.5 text-primary" />
+                            </Button>
+                        )}
+
                         {/* Sound Toggle Button */}
                         <Button
                             variant="ghost"
@@ -398,10 +494,17 @@ export function NotificationBell() {
                             <div
                                 key={lead.id}
                                 onClick={() => handleSelectLead(lead.id)}
-                                className="group flex cursor-pointer flex-col gap-1 p-3 transition-colors hover:bg-muted/60 active:bg-muted"
+                                className={`group flex cursor-pointer flex-col gap-1 p-3 transition-colors hover:bg-muted/60 active:bg-muted ${
+                                    lead.is_unread
+                                        ? 'bg-primary/5 dark:bg-primary/10'
+                                        : ''
+                                }`}
                             >
                                 <div className="flex items-center justify-between gap-2">
                                     <div className="flex min-w-0 items-center gap-1.5">
+                                        {lead.is_unread && (
+                                            <span className="size-2 shrink-0 rounded-full bg-primary" />
+                                        )}
                                         <span className="truncate text-xs font-semibold text-foreground">
                                             {lead.name}
                                         </span>

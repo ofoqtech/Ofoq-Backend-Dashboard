@@ -4,6 +4,7 @@ import {
     Bell,
     BellRing,
     Building2,
+    CheckCheck,
     Clock,
     ExternalLink,
     Inbox,
@@ -48,6 +49,7 @@ interface NotificationsIndexProps {
         total_alerts: number;
         today_alerts: number;
         new_uncontacted: number;
+        unread_alerts?: number;
     };
 }
 
@@ -177,6 +179,26 @@ export default function NotificationsIndex({
         );
     };
 
+    const handleMarkAllAsRead = async () => {
+        try {
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            const token = meta?.getAttribute('content') || '';
+            await fetch('/notifications/mark-as-read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'X-XSRF-TOKEN': token,
+                },
+                body: JSON.stringify({}),
+            });
+            router.reload({ only: ['stats', 'notifications'] });
+        } catch {
+            // quiet catch
+        }
+    };
+
     const hasActiveFilters =
         search !== '' || selectedChannel !== 'all' || selectedStatus !== 'all';
 
@@ -205,6 +227,24 @@ export default function NotificationsIndex({
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
+                        {/* Mark All As Read Button */}
+                        {typeof stats.unread_alerts === 'number' &&
+                            stats.unread_alerts > 0 && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleMarkAllAsRead}
+                                    className="h-8 gap-1.5 text-xs font-medium text-primary hover:text-primary"
+                                >
+                                    <CheckCheck className="size-3.5" />
+                                    <span>
+                                        {isRtl
+                                            ? 'تحديد الكل كمقروء'
+                                            : 'Mark all as read'}
+                                    </span>
+                                </Button>
+                            )}
+
                         {/* Sound Toggle Button */}
                         <Button
                             variant="outline"

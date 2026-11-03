@@ -13,6 +13,7 @@ export interface RealtimeLead {
     notification_type?: 'new_lead' | 'assigned';
     assigned_by_name?: string | null;
     is_assignment?: boolean;
+    is_unread?: boolean;
 }
 
 // Global cached AudioContext to reuse and keep unlocked after user interaction

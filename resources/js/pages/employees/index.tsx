@@ -6,6 +6,7 @@ import {
     Phone,
     Plus,
     Search,
+    ShieldCheck,
     Trash2,
     Users,
     X,
@@ -45,12 +46,14 @@ type EmployeesIndexProps = {
         status: string;
     };
     canManageEmployees: boolean;
+    canManageRoles?: boolean;
 };
 
 export default function EmployeesIndex({
     employees,
     filters,
     canManageEmployees,
+    canManageRoles = false,
 }: EmployeesIndexProps) {
     const { auth, flash } = usePage<{
         auth: Auth;
@@ -62,6 +65,11 @@ export default function EmployeesIndex({
     const [search, setSearch] = useState(filters.search || '');
     const status = filters.status || '';
     const [employeeToDelete, setEmployeeToDelete] = useState<User | null>(null);
+    const [roleTargetUser, setRoleTargetUser] = useState<{
+        user: User;
+        targetRole: 'employee' | 'admin';
+    } | null>(null);
+    const [updatingRoleId, setUpdatingRoleId] = useState<number | null>(null);
 
     const isFocusedRef = useRef(false);
 
@@ -127,6 +135,23 @@ export default function EmployeesIndex({
         router.delete(destroyEmployee.url(employeeToDelete.id), {
             onSuccess: () => setEmployeeToDelete(null),
         });
+    };
+
+    const confirmRoleChange = () => {
+        if (!roleTargetUser) return;
+        const targetId = roleTargetUser.user.id;
+        setUpdatingRoleId(targetId);
+        router.patch(
+            `/employees/${targetId}/role`,
+            { role: roleTargetUser.targetRole },
+            {
+                preserveScroll: true,
+                onFinish: () => {
+                    setUpdatingRoleId(null);
+                    setRoleTargetUser(null);
+                },
+            },
+        );
     };
 
     const getEmployeeTitle = (emp: User | null | undefined) => {
@@ -319,6 +344,9 @@ export default function EmployeesIndex({
                                             {t('employees.job_title')}
                                         </th>
                                         <th className="px-6 py-3.5 text-start">
+                                            {t('employees.system_role')}
+                                        </th>
+                                        <th className="px-6 py-3.5 text-start">
                                             {t('common.phone')}
                                         </th>
                                         <th className="px-6 py-3.5 text-start">
@@ -336,7 +364,7 @@ export default function EmployeesIndex({
                                         <tr>
                                             <td
                                                 colSpan={
-                                                    canManageEmployees ? 5 : 4
+                                                    canManageEmployees ? 6 : 5
                                                 }
                                                 className="px-6 py-10 text-center text-muted-foreground"
                                             >
@@ -412,6 +440,66 @@ export default function EmployeesIndex({
                                                     </td>
 
                                                     <td className="px-6 py-4 text-start">
+                                                        {canManageRoles ? (
+                                                            <select
+                                                                value={
+                                                                    employee.role ||
+                                                                    'employee'
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setRoleTargetUser(
+                                                                        {
+                                                                            user: employee,
+                                                                            targetRole:
+                                                                                e
+                                                                                    .target
+                                                                                    .value as
+                                                                                    | 'employee'
+                                                                                    | 'admin',
+                                                                        },
+                                                                    )
+                                                                }
+                                                                disabled={
+                                                                    isSelf ||
+                                                                    updatingRoleId ===
+                                                                        employee.id
+                                                                }
+                                                                className="h-8 rounded-md border border-input bg-background px-2 py-1 text-xs font-medium text-foreground shadow-xs transition-colors hover:border-primary/50 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                                                            >
+                                                                <option value="employee">
+                                                                    {t(
+                                                                        'employees.role_employee_short',
+                                                                    )}
+                                                                </option>
+                                                                <option value="admin">
+                                                                    {t(
+                                                                        'employees.role_admin_short',
+                                                                    )}
+                                                                </option>
+                                                            </select>
+                                                        ) : (
+                                                            <Badge
+                                                                variant={
+                                                                    employee.role ===
+                                                                    'admin'
+                                                                        ? 'default'
+                                                                        : 'secondary'
+                                                                }
+                                                                className="gap-1 text-xs"
+                                                            >
+                                                                {employee.role ===
+                                                                'admin'
+                                                                    ? t(
+                                                                          'employees.role_admin_short',
+                                                                      )
+                                                                    : t(
+                                                                          'employees.role_employee_short',
+                                                                      )}
+                                                            </Badge>
+                                                        )}
+                                                    </td>
+
+                                                    <td className="px-6 py-4 text-start">
                                                         {employee.phone ? (
                                                             <span className="flex items-center gap-1 font-mono text-xs text-muted-foreground">
                                                                 <Phone className="size-3" />
@@ -461,6 +549,50 @@ export default function EmployeesIndex({
                                                     {canManageEmployees && (
                                                         <td className="px-6 py-4 text-end">
                                                             <div className="flex items-center justify-end gap-1.5">
+                                                                {!isSelf &&
+                                                                    canManageRoles && (
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            className="size-8 p-0 text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"
+                                                                            title={
+                                                                                employee.role ===
+                                                                                'admin'
+                                                                                    ? t(
+                                                                                          'employees.demote_to_employee',
+                                                                                      )
+                                                                                    : t(
+                                                                                          'employees.promote_to_admin',
+                                                                                      )
+                                                                            }
+                                                                            onClick={() =>
+                                                                                setRoleTargetUser(
+                                                                                    {
+                                                                                        user: employee,
+                                                                                        targetRole:
+                                                                                            employee.role ===
+                                                                                            'admin'
+                                                                                                ? 'employee'
+                                                                                                : 'admin',
+                                                                                    },
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <ShieldCheck className="size-3.5" />
+                                                                            <span className="sr-only">
+                                                                                {employee.role ===
+                                                                                'admin'
+                                                                                    ? t(
+                                                                                          'employees.demote_to_employee',
+                                                                                      )
+                                                                                    : t(
+                                                                                          'employees.promote_to_admin',
+                                                                                      )}
+                                                                            </span>
+                                                                        </Button>
+                                                                    )}
+
                                                                 <Button
                                                                     asChild
                                                                     variant="ghost"
@@ -554,6 +686,68 @@ export default function EmployeesIndex({
                     </div>
                 )}
             </div>
+
+            {/* Change Role Confirmation Modal */}
+            <Dialog
+                open={!!roleTargetUser}
+                onOpenChange={(open) => !open && setRoleTargetUser(null)}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <ShieldCheck className="size-5 text-amber-500" />
+                            {t('employees.change_role_title')}
+                        </DialogTitle>
+                        <DialogDescription className="space-y-2 pt-2">
+                            <p>
+                                {isRtl
+                                    ? 'هل أنت متأكد من تغيير صلاحية النظام للمستخدم '
+                                    : 'Are you sure you want to change the system role for '}
+                                <strong>{roleTargetUser?.user.name}</strong>
+                                {isRtl ? ' إلى ' : ' to '}
+                                <span className="font-semibold text-foreground">
+                                    {roleTargetUser?.targetRole === 'admin'
+                                        ? t('employees.role_admin')
+                                        : t('employees.role_employee')}
+                                </span>
+                                ؟
+                            </p>
+                            {roleTargetUser?.targetRole === 'admin' && (
+                                <p className="text-xs text-amber-600 dark:text-amber-400">
+                                    {isRtl
+                                        ? 'سيمنح هذا المستخدم صلاحيات تحكم كاملة بالنظام كمسؤول.'
+                                        : 'This will grant full administrative privileges on the platform.'}
+                                </p>
+                            )}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setRoleTargetUser(null)}
+                            disabled={updatingRoleId !== null}
+                        >
+                            {t('common.cancel')}
+                        </Button>
+                        <Button
+                            variant={
+                                roleTargetUser?.targetRole === 'admin'
+                                    ? 'default'
+                                    : 'secondary'
+                            }
+                            className={
+                                roleTargetUser?.targetRole === 'admin'
+                                    ? 'bg-amber-600 text-white hover:bg-amber-700'
+                                    : ''
+                            }
+                            onClick={confirmRoleChange}
+                            disabled={updatingRoleId !== null}
+                        >
+                            {t('common.confirm')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Delete Confirmation Modal */}
             <Dialog

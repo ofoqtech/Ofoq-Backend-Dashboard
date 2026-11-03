@@ -1,4 +1,4 @@
-<?php
++<?php
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
@@ -23,6 +23,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('crm', [LeadController::class, 'index'])->name('crm.index');
     Route::get('crm/realtime-check', [LeadController::class, 'realtimeCheck'])->name('crm.realtime-check');
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    Route::post('crm/notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('crm.notifications.mark-read');
     Route::post('crm', [LeadController::class, 'store'])->name('crm.store');
     Route::patch('crm/{lead}/status', [LeadController::class, 'updateStatus'])->name('crm.update-status');
     Route::patch('crm/{lead}/priority', [LeadController::class, 'updatePriority'])->name('crm.update-priority');

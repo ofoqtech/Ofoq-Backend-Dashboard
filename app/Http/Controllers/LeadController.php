@@ -429,6 +429,14 @@ class LeadController extends Controller
         $lastActivityId = $request->query('last_activity_id');
         $user = $request->user();
 
+        // Calculate unread notification count for the user
+        $unreadCount = $user->unreadNotifications()->count();
+        if ($unreadCount === 0 && $user->notifications()->count() === 0) {
+            $unreadCount = $user->isAdmin()
+                ? Lead::where('status', LeadStatus::New)->count()
+                : Lead::where('status', LeadStatus::New)->where(fn ($q) => $q->where('assigned_to', $user->id)->orWhereNull('assigned_to'))->count();
+        }
+
         // If no last_id is provided, initialize client watermark to the current max ID and return recent history
         if ($lastId === null || $lastId === '') {
             $latestId = (int) (Lead::query()->max('id') ?? 0);
@@ -442,7 +450,15 @@ class LeadController extends Controller
                 });
             }
 
-            $recentHistory = $recentQuery->get()->map(function (Lead $lead) {
+            $unreadLeadIds = $user->unreadNotifications()
+                ->pluck('data')
+                ->map(fn ($d) => $d['lead_id'] ?? null)
+                ->filter()
+                ->all();
+
+            $hasDbNotifications = $user->notifications()->count() > 0;
+
+            $recentHistory = $recentQuery->get()->map(function (Lead $lead) use ($unreadLeadIds, $hasDbNotifications) {
                 return [
                     'id' => $lead->id,
                     'name' => $lead->name,
@@ -453,12 +469,14 @@ class LeadController extends Controller
                     'channel_label_ar' => $lead->channel_label_ar,
                     'service_name_snapshot' => $lead->service_name_snapshot,
                     'created_at' => $lead->created_at->diffForHumans(),
+                    'is_unread' => in_array($lead->id, $unreadLeadIds, true) || (! $hasDbNotifications && $lead->status === LeadStatus::New),
                 ];
             });
 
             return response()->json([
                 'latest_id' => $latestId,
                 'latest_activity_id' => $latestActivityId,
+                'unread_count' => $unreadCount,
                 'new_leads' => [],
                 'recent_history' => $recentHistory,
             ]);
@@ -489,6 +507,7 @@ class LeadController extends Controller
                 'service_name_snapshot' => $lead->service_name_snapshot,
                 'created_at' => $lead->created_at->diffForHumans(),
                 'notification_type' => 'new_lead',
+                'is_unread' => true,
             ];
         });
 
@@ -527,6 +546,7 @@ class LeadController extends Controller
                     'notification_type' => 'assigned',
                     'assigned_by_name' => $activity->user?->name,
                     'is_assignment' => true,
+                    'is_unread' => true,
                 ];
             });
         }
@@ -540,6 +560,7 @@ class LeadController extends Controller
         return response()->json([
             'latest_id' => $currentMaxId,
             'latest_activity_id' => $currentMaxActivityId,
+            'unread_count' => $unreadCount,
             'new_leads' => $mergedAlerts->values(),
         ]);
     }

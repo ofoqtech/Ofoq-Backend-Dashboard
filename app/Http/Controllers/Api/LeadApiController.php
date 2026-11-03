@@ -143,11 +143,14 @@ class LeadApiController extends Controller
         $activityText = 'Inquiry received'.($timelineContext ? ' ['.implode(' | ', array_map(fn ($k, $v) => "{$k}: {$v}", array_keys($timelineContext), $timelineContext)).']' : '.');
         $lead->logActivity('created', $activityText, null);
 
-        // Notify active admins
+        // Notify active admins via database & email
         try {
             $admins = User::query()
                 ->where('role', Role::Admin)
-                ->where('status', 'active')
+                ->where(function ($q) {
+                    $q->where('status', 'active')
+                        ->orWhereNull('status');
+                })
                 ->get();
 
             if ($admins->isNotEmpty()) {

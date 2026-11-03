@@ -26,13 +26,14 @@ import {
     index as employeesIndex,
     store as storeEmployee,
 } from '@/routes/employees';
+import type { Role } from '@/types';
 
 type CreateEmployeeProps = {
     canManageRoles: boolean;
 };
 
 export default function CreateEmployee({
-    canManageRoles: _canManageRoles,
+    canManageRoles,
 }: CreateEmployeeProps) {
     const { t, isRtl } = useTranslation();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -237,7 +238,7 @@ export default function CreateEmployee({
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                {/* Role (Locked to Employee) */}
+                                {/* System Role */}
                                 <div className="space-y-1.5">
                                     <Label
                                         htmlFor="role"
@@ -246,9 +247,31 @@ export default function CreateEmployee({
                                         <Shield className="size-3.5 text-muted-foreground" />
                                         {t('employees.system_role')}
                                     </Label>
-                                    <div className="flex h-9 w-full items-center rounded-md border border-input bg-muted/40 px-3 text-sm font-medium text-muted-foreground">
-                                        {t('employees.role_employee')}
-                                    </div>
+                                    {canManageRoles ? (
+                                        <select
+                                            id="role"
+                                            value={data.role}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'role',
+                                                    e.target.value as Role,
+                                                )
+                                            }
+                                            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
+                                        >
+                                            <option value="employee">
+                                                {t('employees.role_employee')}
+                                            </option>
+                                            <option value="admin">
+                                                {t('employees.role_admin')}
+                                            </option>
+                                        </select>
+                                    ) : (
+                                        <div className="flex h-9 w-full items-center rounded-md border border-input bg-muted/40 px-3 text-sm font-medium text-muted-foreground">
+                                            {t('employees.role_employee')}
+                                        </div>
+                                    )}
+                                    <InputError message={errors.role} />
                                 </div>
 
                                 {/* Status */}

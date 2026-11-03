@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\LeadStatus;
 use App\Models\Lead;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -105,6 +106,7 @@ class NotificationController extends Controller
         $totalAlerts = Lead::count();
         $todayAlerts = Lead::whereDate('created_at', today())->count();
         $newUncontacted = Lead::where('status', LeadStatus::New->value)->count();
+        $unreadAlerts = $user->unreadNotifications()->count();
 
         return Inertia::render('notifications/index', [
             'notifications' => $notifications,
@@ -117,7 +119,38 @@ class NotificationController extends Controller
                 'total_alerts' => $totalAlerts,
                 'today_alerts' => $todayAlerts,
                 'new_uncontacted' => $newUncontacted,
+                'unread_alerts' => $unreadAlerts,
             ],
+        ]);
+    }
+
+    /**
+     * Mark one or all notifications as read for the authenticated user.
+     */
+    public function markAsRead(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $id = $request->input('id');
+        $leadId = $request->input('lead_id');
+
+        if ($leadId) {
+            $user->unreadNotifications()
+                ->where(function ($q) use ($leadId) {
+                    $q->whereJsonContains('data->lead_id', (int) $leadId)
+                        ->orWhereJsonContains('data->lead_id', (string) $leadId);
+                })
+                ->update(['read_at' => now()]);
+        } elseif ($id) {
+            $user->unreadNotifications()
+                ->where('id', $id)
+                ->update(['read_at' => now()]);
+        } else {
+            $user->unreadNotifications()->update(['read_at' => now()]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'unread_count' => $user->unreadNotifications()->count(),
         ]);
     }
 }

@@ -27,7 +27,7 @@ class LeadAssignedNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['database', 'mail'];
     }
 
     /**
@@ -85,12 +85,19 @@ class LeadAssignedNotification extends Notification
     {
         return [
             'type' => 'lead_assigned',
+            'notification_type' => 'assigned',
             'lead_id' => $this->lead->id,
             'name' => $this->lead->name,
             'phone' => $this->lead->phone,
+            'company' => $this->lead->company,
             'service' => $this->lead->service_name_snapshot ?? ($this->lead->service?->name_en ?? 'Custom Solution'),
+            'service_name_snapshot' => $this->lead->service_name_snapshot,
             'channel' => $this->lead->channel,
+            'channel_label' => $this->lead->channel_label,
+            'channel_label_ar' => $this->lead->channel_label_ar,
             'assigned_by' => $this->assignedBy?->name,
+            'is_assignment' => true,
+            'created_at' => now()->diffForHumans(),
         ];
     }
 }

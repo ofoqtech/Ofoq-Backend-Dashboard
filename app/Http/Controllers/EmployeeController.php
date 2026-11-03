@@ -49,6 +49,7 @@ class EmployeeController extends Controller
                 'status' => $status ?? '',
             ],
             'canManageEmployees' => $request->user()->isAdmin(),
+            'canManageRoles' => $request->user()->isAdmin(),
         ]);
     }
 
@@ -94,17 +95,26 @@ class EmployeeController extends Controller
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
         }
 
+        $role = Role::Employee;
+        if ($request->user()->isAdmin() && ! empty($validated['role'])) {
+            $role = Role::from($validated['role']);
+        }
+
         User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => Role::Employee,
+            'role' => $role,
             'title' => $title,
             'phone' => $validated['phone'] ?? null,
             'status' => $validated['status'],
             'avatar' => $avatarPath,
             'email_verified_at' => now(),
         ]);
+
+        if ($role === Role::Admin) {
+            return redirect()->route('admins.index')->with('success', 'Administrator created successfully.');
+        }
 
         return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
     }
@@ -122,7 +132,7 @@ class EmployeeController extends Controller
 
         return Inertia::render('employees/edit', [
             'employee' => $employee,
-            'canManageRoles' => false,
+            'canManageRoles' => $request->user()->isAdmin(),
         ]);
     }
 
@@ -141,6 +151,7 @@ class EmployeeController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($employee->id)],
             'password' => ['nullable', 'string', 'min:8'],
+            'role' => ['nullable', Rule::enum(Role::class)],
             'title' => ['nullable'],
             'title_ar' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
@@ -157,7 +168,18 @@ class EmployeeController extends Controller
 
         $employee->name = $validated['name'];
         $employee->email = $validated['email'];
-        $employee->role = Role::Employee;
+
+        if ($request->user()->isAdmin() && ! empty($validated['role'])) {
+            $newRole = Role::from($validated['role']);
+            if ($employee->isAdmin() && $newRole === Role::Employee) {
+                $adminCount = User::where('role', Role::Admin)->count();
+                if ($adminCount <= 1) {
+                    return back()->with('error', 'Cannot demote the only remaining administrator.');
+                }
+            }
+            $employee->role = $newRole;
+        }
+
         $employee->title = $title;
         $employee->phone = $validated['phone'] ?? null;
         $employee->status = $validated['status'];
@@ -176,7 +198,41 @@ class EmployeeController extends Controller
 
         $employee->save();
 
+        if ($employee->isAdmin()) {
+            return redirect()->route('admins.index')->with('success', "User '{$employee->name}' promoted to Administrator successfully.");
+        }
+
         return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
+    }
+
+    /**
+     * Update the system role of the specified employee.
+     */
+    public function updateRole(Request $request, User $employee): RedirectResponse
+    {
+        Gate::authorize('manageRoles', User::class);
+
+        $validated = $request->validate([
+            'role' => ['required', Rule::enum(Role::class)],
+        ]);
+
+        $newRole = Role::from($validated['role']);
+
+        if ($employee->isAdmin() && $newRole === Role::Employee) {
+            $adminCount = User::where('role', Role::Admin)->count();
+            if ($adminCount <= 1) {
+                return back()->with('error', 'Cannot demote the only remaining administrator.');
+            }
+        }
+
+        $employee->role = $newRole;
+        $employee->save();
+
+        $message = $newRole === Role::Admin
+            ? "User '{$employee->name}' promoted to Administrator successfully."
+            : "User '{$employee->name}' role changed to Employee successfully.";
+
+        return back()->with('success', $message);
     }
 
     /**
