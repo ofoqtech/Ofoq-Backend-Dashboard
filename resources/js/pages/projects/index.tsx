@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     Briefcase,
@@ -67,46 +67,75 @@ export default function ProjectsIndex({
         null,
     );
 
-    // Keep search in sync if filters.search changes externally
+    const isFocusedRef = useRef(false);
+
+    // Keep search in sync only if filters.search changes externally (and user is not actively typing)
     useEffect(() => {
-        setSearch(filters.search || '');
+        if (!isFocusedRef.current) {
+            setSearch(filters.search || '');
+        }
     }, [filters.search]);
 
-    // Live instant search (fires debounced at 250ms when typing or clearing)
+    // Handle browser back/forward navigation
+    useEffect(() => {
+        const handlePopState = () => {
+            const params = new URLSearchParams(window.location.search);
+            setSearch(params.get('search') || '');
+            setCategory(params.get('category') || 'all');
+        };
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, []);
+
+    // Live instant search (fires debounced at 300ms when typing or clearing)
     useEffect(() => {
         const timer = setTimeout(() => {
-            const currentFilterSearch = filters.search || '';
-            if (search.trim() !== currentFilterSearch.trim()) {
+            const trimmed = search.trim();
+            const currentFilterSearch = (filters.search || '').trim();
+            if (trimmed !== currentFilterSearch) {
                 router.get(
                     projectsIndex.url(),
-                    { search: search.trim() || undefined, category },
+                    { search: trimmed || undefined, category },
                     {
                         preserveState: true,
                         preserveScroll: true,
                         replace: true,
+                        only: ['projects', 'filters'],
                     },
                 );
             }
-        }, 250);
+        }, 300);
 
         return () => clearTimeout(timer);
     }, [search, category]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
+        const trimmed = search.trim();
         router.get(
             projectsIndex.url(),
-            { search: search.trim() || undefined, category },
-            { preserveState: true, replace: true },
+            { search: trimmed || undefined, category },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                only: ['projects', 'filters'],
+            },
         );
     };
 
     const handleCategoryChange = (newCat: string) => {
         setCategory(newCat);
+        const trimmed = search.trim();
         router.get(
             projectsIndex.url(),
-            { search: search.trim() || undefined, category: newCat },
-            { preserveState: true, replace: true },
+            { search: trimmed || undefined, category: newCat },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                only: ['projects', 'filters'],
+            },
         );
     };
 
@@ -234,6 +263,12 @@ export default function ProjectsIndex({
                                 <Input
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
+                                    onFocus={() => {
+                                        isFocusedRef.current = true;
+                                    }}
+                                    onBlur={() => {
+                                        isFocusedRef.current = false;
+                                    }}
                                     placeholder={t(
                                         'projects.search_placeholder',
                                     )}
@@ -245,7 +280,22 @@ export default function ProjectsIndex({
                                 {search && (
                                     <button
                                         type="button"
-                                        onClick={() => setSearch('')}
+                                        onClick={() => {
+                                            setSearch('');
+                                            router.get(
+                                                projectsIndex.url(),
+                                                { search: undefined, category },
+                                                {
+                                                    preserveState: true,
+                                                    preserveScroll: true,
+                                                    replace: true,
+                                                    only: [
+                                                        'projects',
+                                                        'filters',
+                                                    ],
+                                                },
+                                            );
+                                        }}
                                         className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground ${
                                             isRtl ? 'left-2.5' : 'right-2.5'
                                         }`}
@@ -291,7 +341,19 @@ export default function ProjectsIndex({
                                         onClick={() => {
                                             setSearch('');
                                             setCategory('all');
-                                            router.get(projectsIndex.url());
+                                            router.get(
+                                                projectsIndex.url(),
+                                                {},
+                                                {
+                                                    preserveState: true,
+                                                    preserveScroll: true,
+                                                    replace: true,
+                                                    only: [
+                                                        'projects',
+                                                        'filters',
+                                                    ],
+                                                },
+                                            );
                                         }}
                                     >
                                         {t('common.reset')}

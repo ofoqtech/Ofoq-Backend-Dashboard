@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import {
     Bell,
@@ -65,6 +65,26 @@ export default function NotificationsIndex({
     const [selectedStatus, setSelectedStatus] = useState(
         filters.status || 'all',
     );
+    const isFocusedRef = useRef(false);
+
+    // Keep search in sync only if filters.search changes externally (and user is not actively typing)
+    useEffect(() => {
+        if (!isFocusedRef.current) {
+            setSearch(filters.search || '');
+        }
+    }, [filters.search]);
+
+    // Handle browser back/forward navigation
+    useEffect(() => {
+        const handlePopState = () => {
+            const params = new URLSearchParams(window.location.search);
+            setSearch(params.get('search') || '');
+            setSelectedChannel(params.get('channel') || 'all');
+            setSelectedStatus(params.get('status') || 'all');
+        };
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, []);
 
     const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
         if (typeof window === 'undefined') return true;
@@ -126,6 +146,7 @@ export default function NotificationsIndex({
             preserveState: true,
             preserveScroll: true,
             replace: true,
+            only: ['notifications', 'filters', 'stats'],
         });
     };
 
@@ -147,7 +168,12 @@ export default function NotificationsIndex({
         router.get(
             '/notifications',
             {},
-            { preserveState: true, preserveScroll: true, replace: true },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                only: ['notifications', 'filters', 'stats'],
+            },
         );
     };
 
@@ -313,12 +339,22 @@ export default function NotificationsIndex({
                             placeholder={t('notifications.filter_search')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
+                            onFocus={() => {
+                                isFocusedRef.current = true;
+                            }}
+                            onBlur={() => {
+                                isFocusedRef.current = false;
+                            }}
                             className={`h-9 text-xs ${isRtl ? 'pr-9 pl-8' : 'pr-8 pl-9'}`}
+                            autoComplete="off"
                         />
                         {search && (
                             <button
                                 type="button"
-                                onClick={() => setSearch('')}
+                                onClick={() => {
+                                    setSearch('');
+                                    handleApplyFilters({ search: '' });
+                                }}
                                 className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground ${
                                     isRtl ? 'left-2.5' : 'right-2.5'
                                 }`}

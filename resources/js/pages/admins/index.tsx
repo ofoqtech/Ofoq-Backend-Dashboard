@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     Edit3,
@@ -63,40 +63,62 @@ export default function AdminsIndex({
     const status = filters.status || '';
     const [adminToDelete, setAdminToDelete] = useState<User | null>(null);
 
-    // Keep search in sync if filters.search changes externally
+    const isFocusedRef = useRef(false);
+
+    // Keep search in sync only if filters.search changes externally (and user is not actively typing)
     useEffect(() => {
-        setSearch(filters.search || '');
+        if (!isFocusedRef.current) {
+            setSearch(filters.search || '');
+        }
     }, [filters.search]);
 
-    // Live instant search (fires debounced at 250ms when typing or clearing)
+    // Handle browser back/forward navigation
+    useEffect(() => {
+        const handlePopState = () => {
+            const params = new URLSearchParams(window.location.search);
+            setSearch(params.get('search') || '');
+        };
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, []);
+
+    // Live instant search (fires debounced at 300ms when typing or clearing)
     useEffect(() => {
         const timer = setTimeout(() => {
-            const currentFilterSearch = filters.search || '';
-            if (search.trim() !== currentFilterSearch.trim()) {
+            const trimmed = search.trim();
+            const currentFilterSearch = (filters.search || '').trim();
+            if (trimmed !== currentFilterSearch) {
                 router.get(
                     adminsIndex.url(),
                     {
-                        search: search.trim() || undefined,
+                        search: trimmed || undefined,
                         status: status || undefined,
                     },
                     {
                         preserveState: true,
                         preserveScroll: true,
                         replace: true,
+                        only: ['admins', 'filters'],
                     },
                 );
             }
-        }, 250);
+        }, 300);
 
         return () => clearTimeout(timer);
     }, [search, status]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
+        const trimmed = search.trim();
         router.get(
             adminsIndex.url(),
-            { search: search.trim() || undefined, status: status || undefined },
-            { preserveState: true, replace: true },
+            { search: trimmed || undefined, status: status || undefined },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                only: ['admins', 'filters'],
+            },
         );
     };
 
@@ -206,6 +228,12 @@ export default function AdminsIndex({
                                 <Input
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
+                                    onFocus={() => {
+                                        isFocusedRef.current = true;
+                                    }}
+                                    onBlur={() => {
+                                        isFocusedRef.current = false;
+                                    }}
                                     placeholder={t('admins.search_placeholder')}
                                     className={
                                         isRtl ? 'pr-9 pl-8' : 'pr-8 pl-9'
@@ -215,7 +243,19 @@ export default function AdminsIndex({
                                 {search && (
                                     <button
                                         type="button"
-                                        onClick={() => setSearch('')}
+                                        onClick={() => {
+                                            setSearch('');
+                                            router.get(
+                                                adminsIndex.url(),
+                                                { status: status || undefined },
+                                                {
+                                                    preserveState: true,
+                                                    preserveScroll: true,
+                                                    replace: true,
+                                                    only: ['admins', 'filters'],
+                                                },
+                                            );
+                                        }}
                                         className={`absolute top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground ${
                                             isRtl ? 'left-2.5' : 'right-2.5'
                                         }`}
@@ -241,7 +281,16 @@ export default function AdminsIndex({
                                         size="sm"
                                         onClick={() => {
                                             setSearch('');
-                                            router.get(adminsIndex.url());
+                                            router.get(
+                                                adminsIndex.url(),
+                                                {},
+                                                {
+                                                    preserveState: true,
+                                                    preserveScroll: true,
+                                                    replace: true,
+                                                    only: ['admins', 'filters'],
+                                                },
+                                            );
                                         }}
                                     >
                                         {t('common.reset')}
