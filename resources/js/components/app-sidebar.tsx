@@ -57,12 +57,12 @@ export function AppSidebar() {
         },
         ...(isAdmin
             ? [
-                {
-                    title: t('nav.admins'),
-                    href: adminsIndex(),
-                    icon: ShieldCheck,
-                },
-            ]
+                  {
+                      title: t('nav.admins'),
+                      href: adminsIndex(),
+                      icon: ShieldCheck,
+                  },
+              ]
             : []),
         {
             title: t('nav.employees'),
@@ -71,12 +71,12 @@ export function AppSidebar() {
         },
         ...(isAdmin
             ? [
-                {
-                    title: t('nav.categories'),
-                    href: '/categories',
-                    icon: FolderTree,
-                },
-            ]
+                  {
+                      title: t('nav.categories'),
+                      href: '/categories',
+                      icon: FolderTree,
+                  },
+              ]
             : []),
         {
             title: t('nav.projects'),
@@ -99,7 +99,9 @@ export function AppSidebar() {
                             onClick={toggleSidebar}
                             className="cursor-pointer transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:scale-[0.98]"
                             tooltip={{
-                                children: isRtl ? 'تبديل القائمة الجانبية' : 'Toggle Sidebar',
+                                children: isRtl
+                                    ? 'تبديل القائمة الجانبية'
+                                    : 'Toggle Sidebar',
                             }}
                         >
                             <AppLogo />

@@ -62,8 +62,12 @@ export default function NotificationsIndex({
     const { t, isRtl } = useTranslation();
 
     const [search, setSearch] = useState(filters.search || '');
-    const [selectedChannel, setSelectedChannel] = useState(filters.channel || 'all');
-    const [selectedStatus, setSelectedStatus] = useState(filters.status || 'all');
+    const [selectedChannel, setSelectedChannel] = useState(
+        filters.channel || 'all',
+    );
+    const [selectedStatus, setSelectedStatus] = useState(
+        filters.status || 'all',
+    );
 
     const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
         if (typeof window === 'undefined') return true;
@@ -71,7 +75,9 @@ export default function NotificationsIndex({
         return saved !== null ? saved === 'true' : true;
     });
 
-    const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>('default');
+    const [permission, setPermission] = useState<
+        NotificationPermission | 'unsupported'
+    >('default');
 
     useEffect(() => {
         setPermission(getNotificationPermission());
@@ -102,13 +108,22 @@ export default function NotificationsIndex({
     }) => {
         const queryParams: Record<string, string> = {};
 
-        const effectiveSearch = newFilters.search !== undefined ? newFilters.search : search;
-        const effectiveChannel = newFilters.channel !== undefined ? newFilters.channel : selectedChannel;
-        const effectiveStatus = newFilters.status !== undefined ? newFilters.status : selectedStatus;
+        const effectiveSearch =
+            newFilters.search !== undefined ? newFilters.search : search;
+        const effectiveChannel =
+            newFilters.channel !== undefined
+                ? newFilters.channel
+                : selectedChannel;
+        const effectiveStatus =
+            newFilters.status !== undefined
+                ? newFilters.status
+                : selectedStatus;
 
         if (effectiveSearch) queryParams.search = effectiveSearch;
-        if (effectiveChannel && effectiveChannel !== 'all') queryParams.channel = effectiveChannel;
-        if (effectiveStatus && effectiveStatus !== 'all') queryParams.status = effectiveStatus;
+        if (effectiveChannel && effectiveChannel !== 'all')
+            queryParams.channel = effectiveChannel;
+        if (effectiveStatus && effectiveStatus !== 'all')
+            queryParams.status = effectiveStatus;
 
         router.get('/notifications', queryParams, {
             preserveState: true,
@@ -135,14 +150,12 @@ export default function NotificationsIndex({
         router.get(
             '/notifications',
             {},
-            { preserveState: true, preserveScroll: true, replace: true }
+            { preserveState: true, preserveScroll: true, replace: true },
         );
     };
 
     const hasActiveFilters =
-        search !== '' ||
-        selectedChannel !== 'all' ||
-        selectedStatus !== 'all';
+        search !== '' || selectedChannel !== 'all' || selectedStatus !== 'all';
 
     const isPushGranted = permission === 'granted';
 
@@ -155,7 +168,7 @@ export default function NotificationsIndex({
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
                         <div className="flex items-center gap-2">
-                            <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                            <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-foreground">
                                 <BellRing className="size-6 text-primary" />
                                 {t('notifications.page_title')}
                             </h1>
@@ -163,7 +176,7 @@ export default function NotificationsIndex({
                                 {stats.total_alerts}
                             </span>
                         </div>
-                        <p className="mt-1 text-xs text-muted-foreground max-w-2xl">
+                        <p className="mt-1 max-w-2xl text-xs text-muted-foreground">
                             {t('notifications.page_subtitle')}
                         </p>
                     </div>
@@ -175,17 +188,27 @@ export default function NotificationsIndex({
                             size="sm"
                             onClick={toggleSound}
                             className="h-8 gap-1.5 text-xs font-medium"
-                            title={soundEnabled ? t('notifications.mute_sound') : t('notifications.unmute_sound')}
+                            title={
+                                soundEnabled
+                                    ? t('notifications.mute_sound')
+                                    : t('notifications.unmute_sound')
+                            }
                         >
                             {soundEnabled ? (
                                 <>
                                     <Volume2 className="size-3.5 text-emerald-500" />
-                                    <span>{t('notifications.sound_status')}: {t('notifications.enabled')}</span>
+                                    <span>
+                                        {t('notifications.sound_status')}:{' '}
+                                        {t('notifications.enabled')}
+                                    </span>
                                 </>
                             ) : (
                                 <>
                                     <VolumeX className="size-3.5 text-muted-foreground" />
-                                    <span>{t('notifications.sound_status')}: {t('notifications.disabled')}</span>
+                                    <span>
+                                        {t('notifications.sound_status')}:{' '}
+                                        {t('notifications.disabled')}
+                                    </span>
                                 </>
                             )}
                         </Button>
@@ -222,52 +245,58 @@ export default function NotificationsIndex({
                 {/* KPI Summary Cards */}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <Card className="border bg-card/70 shadow-2xs">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-xs font-medium text-muted-foreground">
                                 {t('notifications.total_alerts')}
                             </CardTitle>
                             <Bell className="size-4 text-blue-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold font-mono text-foreground">
+                            <div className="font-mono text-2xl font-bold text-foreground">
                                 {stats.total_alerts}
                             </div>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">
-                                {isRtl ? 'إجمالي الطلبات الواردة' : 'All-time inquiries logged'}
+                            <p className="mt-0.5 text-[11px] text-muted-foreground">
+                                {isRtl
+                                    ? 'إجمالي الطلبات الواردة'
+                                    : 'All-time inquiries logged'}
                             </p>
                         </CardContent>
                     </Card>
 
                     <Card className="border bg-card/70 shadow-2xs">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-xs font-medium text-muted-foreground">
                                 {t('notifications.today_alerts')}
                             </CardTitle>
                             <Sparkles className="size-4 text-amber-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold font-mono text-amber-600 dark:text-amber-400">
+                            <div className="font-mono text-2xl font-bold text-amber-600 dark:text-amber-400">
                                 {stats.today_alerts}
                             </div>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">
-                                {isRtl ? 'طلبات تم استلامها اليوم' : 'Inquiries received today'}
+                            <p className="mt-0.5 text-[11px] text-muted-foreground">
+                                {isRtl
+                                    ? 'طلبات تم استلامها اليوم'
+                                    : 'Inquiries received today'}
                             </p>
                         </CardContent>
                     </Card>
 
                     <Card className="border bg-card/70 shadow-2xs">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-xs font-medium text-muted-foreground">
                                 {t('notifications.new_uncontacted')}
                             </CardTitle>
                             <Clock className="size-4 text-rose-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold font-mono text-rose-600 dark:text-rose-400">
+                            <div className="font-mono text-2xl font-bold text-rose-600 dark:text-rose-400">
                                 {stats.new_uncontacted}
                             </div>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">
-                                {isRtl ? 'في انتظار أول رد وتواصل' : 'Awaiting first contact'}
+                            <p className="mt-0.5 text-[11px] text-muted-foreground">
+                                {isRtl
+                                    ? 'في انتظار أول رد وتواصل'
+                                    : 'Awaiting first contact'}
                             </p>
                         </CardContent>
                     </Card>
@@ -319,12 +348,20 @@ export default function NotificationsIndex({
                                     {t('notifications.all_channels')}
                                 </SelectItem>
                                 <SelectItem value="meta">
-                                    {isRtl ? 'ميتا (فيسبوك، انستغرام)' : 'Meta (FB / IG)'}
+                                    {isRtl
+                                        ? 'ميتا (فيسبوك، انستغرام)'
+                                        : 'Meta (FB / IG)'}
                                 </SelectItem>
                                 <SelectItem value="tiktok">TikTok</SelectItem>
-                                <SelectItem value="snapchat">Snapchat</SelectItem>
-                                <SelectItem value="linkedin">LinkedIn</SelectItem>
-                                <SelectItem value="google">Google Ads</SelectItem>
+                                <SelectItem value="snapchat">
+                                    Snapchat
+                                </SelectItem>
+                                <SelectItem value="linkedin">
+                                    LinkedIn
+                                </SelectItem>
+                                <SelectItem value="google">
+                                    Google Ads
+                                </SelectItem>
                                 <SelectItem value="other">
                                     {t('crm.other_channels')}
                                 </SelectItem>
@@ -346,13 +383,27 @@ export default function NotificationsIndex({
                                 <SelectItem value="all">
                                     {t('notifications.all_statuses')}
                                 </SelectItem>
-                                <SelectItem value="new">{t('crm.stage_new')}</SelectItem>
-                                <SelectItem value="contacted">{t('crm.stage_contacted')}</SelectItem>
-                                <SelectItem value="qualified">{t('crm.stage_qualified')}</SelectItem>
-                                <SelectItem value="proposal_sent">{t('crm.stage_proposal_sent')}</SelectItem>
-                                <SelectItem value="negotiation">{t('crm.stage_negotiation')}</SelectItem>
-                                <SelectItem value="won">{t('crm.stage_won')}</SelectItem>
-                                <SelectItem value="lost">{t('crm.stage_lost')}</SelectItem>
+                                <SelectItem value="new">
+                                    {t('crm.stage_new')}
+                                </SelectItem>
+                                <SelectItem value="contacted">
+                                    {t('crm.stage_contacted')}
+                                </SelectItem>
+                                <SelectItem value="qualified">
+                                    {t('crm.stage_qualified')}
+                                </SelectItem>
+                                <SelectItem value="proposal_sent">
+                                    {t('crm.stage_proposal_sent')}
+                                </SelectItem>
+                                <SelectItem value="negotiation">
+                                    {t('crm.stage_negotiation')}
+                                </SelectItem>
+                                <SelectItem value="won">
+                                    {t('crm.stage_won')}
+                                </SelectItem>
+                                <SelectItem value="lost">
+                                    {t('crm.stage_lost')}
+                                </SelectItem>
                             </SelectContent>
                         </Select>
 
@@ -380,7 +431,7 @@ export default function NotificationsIndex({
                             <h3 className="mt-4 text-base font-semibold text-foreground">
                                 {t('notifications.no_alerts_found')}
                             </h3>
-                            <p className="mt-1 text-xs text-muted-foreground max-w-sm">
+                            <p className="mt-1 max-w-sm text-xs text-muted-foreground">
                                 {isRtl
                                     ? 'جرب إعادة ضبط الفلاتر أو البحث للوصول إلى طلبات سابقة.'
                                     : 'Try resetting your search or channel filter to view past records.'}
@@ -399,43 +450,60 @@ export default function NotificationsIndex({
                     ) : (
                         notifications.data.map((lead: Lead) => {
                             const platformLabel = isRtl
-                                ? (lead.channel_label_ar || lead.channel || 'الموقع')
-                                : (lead.channel_label || lead.channel || 'Website');
+                                ? lead.channel_label_ar ||
+                                  lead.channel ||
+                                  'الموقع'
+                                : lead.channel_label ||
+                                  lead.channel ||
+                                  'Website';
 
                             return (
                                 <Card
                                     key={lead.id}
-                                    className="border transition-all duration-200 hover:border-primary/50 hover:shadow-xs bg-card"
+                                    className="border bg-card transition-all duration-200 hover:border-primary/50 hover:shadow-xs"
                                 >
                                     <CardContent className="p-4 sm:p-5">
                                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                             {/* Client & Inquiry Core Info */}
-                                            <div className="space-y-1.5 min-w-0 flex-1">
+                                            <div className="min-w-0 flex-1 space-y-1.5">
                                                 <div className="flex flex-wrap items-center gap-2">
-                                                    <ChannelBadge channelKey={lead.channel} size="sm" />
+                                                    <ChannelBadge
+                                                        channelKey={
+                                                            lead.channel
+                                                        }
+                                                        size="sm"
+                                                    />
 
                                                     {lead.utm_campaign && (
-                                                        <Badge variant="outline" className="font-mono text-[10px] text-primary">
-                                                            📢 {lead.utm_campaign}
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="font-mono text-[10px] text-primary"
+                                                        >
+                                                            📢{' '}
+                                                            {lead.utm_campaign}
                                                         </Badge>
                                                     )}
 
                                                     {lead.form_name && (
-                                                        <span className="text-[11px] text-muted-foreground font-mono">
+                                                        <span className="font-mono text-[11px] text-muted-foreground">
                                                             📝 {lead.form_name}
                                                         </span>
                                                     )}
 
-                                                    <span className="text-[11px] font-mono text-muted-foreground flex items-center gap-1">
+                                                    <span className="flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
                                                         <Clock className="size-3" />
-                                                        {new Date(lead.created_at).toLocaleString(
-                                                            isRtl ? 'ar-EG' : 'en-US',
+                                                        {new Date(
+                                                            lead.created_at,
+                                                        ).toLocaleString(
+                                                            isRtl
+                                                                ? 'ar-EG'
+                                                                : 'en-US',
                                                             {
                                                                 month: 'short',
                                                                 day: 'numeric',
                                                                 hour: '2-digit',
                                                                 minute: '2-digit',
-                                                            }
+                                                            },
                                                         )}
                                                     </span>
                                                 </div>
@@ -445,7 +513,7 @@ export default function NotificationsIndex({
                                                         {lead.name}
                                                     </h3>
                                                     {lead.company && (
-                                                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                                             <Building2 className="size-3" />
                                                             {lead.company}
                                                         </span>
@@ -453,31 +521,38 @@ export default function NotificationsIndex({
                                                 </div>
 
                                                 <p className="text-xs text-muted-foreground">
-                                                    {isRtl ? 'الخدمة المطلوبة: ' : 'Service: '}
+                                                    {isRtl
+                                                        ? 'الخدمة المطلوبة: '
+                                                        : 'Service: '}
                                                     <span className="font-medium text-foreground">
-                                                        {lead.service_name_snapshot || (isRtl ? 'استفسار عام' : 'General Inquiry')}
+                                                        {lead.service_name_snapshot ||
+                                                            (isRtl
+                                                                ? 'استفسار عام'
+                                                                : 'General Inquiry')}
                                                     </span>
                                                 </p>
 
                                                 {lead.internal_notes && (
-                                                    <p className="text-xs bg-muted/40 p-2.5 rounded-lg text-muted-foreground mt-2 border border-border/50">
+                                                    <p className="mt-2 rounded-lg border border-border/50 bg-muted/40 p-2.5 text-xs text-muted-foreground">
                                                         {lead.internal_notes}
                                                     </p>
                                                 )}
                                             </div>
 
                                             {/* Action Buttons & Status */}
-                                            <div className="flex flex-wrap sm:flex-col items-end gap-2 shrink-0">
+                                            <div className="flex shrink-0 flex-wrap items-end gap-2 sm:flex-col">
                                                 <div className="flex items-center gap-1.5">
                                                     {/* WhatsApp Button */}
                                                     <Button
                                                         size="sm"
                                                         variant="outline"
-                                                        className="h-8 gap-1.5 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
+                                                        className="h-8 gap-1.5 text-xs text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/20"
                                                         asChild
                                                     >
                                                         <a
-                                                            href={lead.whatsapp_url}
+                                                            href={
+                                                                lead.whatsapp_url
+                                                            }
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                         >
@@ -493,7 +568,9 @@ export default function NotificationsIndex({
                                                         className="h-8 gap-1.5 text-xs"
                                                         asChild
                                                     >
-                                                        <a href={`tel:${lead.phone}`}>
+                                                        <a
+                                                            href={`tel:${lead.phone}`}
+                                                        >
                                                             <Phone className="size-3.5" />
                                                             {lead.phone}
                                                         </a>
@@ -503,11 +580,17 @@ export default function NotificationsIndex({
                                                 {/* Open in CRM */}
                                                 <Button
                                                     size="sm"
-                                                    className="h-8 gap-1.5 text-xs font-semibold w-full sm:w-auto"
+                                                    className="h-8 w-full gap-1.5 text-xs font-semibold sm:w-auto"
                                                     asChild
                                                 >
-                                                    <Link href={`/crm?selected=${lead.id}`}>
-                                                        <span>{t('notifications.open_in_crm')}</span>
+                                                    <Link
+                                                        href={`/crm?selected=${lead.id}`}
+                                                    >
+                                                        <span>
+                                                            {t(
+                                                                'notifications.open_in_crm',
+                                                            )}
+                                                        </span>
                                                         <ExternalLink className="size-3" />
                                                     </Link>
                                                 </Button>
@@ -525,35 +608,58 @@ export default function NotificationsIndex({
                     <div className="flex items-center justify-between border-t pt-4">
                         <span className="text-xs text-muted-foreground">
                             {isRtl ? 'عرض ' : 'Showing '}
-                            <span className="font-semibold text-foreground">{notifications.from}</span>
+                            <span className="font-semibold text-foreground">
+                                {notifications.from}
+                            </span>
                             {isRtl ? ' إلى ' : ' to '}
-                            <span className="font-semibold text-foreground">{notifications.to}</span>
+                            <span className="font-semibold text-foreground">
+                                {notifications.to}
+                            </span>
                             {isRtl ? ' من إجمالي ' : ' of '}
-                            <span className="font-semibold text-foreground">{notifications.total}</span>
+                            <span className="font-semibold text-foreground">
+                                {notifications.total}
+                            </span>
                         </span>
 
                         <div className="flex items-center gap-1">
-                            {notifications.links.map((link: { url: string | null; label: string; active: boolean }, idx: number) => (
-                                <Button
-                                    key={idx}
-                                    variant={link.active ? 'default' : 'outline'}
-                                    size="sm"
-                                    className="h-8 min-w-8 text-xs px-2.5"
-                                    disabled={!link.url}
-                                    asChild={!!link.url}
-                                >
-                                    {link.url ? (
-                                        <Link
-                                            href={link.url}
-                                            preserveScroll
-                                            preserveState
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
-                                    ) : (
-                                        <span dangerouslySetInnerHTML={{ __html: link.label }} />
-                                    )}
-                                </Button>
-                            ))}
+                            {notifications.links.map(
+                                (
+                                    link: {
+                                        url: string | null;
+                                        label: string;
+                                        active: boolean;
+                                    },
+                                    idx: number,
+                                ) => (
+                                    <Button
+                                        key={idx}
+                                        variant={
+                                            link.active ? 'default' : 'outline'
+                                        }
+                                        size="sm"
+                                        className="h-8 min-w-8 px-2.5 text-xs"
+                                        disabled={!link.url}
+                                        asChild={!!link.url}
+                                    >
+                                        {link.url ? (
+                                            <Link
+                                                href={link.url}
+                                                preserveScroll
+                                                preserveState
+                                                dangerouslySetInnerHTML={{
+                                                    __html: link.label,
+                                                }}
+                                            />
+                                        ) : (
+                                            <span
+                                                dangerouslySetInnerHTML={{
+                                                    __html: link.label,
+                                                }}
+                                            />
+                                        )}
+                                    </Button>
+                                ),
+                            )}
                         </div>
                     </div>
                 )}

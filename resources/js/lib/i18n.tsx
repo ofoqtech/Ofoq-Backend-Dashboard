@@ -140,8 +140,10 @@ const translations: Record<Locale, Record<string, string>> = {
         'crm.per_page': 'Per page',
         'crm.all_in_progress': 'All Active Stages',
         'crm.no_leads_in_tab': 'No inquiries found in this section.',
-        'crm.no_new_leads': 'All caught up! No uncontacted inquiries awaiting first response.',
-        'crm.no_in_progress': 'No deals currently in discussion or negotiation.',
+        'crm.no_new_leads':
+            'All caught up! No uncontacted inquiries awaiting first response.',
+        'crm.no_in_progress':
+            'No deals currently in discussion or negotiation.',
         'crm.no_won_deals': 'No won deals recorded yet.',
         'crm.no_lost_deals': 'No lost deals in records.',
         'crm.kanban': 'Kanban',
@@ -215,15 +217,18 @@ const translations: Record<Locale, Record<string, string>> = {
         'notifications.mute_sound': 'Mute Chime Sound',
         'notifications.unmute_sound': 'Enable Chime Sound',
         'notifications.page_title': 'Notification History',
-        'notifications.page_subtitle': 'Chronological log of all incoming client inquiries and ad campaign alerts (Newest to Oldest).',
+        'notifications.page_subtitle':
+            'Chronological log of all incoming client inquiries and ad campaign alerts (Newest to Oldest).',
         'notifications.total_alerts': 'Total Alerts',
         'notifications.today_alerts': "Today's Alerts",
         'notifications.new_uncontacted': 'Awaiting Contact',
-        'notifications.filter_search': 'Search by client, phone, company, campaign...',
+        'notifications.filter_search':
+            'Search by client, phone, company, campaign...',
         'notifications.all_channels': 'All Channels',
         'notifications.all_statuses': 'All Stages',
         'notifications.open_in_crm': 'View in CRM',
-        'notifications.no_alerts_found': 'No notification records match the selected filters.',
+        'notifications.no_alerts_found':
+            'No notification records match the selected filters.',
         'crm.initial_message': 'Initial Message / Note:',
         'crm.reason_lost': 'Reason Lost:',
         'crm.ready_initiate': 'Ready to initiate production?',
@@ -476,9 +481,11 @@ const translations: Record<Locale, Record<string, string>> = {
         // Profile & Account Settings
         'profile.settings': 'Profile Settings',
         'profile.title': 'Profile Information',
-        'profile.desc': 'Update your photo, personal details, and contact information.',
+        'profile.desc':
+            'Update your photo, personal details, and contact information.',
         'profile.photo': 'Profile Photo',
-        'profile.photo_hint': 'PNG, JPG, WEBP, or GIF up to 5MB. A square image is recommended.',
+        'profile.photo_hint':
+            'PNG, JPG, WEBP, or GIF up to 5MB. A square image is recommended.',
         'profile.upload_photo': 'Upload Photo',
         'profile.change_photo': 'Change Photo',
         'profile.remove_photo': 'Remove Photo',
@@ -490,8 +497,10 @@ const translations: Record<Locale, Record<string, string>> = {
         'profile.role': 'Account Role',
         'profile.status': 'Account Status',
         'profile.unverified_email': 'Your email address is unverified.',
-        'profile.resend_verification': 'Click here to re-send the verification email.',
-        'profile.verification_sent': 'A new verification link has been sent to your email address.',
+        'profile.resend_verification':
+            'Click here to re-send the verification email.',
+        'profile.verification_sent':
+            'A new verification link has been sent to your email address.',
         'profile.saved': 'Profile updated successfully.',
     },
     ar: {
@@ -602,7 +611,8 @@ const translations: Record<Locale, Record<string, string>> = {
         'crm.per_page': 'لكل صفحة',
         'crm.all_in_progress': 'كافة المراحل الجارية',
         'crm.no_leads_in_tab': 'لم يتم العثور على أي طلبات في هذا القسم.',
-        'crm.no_new_leads': 'تم التواصل مع كافة الطلبات! لا توجد طلبات جديدة في انتظار الرد.',
+        'crm.no_new_leads':
+            'تم التواصل مع كافة الطلبات! لا توجد طلبات جديدة في انتظار الرد.',
         'crm.no_in_progress': 'لا توجد صفقات قيد النقاش أو التفاوض حالياً.',
         'crm.no_won_deals': 'لا توجد صفقات رابحة مسجلة حتى الآن.',
         'crm.no_lost_deals': 'سجل نظيف! لا توجد صفقات غير مكتملة.',
@@ -677,15 +687,18 @@ const translations: Record<Locale, Record<string, string>> = {
         'notifications.mute_sound': 'كتم نغمة الصوت',
         'notifications.unmute_sound': 'تشغيل نغمة الصوت',
         'notifications.page_title': 'سجل الإشعارات والتنبيهات',
-        'notifications.page_subtitle': 'سجل زمني لجميع طلبات واستفسارات العملاء الجديدة وتنبيهات الحملات مرتبة من الأحدث إلى الأقدم.',
+        'notifications.page_subtitle':
+            'سجل زمني لجميع طلبات واستفسارات العملاء الجديدة وتنبيهات الحملات مرتبة من الأحدث إلى الأقدم.',
         'notifications.total_alerts': 'إجمالي التنبيهات',
         'notifications.today_alerts': 'تنبيهات اليوم',
         'notifications.new_uncontacted': 'في انتظار أول تواصل',
-        'notifications.filter_search': 'بحث باسم العميل، الهاتف، الشركة، أو الحملة...',
+        'notifications.filter_search':
+            'بحث باسم العميل، الهاتف، الشركة، أو الحملة...',
         'notifications.all_channels': 'جميع القنوات',
         'notifications.all_statuses': 'جميع المراحل',
         'notifications.open_in_crm': 'عرض في الـ CRM',
-        'notifications.no_alerts_found': 'لا توجد إشعارات مطابقة لمعايير البحث الحالية.',
+        'notifications.no_alerts_found':
+            'لا توجد إشعارات مطابقة لمعايير البحث الحالية.',
         'crm.initial_message': 'الرسالة الأولية / الملاحظات:',
         'crm.reason_lost': 'سبب خسارة الطلب:',
         'crm.ready_initiate': 'جاهز لبدء مرحلة التنفيذ الفعلي؟',

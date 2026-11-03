@@ -275,10 +275,14 @@ export function CreateLeadDialog({
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="meta">
-                                        {isRtl ? 'ميتا (فيسبوك، ماسنجر، انستغرام)' : 'Meta (Facebook, Messenger, Instagram)'}
+                                        {isRtl
+                                            ? 'ميتا (فيسبوك، ماسنجر، انستغرام)'
+                                            : 'Meta (Facebook, Messenger, Instagram)'}
                                     </SelectItem>
                                     <SelectItem value="tiktok">
-                                        {isRtl ? 'تيك توك (إعلانات / محتوى)' : 'TikTok'}
+                                        {isRtl
+                                            ? 'تيك توك (إعلانات / محتوى)'
+                                            : 'TikTok'}
                                     </SelectItem>
                                     <SelectItem value="snapchat">
                                         {isRtl ? 'سناب شات' : 'Snapchat'}
@@ -287,7 +291,9 @@ export function CreateLeadDialog({
                                         {isRtl ? 'لينكد إن' : 'LinkedIn'}
                                     </SelectItem>
                                     <SelectItem value="google">
-                                        {isRtl ? 'إعلانات جوجل / بحث' : 'Google Ads'}
+                                        {isRtl
+                                            ? 'إعلانات جوجل / بحث'
+                                            : 'Google Ads'}
                                     </SelectItem>
                                     <SelectItem value="direct_call">
                                         {t('crm.source_call')}

@@ -46,7 +46,9 @@ export function NotificationBell() {
         return saved !== null ? saved === 'true' : true;
     });
 
-    const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>('default');
+    const [permission, setPermission] = useState<
+        NotificationPermission | 'unsupported'
+    >('default');
     const [history, setHistory] = useState<RealtimeLead[]>(() => {
         if (typeof window === 'undefined') return [];
         try {
@@ -117,14 +119,22 @@ export function NotificationBell() {
                     params.set('last_id', String(lastLeadIdRef.current));
                 }
                 if (lastActivityIdRef.current !== null) {
-                    params.set('last_activity_id', String(lastActivityIdRef.current));
+                    params.set(
+                        'last_activity_id',
+                        String(lastActivityIdRef.current),
+                    );
                 }
-                const queryString = params.toString() ? `?${params.toString()}` : '';
-                const response = await fetch(`/crm/realtime-check${queryString}`, {
-                    headers: {
-                        Accept: 'application/json',
+                const queryString = params.toString()
+                    ? `?${params.toString()}`
+                    : '';
+                const response = await fetch(
+                    `/crm/realtime-check${queryString}`,
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                        },
                     },
-                });
+                );
 
                 if (!response.ok) return;
 
@@ -146,10 +156,19 @@ export function NotificationBell() {
                     if (data.recent_history && data.recent_history.length > 0) {
                         setHistory((prev) => {
                             // Merge and keep sorted newest to oldest
-                            const existingIds = new Set(prev.map((item) => item.id));
-                            const additions = data.recent_history!.filter((item) => !existingIds.has(item.id));
-                            const merged = [...prev, ...additions].sort((a, b) => b.id - a.id).slice(0, 30);
-                            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(merged));
+                            const existingIds = new Set(
+                                prev.map((item) => item.id),
+                            );
+                            const additions = data.recent_history!.filter(
+                                (item) => !existingIds.has(item.id),
+                            );
+                            const merged = [...prev, ...additions]
+                                .sort((a, b) => b.id - a.id)
+                                .slice(0, 30);
+                            localStorage.setItem(
+                                STORAGE_KEY_HISTORY,
+                                JSON.stringify(merged),
+                            );
                             return merged;
                         });
                     }
@@ -177,9 +196,16 @@ export function NotificationBell() {
                     // 2. Add new leads to the top of the history (newest to oldest)
                     setHistory((prev) => {
                         const newIds = new Set(data.new_leads.map((n) => n.id));
-                        const filteredOld = prev.filter((item) => !newIds.has(item.id));
-                        const updated = [...data.new_leads, ...filteredOld].sort((a, b) => b.id - a.id).slice(0, 30);
-                        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(updated));
+                        const filteredOld = prev.filter(
+                            (item) => !newIds.has(item.id),
+                        );
+                        const updated = [...data.new_leads, ...filteredOld]
+                            .sort((a, b) => b.id - a.id)
+                            .slice(0, 30);
+                        localStorage.setItem(
+                            STORAGE_KEY_HISTORY,
+                            JSON.stringify(updated),
+                        );
                         return updated;
                     });
 
@@ -195,7 +221,11 @@ export function NotificationBell() {
                     if (data.latest_id > (lastLeadIdRef.current || 0)) {
                         lastLeadIdRef.current = data.latest_id;
                     }
-                    if (data.latest_activity_id !== undefined && data.latest_activity_id > (lastActivityIdRef.current || 0)) {
+                    if (
+                        data.latest_activity_id !== undefined &&
+                        data.latest_activity_id >
+                            (lastActivityIdRef.current || 0)
+                    ) {
                         lastActivityIdRef.current = data.latest_activity_id;
                     }
                 }
@@ -228,8 +258,12 @@ export function NotificationBell() {
                     className="relative size-8 p-0 text-muted-foreground hover:text-foreground"
                     title={
                         isPushGranted && soundEnabled
-                            ? (isRtl ? 'التنبيهات اللحظية والصوتية مفعلة' : 'Real-time Sound & Alerts Active')
-                            : (isRtl ? 'الإشعارات وسجل الطلبات' : 'Notifications & Inquiry History')
+                            ? isRtl
+                                ? 'التنبيهات اللحظية والصوتية مفعلة'
+                                : 'Real-time Sound & Alerts Active'
+                            : isRtl
+                              ? 'الإشعارات وسجل الطلبات'
+                              : 'Notifications & Inquiry History'
                     }
                 >
                     {soundEnabled ? (
@@ -240,7 +274,7 @@ export function NotificationBell() {
 
                     {/* Unread count badge */}
                     {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold text-white shadow-xs animate-bounce">
+                        <span className="absolute -top-1 -right-1 flex h-4 min-w-4 animate-bounce items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold text-white shadow-xs">
                             {unreadCount > 9 ? '9+' : unreadCount}
                         </span>
                     )}
@@ -261,12 +295,12 @@ export function NotificationBell() {
 
             <DropdownMenuContent
                 align={isRtl ? 'start' : 'end'}
-                className="w-80 sm:w-96 p-0 text-xs shadow-xl rounded-xl border-border/80 overflow-hidden"
+                className="w-80 overflow-hidden rounded-xl border-border/80 p-0 text-xs shadow-xl sm:w-96"
             >
                 {/* Header with Title, Sound Toggle & Clear */}
                 <div className="flex items-center justify-between border-b bg-muted/40 px-3.5 py-2.5">
                     <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                        <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
                             <BellRing className="size-4 text-primary" />
                             {isRtl ? 'الإشعارات' : 'Notifications'}
                         </span>
@@ -286,8 +320,12 @@ export function NotificationBell() {
                             className="size-7 text-muted-foreground hover:text-foreground"
                             title={
                                 soundEnabled
-                                    ? (isRtl ? 'كتم نغمة الصوت' : 'Mute Chime Sound')
-                                    : (isRtl ? 'تشغيل نغمة الصوت' : 'Enable Chime Sound')
+                                    ? isRtl
+                                        ? 'كتم نغمة الصوت'
+                                        : 'Mute Chime Sound'
+                                    : isRtl
+                                      ? 'تشغيل نغمة الصوت'
+                                      : 'Enable Chime Sound'
                             }
                         >
                             {soundEnabled ? (
@@ -304,7 +342,11 @@ export function NotificationBell() {
                                 size="icon"
                                 onClick={handleClearHistory}
                                 className="size-7 text-muted-foreground hover:text-destructive"
-                                title={isRtl ? 'مسح سجل الإشعارات' : 'Clear notification history'}
+                                title={
+                                    isRtl
+                                        ? 'مسح سجل الإشعارات'
+                                        : 'Clear notification history'
+                                }
                             >
                                 <Trash2 className="size-3.5" />
                             </Button>
@@ -314,18 +356,20 @@ export function NotificationBell() {
 
                 {/* Browser Push Permission Banner (if not granted yet) */}
                 {!isPushGranted && !isPushDenied && (
-                    <div className="border-b bg-primary/5 px-3.5 py-2 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5 text-[11px] text-foreground font-medium">
-                            <BellRing className="size-3.5 text-primary shrink-0" />
+                    <div className="flex items-center justify-between gap-2 border-b bg-primary/5 px-3.5 py-2">
+                        <div className="flex items-center gap-1.5 text-[11px] font-medium text-foreground">
+                            <BellRing className="size-3.5 shrink-0 text-primary" />
                             <span>
-                                {isRtl ? 'تفعيل إشعارات المتصفح والموبايل' : 'Enable Mobile & Browser Push'}
+                                {isRtl
+                                    ? 'تفعيل إشعارات المتصفح والموبايل'
+                                    : 'Enable Mobile & Browser Push'}
                             </span>
                         </div>
                         <Button
                             size="sm"
                             variant="default"
                             onClick={handleEnablePush}
-                            className="h-6 text-[10px] px-2 font-semibold shadow-none"
+                            className="h-6 px-2 text-[10px] font-semibold shadow-none"
                         >
                             {isRtl ? 'تفعيل الآن' : 'Enable'}
                         </Button>
@@ -333,16 +377,18 @@ export function NotificationBell() {
                 )}
 
                 {/* Notifications History List (Newest to Oldest) */}
-                <div className="max-h-80 overflow-y-auto divide-y divide-border/40">
+                <div className="max-h-80 divide-y divide-border/40 overflow-y-auto">
                     {history.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-8 px-4 text-center text-muted-foreground">
-                            <div className="flex size-10 items-center justify-center rounded-full bg-muted/60 mb-2">
+                        <div className="flex flex-col items-center justify-center px-4 py-8 text-center text-muted-foreground">
+                            <div className="mb-2 flex size-10 items-center justify-center rounded-full bg-muted/60">
                                 <Bell className="size-5 text-muted-foreground/60" />
                             </div>
                             <p className="text-xs font-medium text-foreground">
-                                {isRtl ? 'لا توجد إشعارات سابقة' : 'No notifications yet'}
+                                {isRtl
+                                    ? 'لا توجد إشعارات سابقة'
+                                    : 'No notifications yet'}
                             </p>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">
+                            <p className="mt-0.5 text-[11px] text-muted-foreground">
                                 {isRtl
                                     ? 'ستظهر هنا جميع طلبات واستفسارات العملاء الجديدة فور وصولها'
                                     : 'New incoming client inquiries will appear here instantly'}
@@ -351,45 +397,59 @@ export function NotificationBell() {
                     ) : (
                         history.map((lead) => {
                             const platform = isRtl
-                                ? (lead.channel_label_ar || lead.channel || 'الموقع')
-                                : (lead.channel_label || lead.channel || 'Website');
+                                ? lead.channel_label_ar ||
+                                  lead.channel ||
+                                  'الموقع'
+                                : lead.channel_label ||
+                                  lead.channel ||
+                                  'Website';
 
                             return (
                                 <div
                                     key={lead.id}
                                     onClick={() => handleSelectLead(lead.id)}
-                                    className="group flex flex-col gap-1 p-3 cursor-pointer transition-colors hover:bg-muted/60 active:bg-muted"
+                                    className="group flex cursor-pointer flex-col gap-1 p-3 transition-colors hover:bg-muted/60 active:bg-muted"
                                 >
                                     <div className="flex items-center justify-between gap-2">
-                                        <div className="flex items-center gap-1.5 min-w-0">
-                                            <span className="font-semibold text-foreground text-xs truncate">
+                                        <div className="flex min-w-0 items-center gap-1.5">
+                                            <span className="truncate text-xs font-semibold text-foreground">
                                                 {lead.name}
                                             </span>
                                             {lead.company && (
-                                                <span className="text-[11px] text-muted-foreground truncate hidden sm:inline">
+                                                <span className="hidden truncate text-[11px] text-muted-foreground sm:inline">
                                                     · {lead.company}
                                                 </span>
                                             )}
                                         </div>
 
-                                        {lead.notification_type === 'assigned' || lead.is_assignment ? (
+                                        {lead.notification_type ===
+                                            'assigned' || lead.is_assignment ? (
                                             <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
                                                 <UserCheck className="size-2.5" />
-                                                {isRtl ? 'تكليف جديد' : 'Assigned'}
+                                                {isRtl
+                                                    ? 'تكليف جديد'
+                                                    : 'Assigned'}
                                             </span>
                                         ) : (
-                                            <ChannelBadge channelKey={lead.channel} size="sm" />
+                                            <ChannelBadge
+                                                channelKey={lead.channel}
+                                                size="sm"
+                                            />
                                         )}
                                     </div>
 
-                                    <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-0.5">
-                                        <span className="truncate max-w-[200px]">
-                                            {lead.service_name_snapshot || (isRtl ? 'استفسار عام' : 'General Inquiry')}
+                                    <div className="mt-0.5 flex items-center justify-between text-[11px] text-muted-foreground">
+                                        <span className="max-w-[200px] truncate">
+                                            {lead.service_name_snapshot ||
+                                                (isRtl
+                                                    ? 'استفسار عام'
+                                                    : 'General Inquiry')}
                                         </span>
 
-                                        <span className="flex items-center gap-1 text-[10px] shrink-0 text-muted-foreground/80 font-mono">
+                                        <span className="flex shrink-0 items-center gap-1 font-mono text-[10px] text-muted-foreground/80">
                                             <Clock className="size-2.5" />
-                                            {lead.created_at || (isRtl ? 'الآن' : 'Just now')}
+                                            {lead.created_at ||
+                                                (isRtl ? 'الآن' : 'Just now')}
                                         </span>
                                     </div>
                                 </div>
@@ -403,11 +463,15 @@ export function NotificationBell() {
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="w-full h-7 text-xs font-medium text-primary hover:text-primary gap-1.5 justify-center"
+                        className="h-7 w-full justify-center gap-1.5 text-xs font-medium text-primary hover:text-primary"
                         asChild
                     >
                         <Link href="/notifications">
-                            <span>{isRtl ? 'عرض سجل الإشعارات بالكامل ➔' : 'View Full Notification History ➔'}</span>
+                            <span>
+                                {isRtl
+                                    ? 'عرض سجل الإشعارات بالكامل ➔'
+                                    : 'View Full Notification History ➔'}
+                            </span>
                         </Link>
                     </Button>
                 </div>

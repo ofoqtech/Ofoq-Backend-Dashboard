@@ -1,1 +1,4 @@
-export { ChannelBadge, type ChannelBadgeProps } from '@/components/channel-badge';
+export {
+    ChannelBadge,
+    type ChannelBadgeProps,
+} from '@/components/channel-badge';

@@ -101,15 +101,18 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
                                         <CardContent className="space-y-2.5 p-3.5">
                                             {/* Priority, Channel & Time */}
                                             <div className="flex items-center justify-between text-[11px]">
-                                                <div className="flex items-center gap-1.5 flex-wrap">
+                                                <div className="flex flex-wrap items-center gap-1.5">
                                                     <span
                                                         className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${lead.priority_color}`}
                                                     >
                                                         {getPriorityLabel(lead)}
                                                     </span>
-                                                    <ChannelBadge lead={lead} size="sm" />
+                                                    <ChannelBadge
+                                                        lead={lead}
+                                                        size="sm"
+                                                    />
                                                 </div>
-                                                <span className="flex items-center gap-1 text-muted-foreground shrink-0">
+                                                <span className="flex shrink-0 items-center gap-1 text-muted-foreground">
                                                     <Calendar className="size-3" />
                                                     {formatDate(
                                                         lead.created_at,
@@ -146,9 +149,15 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
                                                 <div className="flex max-w-[140px] items-center gap-1.5 truncate text-muted-foreground">
                                                     {lead.assignee?.avatar ? (
                                                         <img
-                                                            src={lead.assignee.avatar}
-                                                            alt={lead.assignee.name}
-                                                            className="size-3.5 rounded-full object-cover shrink-0"
+                                                            src={
+                                                                lead.assignee
+                                                                    .avatar
+                                                            }
+                                                            alt={
+                                                                lead.assignee
+                                                                    .name
+                                                            }
+                                                            className="size-3.5 shrink-0 rounded-full object-cover"
                                                         />
                                                     ) : (
                                                         <UserIcon className="size-3 shrink-0" />

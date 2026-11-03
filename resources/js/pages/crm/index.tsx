@@ -84,7 +84,7 @@ export default function CrmIndex({
             const tabParam = urlParams.get('tab') as CrmSubPage;
             if (
                 ['all', 'kanban', 'new', 'in_progress', 'won', 'lost'].includes(
-                    tabParam
+                    tabParam,
                 )
             ) {
                 return tabParam;
@@ -97,13 +97,13 @@ export default function CrmIndex({
     const [search, setSearch] = useState(filters.search || '');
     const [selectedChannel, setSelectedChannel] = useState<string>('');
     const [selectedPriority, setSelectedPriority] = useState<string>(
-        filters.priority || 'all'
+        filters.priority || 'all',
     );
     const [selectedAssignee, setSelectedAssignee] = useState<string>(
-        filters.assigned_to || 'all'
+        filters.assigned_to || 'all',
     );
     const [selectedStage, setSelectedStage] = useState<string>(
-        filters.status || 'all'
+        filters.status || 'all',
     );
     const [selectedInProgressStage, setSelectedInProgressStage] =
         useState<string>('all');
@@ -162,8 +162,8 @@ export default function CrmIndex({
         const newCount = leads.filter((l) => l.status === 'new').length;
         const inProgressCount = leads.filter((l) =>
             ['contacted', 'qualified', 'proposal_sent', 'negotiation'].includes(
-                l.status
-            )
+                l.status,
+            ),
         ).length;
         const wonCount = leads.filter((l) => l.status === 'won').length;
         const lostCount = leads.filter((l) => l.status === 'lost').length;
@@ -246,7 +246,7 @@ export default function CrmIndex({
                         'qualified',
                         'proposal_sent',
                         'negotiation',
-                    ].includes(l.status)
+                    ].includes(l.status),
                 );
             case 'won':
                 return leads.filter((l) => l.status === 'won');
@@ -439,7 +439,7 @@ export default function CrmIndex({
                         } else if (selectedChannel === 'snapchat') {
                             if (
                                 !['snapchat', 'snapshot'].includes(
-                                    lead.channel || ''
+                                    lead.channel || '',
                                 )
                             ) {
                                 return false;
@@ -471,9 +471,15 @@ export default function CrmIndex({
                     // Search filter
                     if (search.trim()) {
                         const term = search.toLowerCase().trim();
-                        const nameMatch = lead.name?.toLowerCase().includes(term);
-                        const phoneMatch = lead.phone?.toLowerCase().includes(term);
-                        const emailMatch = lead.email?.toLowerCase().includes(term);
+                        const nameMatch = lead.name
+                            ?.toLowerCase()
+                            .includes(term);
+                        const phoneMatch = lead.phone
+                            ?.toLowerCase()
+                            .includes(term);
+                        const emailMatch = lead.email
+                            ?.toLowerCase()
+                            .includes(term);
                         const companyMatch = lead.company
                             ?.toLowerCase()
                             .includes(term);
@@ -596,7 +602,7 @@ export default function CrmIndex({
                         <Button
                             onClick={() => setIsCreateOpen(true)}
                             size="sm"
-                            className="h-8 gap-1.5 text-xs shadow-sm cursor-pointer"
+                            className="h-8 cursor-pointer gap-1.5 text-xs shadow-sm"
                         >
                             <Plus className="size-3.5" />
                             {t('crm.record_inquiry')}
@@ -620,7 +626,7 @@ export default function CrmIndex({
                 {/* Enhanced CRM Sub-Pages Section (Body flex-1) */}
                 <div className="flex flex-1 flex-col gap-4">
                     {/* Sub-Pages Tab Navigation Bar */}
-                    <div className="flex items-center gap-1.5 overflow-x-auto border-b border-border/60 pb-1.5 scrollbar-none">
+                    <div className="flex scrollbar-none items-center gap-1.5 overflow-x-auto border-b border-border/60 pb-1.5">
                         {subPageTabs.map((tab) => {
                             const Icon = tab.icon;
                             const isActive = activeTab === tab.key;
@@ -630,10 +636,10 @@ export default function CrmIndex({
                                     type="button"
                                     onClick={() => handleTabChange(tab.key)}
                                     className={cn(
-                                        'group relative flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition-all cursor-pointer select-none',
+                                        'group relative flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold whitespace-nowrap transition-all select-none',
                                         isActive
                                             ? 'bg-primary text-primary-foreground shadow-xs'
-                                            : 'text-muted-foreground hover:bg-muted/70 hover:text-foreground'
+                                            : 'text-muted-foreground hover:bg-muted/70 hover:text-foreground',
                                     )}
                                 >
                                     <Icon
@@ -641,16 +647,16 @@ export default function CrmIndex({
                                             'size-4',
                                             isActive
                                                 ? 'text-primary-foreground'
-                                                : 'text-muted-foreground group-hover:text-foreground'
+                                                : 'text-muted-foreground group-hover:text-foreground',
                                         )}
                                     />
                                     <span>{tab.title}</span>
                                     <span
                                         className={cn(
-                                            'flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1.5 text-xs font-mono font-bold leading-none',
+                                            'flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1.5 font-mono text-xs leading-none font-bold',
                                             isActive
                                                 ? 'bg-primary-foreground/20 text-primary-foreground'
-                                                : tab.badgeClass
+                                                : tab.badgeClass,
                                         )}
                                     >
                                         {tab.count}
@@ -746,7 +752,7 @@ export default function CrmIndex({
                                         <SelectItem value="all">
                                             {t(
                                                 'crm.all_in_progress',
-                                                'All Active Stages'
+                                                'All Active Stages',
                                             )}
                                         </SelectItem>
                                         {statuses
@@ -756,7 +762,7 @@ export default function CrmIndex({
                                                     'qualified',
                                                     'proposal_sent',
                                                     'negotiation',
-                                                ].includes(s.value)
+                                                ].includes(s.value),
                                             )
                                             .map((s) => (
                                                 <SelectItem
@@ -777,7 +783,7 @@ export default function CrmIndex({
                                 value={selectedChannel || 'all'}
                                 onValueChange={(val) => {
                                     setSelectedChannel(
-                                        val === 'all' ? '' : val
+                                        val === 'all' ? '' : val,
                                     );
                                     setCurrentPage(1);
                                 }}
@@ -811,7 +817,7 @@ export default function CrmIndex({
                                     <SelectItem value="other">
                                         {t(
                                             'crm.other_channels',
-                                            'Other Sources'
+                                            'Other Sources',
                                         )}
                                     </SelectItem>
                                 </SelectContent>
@@ -882,7 +888,7 @@ export default function CrmIndex({
                                     variant="ghost"
                                     size="sm"
                                     onClick={handleResetFilters}
-                                    className="h-9 gap-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+                                    className="h-9 cursor-pointer gap-1 text-xs text-muted-foreground hover:text-foreground"
                                 >
                                     <X className="size-3.5" />
                                     {t('common.reset')}

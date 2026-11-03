@@ -36,7 +36,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                 description={t('profile.desc')}
             />
 
-            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 mt-6">
+            <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:gap-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav
                         className="flex flex-col space-y-1"
@@ -48,13 +48,15 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 size="sm"
                                 variant="ghost"
                                 asChild
-                                className={cn('w-full justify-start text-start', {
-                                    'bg-muted font-semibold': isCurrentOrParentUrl(item.href),
-                                })}
+                                className={cn(
+                                    'w-full justify-start text-start',
+                                    {
+                                        'bg-muted font-semibold':
+                                            isCurrentOrParentUrl(item.href),
+                                    },
+                                )}
                             >
-                                <Link href={item.href}>
-                                    {item.title}
-                                </Link>
+                                <Link href={item.href}>{item.title}</Link>
                             </Button>
                         ))}
                     </nav>

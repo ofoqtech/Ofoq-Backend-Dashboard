@@ -483,37 +483,46 @@ export function LeadDetailSheet({
                             </div>
 
                             {/* Marketing & Ad Attribution Section */}
-                            <div className="mt-3 rounded-lg border bg-muted/30 p-3 text-xs space-y-2.5">
+                            <div className="mt-3 space-y-2.5 rounded-lg border bg-muted/30 p-3 text-xs">
                                 <div className="flex items-center justify-between">
-                                    <span className="font-semibold text-foreground flex items-center gap-1.5 text-xs">
+                                    <span className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
                                         <Megaphone className="size-3.5 text-primary" />
                                         {t('crm.marketing_attribution')}
                                     </span>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
+                                <div className="grid grid-cols-1 gap-2 pt-1 text-xs sm:grid-cols-2">
                                     <div>
-                                        <span className="text-muted-foreground block text-[11px]">
+                                        <span className="block text-[11px] text-muted-foreground">
                                             {t('crm.channel')}
                                         </span>
                                         <span className="font-medium text-foreground">
-                                            {isRtl ? (lead.channel_label_ar || lead.channel) : (lead.channel_label || lead.channel)}
+                                            {isRtl
+                                                ? lead.channel_label_ar ||
+                                                  lead.channel
+                                                : lead.channel_label ||
+                                                  lead.channel}
                                         </span>
                                     </div>
 
                                     <div>
-                                        <span className="text-muted-foreground block text-[11px]">
+                                        <span className="block text-[11px] text-muted-foreground">
                                             {t('crm.form_signed')}
                                         </span>
-                                        <span className="font-medium text-foreground flex items-center gap-1">
+                                        <span className="flex items-center gap-1 font-medium text-foreground">
                                             <FileText className="size-3 text-muted-foreground" />
-                                            {lead.form_name || lead.source?.replace('_', ' ') || 'Website Form'}
+                                            {lead.form_name ||
+                                                lead.source?.replace(
+                                                    '_',
+                                                    ' ',
+                                                ) ||
+                                                'Website Form'}
                                         </span>
                                     </div>
 
                                     {lead.utm_campaign && (
                                         <div>
-                                            <span className="text-muted-foreground block text-[11px]">
+                                            <span className="block text-[11px] text-muted-foreground">
                                                 {t('crm.campaign')}
                                             </span>
                                             <span className="font-mono text-[11px] font-semibold text-primary">
@@ -524,7 +533,7 @@ export function LeadDetailSheet({
 
                                     {lead.utm_medium && (
                                         <div>
-                                            <span className="text-muted-foreground block text-[11px]">
+                                            <span className="block text-[11px] text-muted-foreground">
                                                 {t('crm.medium')}
                                             </span>
                                             <span className="font-mono text-[11px] text-foreground">
@@ -535,7 +544,7 @@ export function LeadDetailSheet({
 
                                     {lead.utm_content && (
                                         <div className="sm:col-span-2">
-                                            <span className="text-muted-foreground block text-[11px]">
+                                            <span className="block text-[11px] text-muted-foreground">
                                                 {t('crm.ad_content')}
                                             </span>
                                             <span className="font-mono text-[11px] text-foreground">
@@ -546,10 +555,13 @@ export function LeadDetailSheet({
 
                                     {lead.landing_page && (
                                         <div className="sm:col-span-2">
-                                            <span className="text-muted-foreground block text-[11px]">
+                                            <span className="block text-[11px] text-muted-foreground">
                                                 {t('crm.landing_page')}
                                             </span>
-                                            <span className="font-mono text-[10px] text-muted-foreground truncate block" title={lead.landing_page}>
+                                            <span
+                                                className="block truncate font-mono text-[10px] text-muted-foreground"
+                                                title={lead.landing_page}
+                                            >
                                                 {lead.landing_page}
                                             </span>
                                         </div>
@@ -557,10 +569,13 @@ export function LeadDetailSheet({
 
                                     {lead.referrer && (
                                         <div className="sm:col-span-2">
-                                            <span className="text-muted-foreground block text-[11px]">
+                                            <span className="block text-[11px] text-muted-foreground">
                                                 {t('crm.referrer')}
                                             </span>
-                                            <span className="font-mono text-[10px] text-muted-foreground truncate block" title={lead.referrer}>
+                                            <span
+                                                className="block truncate font-mono text-[10px] text-muted-foreground"
+                                                title={lead.referrer}
+                                            >
                                                 {lead.referrer}
                                             </span>
                                         </div>

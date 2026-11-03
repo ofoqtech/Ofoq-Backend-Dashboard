@@ -47,7 +47,7 @@ export function CrmTable({
 
     if (leads.length === 0) {
         return (
-            <div className="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center bg-card/30">
+            <div className="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed bg-card/30 p-8 text-center">
                 <p className="text-sm font-semibold text-foreground">
                     {emptyTitle || t('crm.no_leads_found')}
                 </p>
@@ -153,10 +153,13 @@ export function CrmTable({
                                 </td>
 
                                 <td className="px-4 py-3 text-start whitespace-nowrap">
-                                    <div className="flex flex-col gap-0.5 items-start">
+                                    <div className="flex flex-col items-start gap-0.5">
                                         <ChannelBadge lead={lead} size="sm" />
                                         {lead.utm_campaign && (
-                                            <span className="text-[10px] font-mono text-muted-foreground truncate max-w-[130px]" title={lead.utm_campaign}>
+                                            <span
+                                                className="max-w-[130px] truncate font-mono text-[10px] text-muted-foreground"
+                                                title={lead.utm_campaign}
+                                            >
                                                 {lead.utm_campaign}
                                             </span>
                                         )}
@@ -185,7 +188,7 @@ export function CrmTable({
                                             <img
                                                 src={lead.assignee.avatar}
                                                 alt={lead.assignee.name}
-                                                className="size-4 rounded-full object-cover shrink-0"
+                                                className="size-4 shrink-0 rounded-full object-cover"
                                             />
                                         ) : (
                                             <UserIcon className="size-3.5 shrink-0" />

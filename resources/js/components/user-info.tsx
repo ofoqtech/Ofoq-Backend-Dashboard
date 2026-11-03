@@ -18,7 +18,7 @@ export function UserInfo({
                     <img
                         src={user.avatar}
                         alt={user.name}
-                        className="size-full object-cover rounded-full"
+                        className="size-full rounded-full object-cover"
                     />
                 ) : (
                     <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">

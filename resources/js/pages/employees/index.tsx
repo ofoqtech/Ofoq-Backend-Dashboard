@@ -307,13 +307,21 @@ export default function EmployeesIndex({
                                                             <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-primary/10">
                                                                 {employee.avatar ? (
                                                                     <img
-                                                                        src={employee.avatar}
-                                                                        alt={employee.name}
+                                                                        src={
+                                                                            employee.avatar
+                                                                        }
+                                                                        alt={
+                                                                            employee.name
+                                                                        }
                                                                         className="size-full object-cover"
                                                                     />
                                                                 ) : (
                                                                     <span className="text-xs font-bold text-primary">
-                                                                        {employee.name.charAt(0).toUpperCase()}
+                                                                        {employee.name
+                                                                            .charAt(
+                                                                                0,
+                                                                            )
+                                                                            .toUpperCase()}
                                                                     </span>
                                                                 )}
                                                             </div>

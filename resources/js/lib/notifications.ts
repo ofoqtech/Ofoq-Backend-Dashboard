@@ -23,7 +23,13 @@ function getAudioContext(): AudioContext | null {
 
     try {
         if (!cachedAudioCtx) {
-            const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+            const AudioCtx =
+                window.AudioContext ||
+                (
+                    window as unknown as {
+                        webkitAudioContext: typeof AudioContext;
+                    }
+                ).webkitAudioContext;
             if (AudioCtx) {
                 cachedAudioCtx = new AudioCtx();
             }
@@ -110,7 +116,9 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 /**
  * Check if the browser supports notifications and get current permission.
  */
-export function getNotificationPermission(): NotificationPermission | 'unsupported' {
+export function getNotificationPermission():
+    | NotificationPermission
+    | 'unsupported' {
     if (typeof window === 'undefined' || !('Notification' in window)) {
         return 'unsupported';
     }
@@ -146,7 +154,7 @@ export function showLeadNotification(
         soundEnabled?: boolean;
         isRtl?: boolean;
         onSelect?: (leadId: number) => void;
-    } = {}
+    } = {},
 ) {
     const { soundEnabled = true, isRtl = false, onSelect } = options;
 
@@ -165,27 +173,38 @@ export function showLeadNotification(
     }
 
     const platformLabel = isRtl
-        ? (lead.channel_label_ar || lead.channel || 'الموقع')
-        : (lead.channel_label || lead.channel || 'Website');
+        ? lead.channel_label_ar || lead.channel || 'الموقع'
+        : lead.channel_label || lead.channel || 'Website';
 
-    const serviceLabel = lead.service_name_snapshot || (isRtl ? 'طلب استفسار جديد' : 'New Client Inquiry');
+    const serviceLabel =
+        lead.service_name_snapshot ||
+        (isRtl ? 'طلب استفسار جديد' : 'New Client Inquiry');
 
-    const isAssignment = lead.notification_type === 'assigned' || !!lead.is_assignment;
+    const isAssignment =
+        lead.notification_type === 'assigned' || !!lead.is_assignment;
 
     const title = isAssignment
-        ? (isRtl ? `📋 تم تكليفك بطلب عميل: ${lead.name}` : `📋 Lead Assigned to You: ${lead.name}`)
-        : (isRtl ? `🔔 عميل جديد: ${lead.name}` : `🔔 New Lead: ${lead.name}`);
+        ? isRtl
+            ? `📋 تم تكليفك بطلب عميل: ${lead.name}`
+            : `📋 Lead Assigned to You: ${lead.name}`
+        : isRtl
+          ? `🔔 عميل جديد: ${lead.name}`
+          : `🔔 New Lead: ${lead.name}`;
 
     const body = isAssignment
-        ? (isRtl
+        ? isRtl
             ? `قام ${lead.assigned_by_name || 'مدير النظام'} بتكليفك بمتابعة هذا العميل (${serviceLabel})`
-            : `Assigned to you by ${lead.assigned_by_name || 'Admin'} (${serviceLabel})`)
+            : `Assigned to you by ${lead.assigned_by_name || 'Admin'} (${serviceLabel})`
         : `${platformLabel ? `[${platformLabel}] ` : ''}${serviceLabel}${lead.company ? ` · ${lead.company}` : ''} (${lead.phone})`;
 
     const targetUrl = `/crm?selected=${lead.id}`;
 
     // 3. Native Operating System & Mobile Notification
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+    if (
+        typeof window !== 'undefined' &&
+        'Notification' in window &&
+        Notification.permission === 'granted'
+    ) {
         const notificationOptions = {
             body,
             icon: '/logo dark.jpeg',
@@ -194,16 +213,21 @@ export function showLeadNotification(
             data: { url: targetUrl },
         };
 
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.ready.then((reg) => {
-                reg.showNotification(title, notificationOptions);
-            }).catch(() => {
-                const n = new Notification(title, notificationOptions);
-                n.onclick = () => {
-                    window.focus();
-                    window.location.href = targetUrl;
-                };
-            });
+        if (
+            'serviceWorker' in navigator &&
+            navigator.serviceWorker.controller
+        ) {
+            navigator.serviceWorker.ready
+                .then((reg) => {
+                    reg.showNotification(title, notificationOptions);
+                })
+                .catch(() => {
+                    const n = new Notification(title, notificationOptions);
+                    n.onclick = () => {
+                        window.focus();
+                        window.location.href = targetUrl;
+                    };
+                });
         } else {
             try {
                 const n = new Notification(title, notificationOptions);
@@ -233,4 +257,3 @@ export function showLeadNotification(
         },
     });
 }
-

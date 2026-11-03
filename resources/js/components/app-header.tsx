@@ -221,11 +221,13 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                             <img
                                                 src={auth.user.avatar}
                                                 alt={auth.user.name}
-                                                className="size-full object-cover rounded-full"
+                                                className="size-full rounded-full object-cover"
                                             />
                                         ) : (
                                             <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                                {getInitials(auth.user?.name ?? '')}
+                                                {getInitials(
+                                                    auth.user?.name ?? '',
+                                                )}
                                             </AvatarFallback>
                                         )}
                                     </Avatar>

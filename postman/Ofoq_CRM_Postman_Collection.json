@@ -1,398 +1,445 @@
 {
-  "info": {
-    "name": "Ofoq CRM & Instant Notifications API",
-    "_postman_id": "ofoq-crm-collection-v1",
-    "description": "Complete Postman collection to test the CRM lifecycle, Marketing Attribution (Meta, TikTok, Snapchat, LinkedIn, Google Ads), and Real-time Sound & Push Notifications.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "1. Public Lead Ingestion & Ad Attribution (Triggers Live Audio & Push Alerts)",
-      "item": [
-        {
-          "name": "01 - Ingest Lead from Meta Ads (Facebook / Instagram)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 201 Created', function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "var jsonData = pm.response.json();",
-                  "pm.test('Response indicates success', function () {",
-                  "    pm.expect(jsonData.success).to.eql(true);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Eng. Tarek Mansour\",\n  \"mobile\": \"+201011223344\",\n  \"email\": \"tarek@mansour-tech.com\",\n  \"company\": \"Mansour Tech Solutions\",\n  \"service_id\": {{service_id}},\n  \"form_name\": \"Hero_Contact_Modal\",\n  \"utm_source\": \"meta\",\n  \"utm_medium\": \"cpc\",\n  \"utm_campaign\": \"Ramadan_Tech_Promo_2026\",\n  \"utm_content\": \"carousel_ad_v1\",\n  \"landing_page\": \"https://ofoq.tech/services?utm_source=meta&utm_campaign=Ramadan_Tech_Promo_2026\",\n  \"message\": \"Looking to build a scalable multi-tenant SaaS backend with Laravel.\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/service-form",
-              "host": ["{{base_url}}"],
-              "path": ["api", "service-form"]
-            },
-            "description": "Submits a new inquiry with Meta (Facebook/IG) attribution. When your dashboard is open, this triggers an instant bell chime sound, mobile/browser push notification, and live toast!"
-          }
-        },
-        {
-          "name": "02 - Ingest Lead from TikTok Ads",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Sarah El-Gendy\",\n  \"mobile\": \"+201122334455\",\n  \"email\": \"sarah@elgendy-agency.com\",\n  \"company\": \"El-Gendy Creative Agency\",\n  \"service_id\": {{service_id}},\n  \"form_name\": \"TikTok_LeadGen_Popup\",\n  \"utm_source\": \"tiktok\",\n  \"utm_medium\": \"feed_video\",\n  \"utm_campaign\": \"Summer_Viral_2026\",\n  \"utm_content\": \"reel_creative_04\",\n  \"landing_page\": \"https://ofoq.tech/portfolio?utm_source=tiktok\",\n  \"message\": \"Need high-performance mobile UI and React frontend development.\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/service-form",
-              "host": ["{{base_url}}"],
-              "path": ["api", "service-form"]
-            },
-            "description": "Submits an inquiry tagged with TikTok attribution."
-          }
-        },
-        {
-          "name": "03 - Ingest Lead from Snapchat Ads (Snapshot)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Dr. Omar Abdelaziz\",\n  \"mobile\": \"+201233445566\",\n  \"email\": \"omar@abdelaziz-clinic.eg\",\n  \"company\": \"Al-Safwa Specialized Clinics\",\n  \"service_id\": {{service_id}},\n  \"form_name\": \"Snapchat_Story_Swipe\",\n  \"utm_source\": \"snapchat\",\n  \"utm_medium\": \"story_ad\",\n  \"utm_campaign\": \"Medical_Platform_KSA\",\n  \"landing_page\": \"https://ofoq.tech/medical?utm_source=snapchat\",\n  \"message\": \"We need a full booking and patient management platform.\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/service-form",
-              "host": ["{{base_url}}"],
-              "path": ["api", "service-form"]
-            },
-            "description": "Submits an inquiry with Snapchat attribution."
-          }
-        },
-        {
-          "name": "04 - Ingest Lead from LinkedIn Ads",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Khaled Mostafa\",\n  \"mobile\": \"+201099887711\",\n  \"email\": \"k.mostafa@fintech-global.com\",\n  \"company\": \"FinTech Global MENA\",\n  \"service_id\": {{service_id}},\n  \"form_name\": \"LinkedIn_B2B_Form\",\n  \"utm_source\": \"linkedin\",\n  \"utm_medium\": \"sponsored_inmail\",\n  \"utm_campaign\": \"Enterprise_Fintech_Q3\",\n  \"landing_page\": \"https://ofoq.tech/enterprise?utm_source=linkedin\",\n  \"message\": \"Looking for enterprise API architecture and cloud microservices.\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/service-form",
-              "host": ["{{base_url}}"],
-              "path": ["api", "service-form"]
-            },
-            "description": "Submits an inquiry with LinkedIn B2B attribution."
-          }
-        },
-        {
-          "name": "05 - Ingest Lead from Google Ads",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Nourhan Ezzat\",\n  \"mobile\": \"+201588776655\",\n  \"email\": \"nourhan@ezzat-group.com\",\n  \"company\": \"Ezzat Logistics & Supply\",\n  \"service_id\": {{service_id}},\n  \"form_name\": \"Google_Search_Landing\",\n  \"utm_source\": \"google\",\n  \"utm_medium\": \"cpc\",\n  \"utm_campaign\": \"ERP_Custom_Software_Cairo\",\n  \"landing_page\": \"https://ofoq.tech/custom-erp?utm_source=google\",\n  \"message\": \"Urgent requirement for warehouse inventory ERP system.\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/service-form",
-              "host": ["{{base_url}}"],
-              "path": ["api", "service-form"]
-            },
-            "description": "Submits an inquiry with Google Ads search attribution."
-          }
-        },
-        {
-          "name": "06 - Ingest Lead with Auto-detection (Referer Fallback)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Referer", "value": "https://l.instagram.com/" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Amr El-Shal\",\n  \"mobile\": \"+201055443322\",\n  \"email\": \"amr@elshal.com\",\n  \"service_id\": {{service_id}},\n  \"message\": \"Hello, inquiring about website development pricing.\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/service-form",
-              "host": ["{{base_url}}"],
-              "path": ["api", "service-form"]
-            },
-            "description": "Tests auto-detection: no UTM parameters are sent, but HTTP Referer header is instagram.com. System automatically classifies as Meta."
-          }
-        },
-        {
-          "name": "07 - Get Active Services & Budgets",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/services",
-              "host": ["{{base_url}}"],
-              "path": ["api", "services"]
-            },
-            "description": "Fetches active services to find service IDs for test submissions."
-          }
-        }
-      ]
+    "info": {
+        "name": "Ofoq CRM & Instant Notifications API",
+        "_postman_id": "ofoq-crm-collection-v1",
+        "description": "Complete Postman collection to test the CRM lifecycle, Marketing Attribution (Meta, TikTok, Snapchat, LinkedIn, Google Ads), and Real-time Sound & Push Notifications.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
-    {
-      "name": "2. Real-time Notification Engine",
-      "item": [
+    "item": [
         {
-          "name": "08 - Get Initial Watermark & History (No last_id)",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/crm/realtime-check",
-              "host": ["{{base_url}}"],
-              "path": ["crm", "realtime-check"]
-            },
-            "description": "Returns latest_id watermark and initial recent history without playing sounds."
-          }
+            "name": "1. Public Lead Ingestion & Ad Attribution (Triggers Live Audio & Push Alerts)",
+            "item": [
+                {
+                    "name": "01 - Ingest Lead from Meta Ads (Facebook / Instagram)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 201 Created', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.test('Response indicates success', function () {",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Eng. Tarek Mansour\",\n  \"mobile\": \"+201011223344\",\n  \"email\": \"tarek@mansour-tech.com\",\n  \"company\": \"Mansour Tech Solutions\",\n  \"service_id\": {{service_id}},\n  \"form_name\": \"Hero_Contact_Modal\",\n  \"utm_source\": \"meta\",\n  \"utm_medium\": \"cpc\",\n  \"utm_campaign\": \"Ramadan_Tech_Promo_2026\",\n  \"utm_content\": \"carousel_ad_v1\",\n  \"landing_page\": \"https://ofoq.tech/services?utm_source=meta&utm_campaign=Ramadan_Tech_Promo_2026\",\n  \"message\": \"Looking to build a scalable multi-tenant SaaS backend with Laravel.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/service-form",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "service-form"]
+                        },
+                        "description": "Submits a new inquiry with Meta (Facebook/IG) attribution. When your dashboard is open, this triggers an instant bell chime sound, mobile/browser push notification, and live toast!"
+                    }
+                },
+                {
+                    "name": "02 - Ingest Lead from TikTok Ads",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Sarah El-Gendy\",\n  \"mobile\": \"+201122334455\",\n  \"email\": \"sarah@elgendy-agency.com\",\n  \"company\": \"El-Gendy Creative Agency\",\n  \"service_id\": {{service_id}},\n  \"form_name\": \"TikTok_LeadGen_Popup\",\n  \"utm_source\": \"tiktok\",\n  \"utm_medium\": \"feed_video\",\n  \"utm_campaign\": \"Summer_Viral_2026\",\n  \"utm_content\": \"reel_creative_04\",\n  \"landing_page\": \"https://ofoq.tech/portfolio?utm_source=tiktok\",\n  \"message\": \"Need high-performance mobile UI and React frontend development.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/service-form",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "service-form"]
+                        },
+                        "description": "Submits an inquiry tagged with TikTok attribution."
+                    }
+                },
+                {
+                    "name": "03 - Ingest Lead from Snapchat Ads (Snapshot)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Dr. Omar Abdelaziz\",\n  \"mobile\": \"+201233445566\",\n  \"email\": \"omar@abdelaziz-clinic.eg\",\n  \"company\": \"Al-Safwa Specialized Clinics\",\n  \"service_id\": {{service_id}},\n  \"form_name\": \"Snapchat_Story_Swipe\",\n  \"utm_source\": \"snapchat\",\n  \"utm_medium\": \"story_ad\",\n  \"utm_campaign\": \"Medical_Platform_KSA\",\n  \"landing_page\": \"https://ofoq.tech/medical?utm_source=snapchat\",\n  \"message\": \"We need a full booking and patient management platform.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/service-form",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "service-form"]
+                        },
+                        "description": "Submits an inquiry with Snapchat attribution."
+                    }
+                },
+                {
+                    "name": "04 - Ingest Lead from LinkedIn Ads",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Khaled Mostafa\",\n  \"mobile\": \"+201099887711\",\n  \"email\": \"k.mostafa@fintech-global.com\",\n  \"company\": \"FinTech Global MENA\",\n  \"service_id\": {{service_id}},\n  \"form_name\": \"LinkedIn_B2B_Form\",\n  \"utm_source\": \"linkedin\",\n  \"utm_medium\": \"sponsored_inmail\",\n  \"utm_campaign\": \"Enterprise_Fintech_Q3\",\n  \"landing_page\": \"https://ofoq.tech/enterprise?utm_source=linkedin\",\n  \"message\": \"Looking for enterprise API architecture and cloud microservices.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/service-form",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "service-form"]
+                        },
+                        "description": "Submits an inquiry with LinkedIn B2B attribution."
+                    }
+                },
+                {
+                    "name": "05 - Ingest Lead from Google Ads",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Nourhan Ezzat\",\n  \"mobile\": \"+201588776655\",\n  \"email\": \"nourhan@ezzat-group.com\",\n  \"company\": \"Ezzat Logistics & Supply\",\n  \"service_id\": {{service_id}},\n  \"form_name\": \"Google_Search_Landing\",\n  \"utm_source\": \"google\",\n  \"utm_medium\": \"cpc\",\n  \"utm_campaign\": \"ERP_Custom_Software_Cairo\",\n  \"landing_page\": \"https://ofoq.tech/custom-erp?utm_source=google\",\n  \"message\": \"Urgent requirement for warehouse inventory ERP system.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/service-form",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "service-form"]
+                        },
+                        "description": "Submits an inquiry with Google Ads search attribution."
+                    }
+                },
+                {
+                    "name": "06 - Ingest Lead with Auto-detection (Referer Fallback)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" },
+                            {
+                                "key": "Referer",
+                                "value": "https://l.instagram.com/"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Amr El-Shal\",\n  \"mobile\": \"+201055443322\",\n  \"email\": \"amr@elshal.com\",\n  \"service_id\": {{service_id}},\n  \"message\": \"Hello, inquiring about website development pricing.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/service-form",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "service-form"]
+                        },
+                        "description": "Tests auto-detection: no UTM parameters are sent, but HTTP Referer header is instagram.com. System automatically classifies as Meta."
+                    }
+                },
+                {
+                    "name": "07 - Get Active Services & Budgets",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/services",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "services"]
+                        },
+                        "description": "Fetches active services to find service IDs for test submissions."
+                    }
+                }
+            ]
         },
         {
-          "name": "09 - Poll for New Incoming Leads (with last_id)",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/crm/realtime-check?last_id={{last_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["crm", "realtime-check"],
-              "query": [
-                { "key": "last_id", "value": "{{last_id}}" }
-              ]
-            },
-            "description": "Polls for new leads since last_id. When new leads arrive, the client triggers the audio chime and push notification."
-          }
+            "name": "2. Real-time Notification Engine",
+            "item": [
+                {
+                    "name": "08 - Get Initial Watermark & History (No last_id)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/crm/realtime-check",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm", "realtime-check"]
+                        },
+                        "description": "Returns latest_id watermark and initial recent history without playing sounds."
+                    }
+                },
+                {
+                    "name": "09 - Poll for New Incoming Leads (with last_id)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/crm/realtime-check?last_id={{last_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm", "realtime-check"],
+                            "query": [
+                                { "key": "last_id", "value": "{{last_id}}" }
+                            ]
+                        },
+                        "description": "Polls for new leads since last_id. When new leads arrive, the client triggers the audio chime and push notification."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. CRM Pipeline & Lifecycle Management",
+            "item": [
+                {
+                    "name": "10 - Manual Lead Creation (Record Inquiry)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Eng. Hisham Al-Qadi\",\n  \"phone\": \"+201088776655\",\n  \"email\": \"hisham@alqadi.com\",\n  \"company\": \"Al-Qadi Real Estate\",\n  \"priority\": \"high\",\n  \"source\": \"meta\",\n  \"utm_source\": \"meta\",\n  \"utm_campaign\": \"Exhibition_VIP_2026\",\n  \"internal_notes\": \"Discussed mobile app with CRM integration. Follow up on Sunday.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/crm",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm"]
+                        },
+                        "description": "Manually records a lead into the CRM pipeline."
+                    }
+                },
+                {
+                    "name": "11 - Update Stage to Contacted",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"contacted\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/crm/{{lead_id}}/status",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm", "{{lead_id}}", "status"]
+                        }
+                    }
+                },
+                {
+                    "name": "12 - Update Stage to Qualified",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"qualified\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/crm/{{lead_id}}/status",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm", "{{lead_id}}", "status"]
+                        }
+                    }
+                },
+                {
+                    "name": "13 - Update Stage to Proposal Sent",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"proposal_sent\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/crm/{{lead_id}}/status",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm", "{{lead_id}}", "status"]
+                        }
+                    }
+                },
+                {
+                    "name": "14 - Update Stage to Won (Deal Closed)",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"won\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/crm/{{lead_id}}/status",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm", "{{lead_id}}", "status"]
+                        }
+                    }
+                },
+                {
+                    "name": "15 - Update Stage to Lost (with Lost Reason)",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"lost\",\n  \"lost_reason\": \"Client postponed project to next fiscal year.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/crm/{{lead_id}}/status",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm", "{{lead_id}}", "status"]
+                        }
+                    }
+                },
+                {
+                    "name": "16 - Update Priority (Urgent / High / Medium / Low)",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"priority\": \"urgent\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/crm/{{lead_id}}/priority",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm", "{{lead_id}}", "priority"]
+                        }
+                    }
+                },
+                {
+                    "name": "17 - Assign Lead to Staff Member",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"assigned_to\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/crm/{{lead_id}}/assign",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm", "{{lead_id}}", "assign"]
+                        }
+                    }
+                },
+                {
+                    "name": "18 - Add Activity Note (Call / Meeting / WhatsApp)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"call\",\n  \"content\": \"Called client on WhatsApp. Discussed scope, timeline (3 weeks), and agreed on proposal review.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/crm/{{lead_id}}/notes",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm", "{{lead_id}}", "notes"]
+                        }
+                    }
+                },
+                {
+                    "name": "19 - Delete Lead (Admin Only)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/crm/{{lead_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["crm", "{{lead_id}}"]
+                        }
+                    }
+                }
+            ]
         }
-      ]
-    },
-    {
-      "name": "3. CRM Pipeline & Lifecycle Management",
-      "item": [
-        {
-          "name": "10 - Manual Lead Creation (Record Inquiry)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Eng. Hisham Al-Qadi\",\n  \"phone\": \"+201088776655\",\n  \"email\": \"hisham@alqadi.com\",\n  \"company\": \"Al-Qadi Real Estate\",\n  \"priority\": \"high\",\n  \"source\": \"meta\",\n  \"utm_source\": \"meta\",\n  \"utm_campaign\": \"Exhibition_VIP_2026\",\n  \"internal_notes\": \"Discussed mobile app with CRM integration. Follow up on Sunday.\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/crm",
-              "host": ["{{base_url}}"],
-              "path": ["crm"]
-            },
-            "description": "Manually records a lead into the CRM pipeline."
-          }
-        },
-        {
-          "name": "11 - Update Stage to Contacted",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"contacted\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/crm/{{lead_id}}/status",
-              "host": ["{{base_url}}"],
-              "path": ["crm", "{{lead_id}}", "status"]
-            }
-          }
-        },
-        {
-          "name": "12 - Update Stage to Qualified",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"qualified\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/crm/{{lead_id}}/status",
-              "host": ["{{base_url}}"],
-              "path": ["crm", "{{lead_id}}", "status"]
-            }
-          }
-        },
-        {
-          "name": "13 - Update Stage to Proposal Sent",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"proposal_sent\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/crm/{{lead_id}}/status",
-              "host": ["{{base_url}}"],
-              "path": ["crm", "{{lead_id}}", "status"]
-            }
-          }
-        },
-        {
-          "name": "14 - Update Stage to Won (Deal Closed)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"won\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/crm/{{lead_id}}/status",
-              "host": ["{{base_url}}"],
-              "path": ["crm", "{{lead_id}}", "status"]
-            }
-          }
-        },
-        {
-          "name": "15 - Update Stage to Lost (with Lost Reason)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"lost\",\n  \"lost_reason\": \"Client postponed project to next fiscal year.\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/crm/{{lead_id}}/status",
-              "host": ["{{base_url}}"],
-              "path": ["crm", "{{lead_id}}", "status"]
-            }
-          }
-        },
-        {
-          "name": "16 - Update Priority (Urgent / High / Medium / Low)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"priority\": \"urgent\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/crm/{{lead_id}}/priority",
-              "host": ["{{base_url}}"],
-              "path": ["crm", "{{lead_id}}", "priority"]
-            }
-          }
-        },
-        {
-          "name": "17 - Assign Lead to Staff Member",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"assigned_to\": 1\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/crm/{{lead_id}}/assign",
-              "host": ["{{base_url}}"],
-              "path": ["crm", "{{lead_id}}", "assign"]
-            }
-          }
-        },
-        {
-          "name": "18 - Add Activity Note (Call / Meeting / WhatsApp)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type\": \"call\",\n  \"content\": \"Called client on WhatsApp. Discussed scope, timeline (3 weeks), and agreed on proposal review.\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/crm/{{lead_id}}/notes",
-              "host": ["{{base_url}}"],
-              "path": ["crm", "{{lead_id}}", "notes"]
-            }
-          }
-        },
-        {
-          "name": "19 - Delete Lead (Admin Only)",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/crm/{{lead_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["crm", "{{lead_id}}"]
-            }
-          }
-        }
-      ]
-    }
-  ]
+    ]
 }
-

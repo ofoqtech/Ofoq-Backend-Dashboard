@@ -517,7 +517,9 @@ export default function Dashboard({
                                                         />
                                                     ) : (
                                                         <span className="text-xs font-bold text-primary">
-                                                            {emp.name.charAt(0).toUpperCase()}
+                                                            {emp.name
+                                                                .charAt(0)
+                                                                .toUpperCase()}
                                                         </span>
                                                     )}
                                                 </div>

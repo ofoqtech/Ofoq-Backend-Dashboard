@@ -1,18 +1,17 @@
 {
-  "name": "Ofoq CRM & Dashboard",
-  "short_name": "Ofoq CRM",
-  "description": "Ofoq Technology CRM and Client Pipeline Management",
-  "start_url": "/crm",
-  "display": "standalone",
-  "background_color": "#080F1E",
-  "theme_color": "#0081FB",
-  "icons": [
-    {
-      "src": "/logo dark.jpeg",
-      "sizes": "192x192 512x512",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
-    }
-  ]
+    "name": "Ofoq CRM & Dashboard",
+    "short_name": "Ofoq CRM",
+    "description": "Ofoq Technology CRM and Client Pipeline Management",
+    "start_url": "/crm",
+    "display": "standalone",
+    "background_color": "#080F1E",
+    "theme_color": "#0081FB",
+    "icons": [
+        {
+            "src": "/logo dark.jpeg",
+            "sizes": "192x192 512x512",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        }
+    ]
 }
-

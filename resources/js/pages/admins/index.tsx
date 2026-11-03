@@ -302,8 +302,12 @@ export default function AdminsIndex({
                                                             <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20">
                                                                 {admin.avatar ? (
                                                                     <img
-                                                                        src={admin.avatar}
-                                                                        alt={admin.name}
+                                                                        src={
+                                                                            admin.avatar
+                                                                        }
+                                                                        alt={
+                                                                            admin.name
+                                                                        }
                                                                         className="size-full object-cover"
                                                                     />
                                                                 ) : (

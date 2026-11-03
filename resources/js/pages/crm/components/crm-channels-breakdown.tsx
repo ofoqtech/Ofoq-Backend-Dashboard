@@ -25,14 +25,14 @@ export function CrmChannelsBreakdown({
         <div className="space-y-2.5">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                    <h3 className="text-base font-semibold text-foreground tracking-tight">
+                    <h3 className="text-base font-semibold tracking-tight text-foreground">
                         {t('crm.channels_breakdown')}
                     </h3>
                     {selectedChannel && (
                         <button
                             type="button"
                             onClick={() => onSelectChannel('')}
-                            className="text-sm font-medium text-primary hover:underline cursor-pointer"
+                            className="cursor-pointer text-sm font-medium text-primary hover:underline"
                         >
                             ({t('common.reset')})
                         </button>
@@ -47,17 +47,22 @@ export function CrmChannelsBreakdown({
                     return (
                         <Card
                             key={ch.key}
-                            onClick={() => onSelectChannel(isSelected ? '' : ch.key)}
+                            onClick={() =>
+                                onSelectChannel(isSelected ? '' : ch.key)
+                            }
                             className={`cursor-pointer transition-all duration-150 hover:border-primary/50 hover:shadow-xs ${
                                 isSelected
-                                    ? 'border-primary ring-1 ring-primary bg-primary/[0.04]'
+                                    ? 'border-primary bg-primary/[0.04] ring-1 ring-primary'
                                     : 'border-border/70 bg-card/60'
                             }`}
                         >
                             <CardContent className="p-3 sm:p-3.5">
                                 <div className="flex items-center justify-between gap-1">
-                                    <ChannelBadge channelKey={ch.key} size="md" />
-                                    <span className="text-sm font-mono font-bold text-foreground">
+                                    <ChannelBadge
+                                        channelKey={ch.key}
+                                        size="md"
+                                    />
+                                    <span className="font-mono text-sm font-bold text-foreground">
                                         {ch.count}
                                     </span>
                                 </div>
@@ -82,4 +87,3 @@ export function CrmChannelsBreakdown({
         </div>
     );
 }
-

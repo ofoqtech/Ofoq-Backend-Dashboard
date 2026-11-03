@@ -50,7 +50,12 @@ function GoogleIcon({ className = 'size-3.5' }: { className?: string }) {
     );
 }
 
-export function ChannelBadge({ lead, channelKey, showLabel = true, size = 'sm' }: ChannelBadgeProps) {
+export function ChannelBadge({
+    lead,
+    channelKey,
+    showLabel = true,
+    size = 'sm',
+}: ChannelBadgeProps) {
     const { isRtl } = useTranslation();
     const key = channelKey || lead?.channel || 'website';
 
@@ -58,12 +63,18 @@ export function ChannelBadge({ lead, channelKey, showLabel = true, size = 'sm' }
     const textSize = size === 'sm' ? 'text-[10px]' : 'text-xs';
 
     let icon: React.ReactNode = <Globe className={iconSize} />;
-    let badgeClass = 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20';
+    let badgeClass =
+        'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20';
     let labelEn = 'Website Form';
     let labelAr = 'نموذج الموقع';
 
     // Check specific sub-platform for Meta if lead info exists
-    const rawAttribution = (lead?.utm_source || lead?.source || lead?.referrer || '').toLowerCase();
+    const rawAttribution = (
+        lead?.utm_source ||
+        lead?.source ||
+        lead?.referrer ||
+        ''
+    ).toLowerCase();
 
     switch (key) {
         case 'meta':
@@ -71,14 +82,26 @@ export function ChannelBadge({ lead, channelKey, showLabel = true, size = 'sm' }
         case 'instagram':
         case 'messenger':
             icon = <MetaIcon className={iconSize} />;
-            badgeClass = 'bg-blue-600/10 text-[#0081FB] dark:text-blue-400 border-blue-500/20';
-            if (rawAttribution.includes('instagram') || rawAttribution.includes('ig') || key === 'instagram') {
+            badgeClass =
+                'bg-blue-600/10 text-[#0081FB] dark:text-blue-400 border-blue-500/20';
+            if (
+                rawAttribution.includes('instagram') ||
+                rawAttribution.includes('ig') ||
+                key === 'instagram'
+            ) {
                 labelEn = 'Meta · Instagram';
                 labelAr = 'ميتا · انستغرام';
-            } else if (rawAttribution.includes('messenger') || key === 'messenger') {
+            } else if (
+                rawAttribution.includes('messenger') ||
+                key === 'messenger'
+            ) {
                 labelEn = 'Meta · Messenger';
                 labelAr = 'ميتا · ماسنجر';
-            } else if (rawAttribution.includes('facebook') || rawAttribution.includes('fb') || key === 'facebook') {
+            } else if (
+                rawAttribution.includes('facebook') ||
+                rawAttribution.includes('fb') ||
+                key === 'facebook'
+            ) {
                 labelEn = 'Meta · Facebook';
                 labelAr = 'ميتا · فيسبوك';
             } else {
@@ -88,51 +111,63 @@ export function ChannelBadge({ lead, channelKey, showLabel = true, size = 'sm' }
             break;
         case 'tiktok':
             icon = <TikTokIcon className={iconSize} />;
-            badgeClass = 'bg-neutral-900/10 text-neutral-900 dark:bg-white/10 dark:text-white border-neutral-700/20';
+            badgeClass =
+                'bg-neutral-900/10 text-neutral-900 dark:bg-white/10 dark:text-white border-neutral-700/20';
             labelEn = 'TikTok';
             labelAr = 'تيك توك';
             break;
         case 'snapchat':
         case 'snapshot':
             icon = <SnapchatIcon className={iconSize} />;
-            badgeClass = 'bg-amber-400/15 text-amber-700 dark:text-yellow-400 border-amber-400/30';
+            badgeClass =
+                'bg-amber-400/15 text-amber-700 dark:text-yellow-400 border-amber-400/30';
             labelEn = 'Snapchat';
             labelAr = 'سناب شات';
             break;
         case 'linkedin':
             icon = <LinkedInIcon className={iconSize} />;
-            badgeClass = 'bg-sky-600/10 text-[#0A66C2] dark:text-sky-400 border-sky-600/20';
+            badgeClass =
+                'bg-sky-600/10 text-[#0A66C2] dark:text-sky-400 border-sky-600/20';
             labelEn = 'LinkedIn';
             labelAr = 'لينكد إن';
             break;
         case 'google':
         case 'google_ads':
             icon = <GoogleIcon className={iconSize} />;
-            badgeClass = 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20';
+            badgeClass =
+                'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20';
             labelEn = 'Google Ads';
             labelAr = 'إعلانات جوجل';
             break;
         case 'whatsapp':
             icon = <MessageCircle className={iconSize} />;
-            badgeClass = 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
+            badgeClass =
+                'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
             labelEn = 'WhatsApp';
             labelAr = 'واتساب';
             break;
         case 'call':
             icon = <Phone className={iconSize} />;
-            badgeClass = 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
+            badgeClass =
+                'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
             labelEn = 'Direct Call';
             labelAr = 'مكالمة هاتفية';
             break;
         case 'referral':
             icon = <Share2 className={iconSize} />;
-            badgeClass = 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20';
+            badgeClass =
+                'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20';
             labelEn = 'Referral';
             labelAr = 'توصية';
             break;
         default:
-            icon = lead?.form_name ? <FileText className={iconSize} /> : <Globe className={iconSize} />;
-            badgeClass = 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20';
+            icon = lead?.form_name ? (
+                <FileText className={iconSize} />
+            ) : (
+                <Globe className={iconSize} />
+            );
+            badgeClass =
+                'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20';
             labelEn = lead?.form_name || 'Website';
             labelAr = lead?.form_name || 'الموقع';
             break;
@@ -140,12 +175,15 @@ export function ChannelBadge({ lead, channelKey, showLabel = true, size = 'sm' }
 
     return (
         <span
-            className={`inline-flex items-center gap-1 font-semibold rounded-md border px-1.5 py-0.5 ${textSize} ${badgeClass}`}
-            title={lead?.utm_campaign ? `Campaign: ${lead.utm_campaign}` : undefined}
+            className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 font-semibold ${textSize} ${badgeClass}`}
+            title={
+                lead?.utm_campaign
+                    ? `Campaign: ${lead.utm_campaign}`
+                    : undefined
+            }
         >
             {icon}
             {showLabel && <span>{isRtl ? labelAr : labelEn}</span>}
         </span>
     );
 }
-

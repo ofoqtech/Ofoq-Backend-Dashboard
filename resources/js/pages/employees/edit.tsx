@@ -1,6 +1,13 @@
 import { useState, useRef } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Camera, Save, Shield, Trash2, User as UserIcon } from 'lucide-react';
+import {
+    ArrowLeft,
+    Camera,
+    Save,
+    Shield,
+    Trash2,
+    User as UserIcon,
+} from 'lucide-react';
 import InputError from '@/components/input-error';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -132,22 +139,32 @@ export default function EditEmployee({
                     <CardContent>
                         <form onSubmit={submit} className="space-y-5">
                             {/* Profile Image */}
-                            <div className="flex items-center gap-4 p-3 rounded-lg border bg-muted/20">
-                                <Avatar className="size-16 rounded-full border shadow-xs overflow-hidden">
-                                    {(!data.remove_avatar && (avatarPreview || employee.avatar)) && (
-                                        <AvatarImage
-                                            src={avatarPreview || employee.avatar}
-                                            alt={employee.name}
-                                            className="object-cover size-full"
-                                        />
-                                    )}
-                                    <AvatarFallback className="size-full text-lg font-bold bg-primary/10 text-primary">
-                                        {data.name ? data.name.charAt(0).toUpperCase() : <UserIcon className="size-6" />}
+                            <div className="flex items-center gap-4 rounded-lg border bg-muted/20 p-3">
+                                <Avatar className="size-16 overflow-hidden rounded-full border shadow-xs">
+                                    {!data.remove_avatar &&
+                                        (avatarPreview || employee.avatar) && (
+                                            <AvatarImage
+                                                src={
+                                                    avatarPreview ||
+                                                    employee.avatar
+                                                }
+                                                alt={employee.name}
+                                                className="size-full object-cover"
+                                            />
+                                        )}
+                                    <AvatarFallback className="size-full bg-primary/10 text-lg font-bold text-primary">
+                                        {data.name ? (
+                                            data.name.charAt(0).toUpperCase()
+                                        ) : (
+                                            <UserIcon className="size-6" />
+                                        )}
                                     </AvatarFallback>
                                 </Avatar>
 
                                 <div className="space-y-1">
-                                    <Label className="text-xs font-semibold">{t('profile.photo')}</Label>
+                                    <Label className="text-xs font-semibold">
+                                        {t('profile.photo')}
+                                    </Label>
                                     <div className="flex items-center gap-2">
                                         <input
                                             ref={fileInputRef}
@@ -160,29 +177,39 @@ export default function EditEmployee({
                                             type="button"
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => fileInputRef.current?.click()}
-                                            className="h-8 text-xs gap-1.5"
+                                            onClick={() =>
+                                                fileInputRef.current?.click()
+                                            }
+                                            className="h-8 gap-1.5 text-xs"
                                         >
                                             <Camera className="size-3.5" />
-                                            {(avatarPreview || (employee.avatar && !data.remove_avatar))
+                                            {avatarPreview ||
+                                            (employee.avatar &&
+                                                !data.remove_avatar)
                                                 ? t('profile.change_photo')
                                                 : t('profile.upload_photo')}
                                         </Button>
-                                        {(avatarPreview || (employee.avatar && !data.remove_avatar)) && (
+                                        {(avatarPreview ||
+                                            (employee.avatar &&
+                                                !data.remove_avatar)) && (
                                             <Button
                                                 type="button"
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={handleRemoveAvatar}
-                                                className="h-8 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 gap-1.5"
+                                                className="h-8 gap-1.5 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
                                             >
                                                 <Trash2 className="size-3.5" />
                                                 {t('profile.remove_photo')}
                                             </Button>
                                         )}
                                     </div>
-                                    <p className="text-[11px] text-muted-foreground">{t('profile.photo_hint')}</p>
-                                    {errors.avatar && <InputError message={errors.avatar} />}
+                                    <p className="text-[11px] text-muted-foreground">
+                                        {t('profile.photo_hint')}
+                                    </p>
+                                    {errors.avatar && (
+                                        <InputError message={errors.avatar} />
+                                    )}
                                 </div>
                             </div>
 
