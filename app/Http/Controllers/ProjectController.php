@@ -119,8 +119,10 @@ class ProjectController extends Controller
             'solution' => ['nullable'],
             'solution_ar' => ['nullable', 'string'],
             'image' => ['nullable', 'string'],
-            'image_file' => ['nullable', 'image', 'max:6144'],
+            'image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:6144'],
             'gallery' => ['nullable', 'array'],
+            'gallery_files' => ['nullable', 'array'],
+            'gallery_files.*' => ['file', 'image', 'mimes:jpeg,png,jpg,webp', 'max:6144'],
             'technologies' => ['nullable', 'array'],
             'features' => ['nullable'],
             'features_ar' => ['nullable', 'array'],
@@ -286,8 +288,10 @@ class ProjectController extends Controller
             'solution' => ['nullable'],
             'solution_ar' => ['nullable', 'string'],
             'image' => ['nullable', 'string'],
-            'image_file' => ['nullable', 'image', 'max:6144'],
+            'image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:6144'],
             'gallery' => ['nullable', 'array'],
+            'gallery_files' => ['nullable', 'array'],
+            'gallery_files.*' => ['file', 'image', 'mimes:jpeg,png,jpg,webp', 'max:6144'],
             'technologies' => ['nullable', 'array'],
             'features' => ['nullable'],
             'features_ar' => ['nullable', 'array'],
@@ -451,6 +455,15 @@ class ProjectController extends Controller
         Gate::authorize('update', $project);
 
         if ($image->project_id === $project->id) {
+            if ($image->path) {
+                $urlPath = parse_url($image->path, PHP_URL_PATH);
+                if (is_string($urlPath)) {
+                    $relativePath = str_replace('/storage/', '', $urlPath);
+                    if ($relativePath && Storage::disk('public')->exists($relativePath)) {
+                        Storage::disk('public')->delete($relativePath);
+                    }
+                }
+            }
             $image->delete();
             $galleryPaths = $project->images()->orderBy('display_order')->pluck('path')->toArray();
             $project->update(['gallery' => $galleryPaths]);

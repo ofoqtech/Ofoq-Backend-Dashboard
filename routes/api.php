@@ -9,10 +9,14 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-// CRM Services and Inquiry submission
+// CRM Services and Inquiry submission (throttled against spam and email bombing)
 Route::get('services', [LeadApiController::class, 'services'])->name('api.services.index');
-Route::post('service-form', [LeadApiController::class, 'submitServiceForm'])->name('api.service-form.submit');
-Route::post('contact', [LeadApiController::class, 'submitServiceForm'])->name('api.contact.submit');
+Route::post('service-form', [LeadApiController::class, 'submitServiceForm'])
+    ->middleware('throttle:10,1')
+    ->name('api.service-form.submit');
+Route::post('contact', [LeadApiController::class, 'submitServiceForm'])
+    ->middleware('throttle:10,1')
+    ->name('api.contact.submit');
 
 // Portfolio Projects and Categories
 Route::get('categories', [ProjectApiController::class, 'categories'])->name('api.categories.index');

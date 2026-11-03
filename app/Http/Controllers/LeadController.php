@@ -435,7 +435,7 @@ class LeadController extends Controller
             $latestActivityId = (int) (LeadActivity::query()->max('id') ?? 0);
 
             $recentQuery = Lead::query()->latest('id')->limit(15);
-            if ($user->role === 'employee') {
+            if ($user->isEmployee()) {
                 $recentQuery->where(function ($q) use ($user) {
                     $q->where('assigned_to', $user->id)
                         ->orWhereNull('assigned_to');
@@ -470,7 +470,7 @@ class LeadController extends Controller
             ->limit(10);
 
         // If employee, limit to unassigned leads or assigned to this employee
-        if ($user->role === 'employee') {
+        if ($user->isEmployee()) {
             $query->where(function ($q) use ($user) {
                 $q->where('assigned_to', $user->id)
                     ->orWhereNull('assigned_to');

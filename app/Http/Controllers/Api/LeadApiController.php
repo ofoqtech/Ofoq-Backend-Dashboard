@@ -162,7 +162,11 @@ class LeadApiController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Thank you! Your project request has been received. Our team will contact you shortly.',
-            'data' => $lead,
+            'data' => [
+                'id' => $lead->id,
+                'name' => $lead->name,
+                'service' => $lead->service_name_snapshot,
+            ],
         ], 201, [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 }

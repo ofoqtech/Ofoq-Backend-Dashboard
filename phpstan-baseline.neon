@@ -133,22 +133,10 @@ parameters:
 			path: app/Http/Controllers/LeadController.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between App\\Enums\\Role and ''employee'' will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 2
-			path: app/Http/Controllers/LeadController.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>name_en" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Controllers/LeadController.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between App\\Enums\\Role and ''employee'' will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: app/Http/Controllers/NotificationController.php
 
 		-
 			message: '#^Left side of && is always true\.$#'

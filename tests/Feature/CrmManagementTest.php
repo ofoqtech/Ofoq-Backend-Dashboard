@@ -374,3 +374,42 @@ test('authenticated user can poll realtime leads for sound and push notification
 
     expect($pollResponse->json('latest_id'))->toBe($newLead->id);
 });
+
+test('employee only sees their assigned and unassigned leads in notifications and realtime check', function () {
+    $employee1 = User::factory()->employee()->create();
+    $employee2 = User::factory()->employee()->create();
+
+    Lead::create([
+        'name' => 'Unassigned Lead',
+        'phone' => '+201100000001',
+        'status' => LeadStatus::New,
+        'priority' => LeadPriority::Medium,
+        'source' => 'test',
+    ]);
+
+    Lead::create([
+        'name' => 'Assigned to Other',
+        'phone' => '+201100000002',
+        'status' => LeadStatus::New,
+        'priority' => LeadPriority::Medium,
+        'assigned_to' => $employee2->id,
+        'source' => 'test',
+    ]);
+
+    Lead::create([
+        'name' => 'Assigned to Me',
+        'phone' => '+201100000003',
+        'status' => LeadStatus::New,
+        'priority' => LeadPriority::Medium,
+        'assigned_to' => $employee1->id,
+        'source' => 'test',
+    ]);
+
+    $response = $this->actingAs($employee1)->getJson(route('crm.realtime-check', ['last_id' => 0]));
+    $response->assertOk();
+
+    $names = collect($response->json('new_leads'))->pluck('name')->all();
+    expect($names)->toContain('Unassigned Lead')
+        ->toContain('Assigned to Me')
+        ->not->toContain('Assigned to Other');
+});

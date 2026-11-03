@@ -25,7 +25,7 @@ class NotificationController extends Controller
             ->latest('id');
 
         // Employee access scope: their assigned leads or unassigned
-        if ($user->role === 'employee') {
+        if ($user->isEmployee()) {
             $query->where(function ($q) use ($user) {
                 $q->where('assigned_to', $user->id)
                     ->orWhereNull('assigned_to');
