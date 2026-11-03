@@ -22,17 +22,17 @@ export function CrmChannelsBreakdown({
     }
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                    <h3 className="text-sm font-semibold text-foreground tracking-tight">
+                    <h3 className="text-base font-semibold text-foreground tracking-tight">
                         {t('crm.channels_breakdown')}
                     </h3>
                     {selectedChannel && (
                         <button
                             type="button"
                             onClick={() => onSelectChannel('')}
-                            className="text-xs font-medium text-primary hover:underline"
+                            className="text-sm font-medium text-primary hover:underline cursor-pointer"
                         >
                             ({t('common.reset')})
                         </button>
@@ -54,15 +54,15 @@ export function CrmChannelsBreakdown({
                                     : 'border-border/70 bg-card/60'
                             }`}
                         >
-                            <CardContent className="p-3">
+                            <CardContent className="p-3 sm:p-3.5">
                                 <div className="flex items-center justify-between gap-1">
-                                    <ChannelBadge channelKey={ch.key} size="sm" />
-                                    <span className="text-xs font-mono font-bold text-foreground">
+                                    <ChannelBadge channelKey={ch.key} size="md" />
+                                    <span className="text-sm font-mono font-bold text-foreground">
                                         {ch.count}
                                     </span>
                                 </div>
 
-                                <div className="mt-2.5 flex items-center justify-between text-[11px] text-muted-foreground">
+                                <div className="mt-2.5 flex items-center justify-between text-xs font-medium text-muted-foreground">
                                     <span>{ch.percentage}%</span>
                                     <div className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
                                         <div

@@ -73,7 +73,7 @@ export function CrmPagination({
     const pages = getPageNumbers();
 
     return (
-        <div className="flex flex-col gap-3 rounded-b-xl border-t bg-card/60 p-3 text-xs sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 rounded-b-xl border-t bg-card/60 p-3.5 text-sm sm:flex-row sm:items-center sm:justify-between">
             {/* Info and Page Size Selector */}
             <div className="flex flex-wrap items-center gap-3 text-muted-foreground">
                 <span>
@@ -85,16 +85,16 @@ export function CrmPagination({
                     <span className="font-semibold text-foreground">{totalItems}</span>
                 </span>
 
-                <div className="flex items-center gap-1.5 border-l pl-3 rtl:border-r rtl:border-l-0 rtl:pr-3 rtl:pl-0">
-                    <span className="text-[11px]">{t('crm.per_page', 'Per page')}:</span>
+                <div className="flex items-center gap-2 border-l pl-3 rtl:border-r rtl:border-l-0 rtl:pr-3 rtl:pl-0">
+                    <span className="text-xs font-medium">{t('crm.per_page', 'Per page')}:</span>
                     <Select
                         value={String(pageSize)}
                         onValueChange={(val) => onPageSizeChange(Number(val))}
                     >
-                        <SelectTrigger className="h-7 w-[68px] text-[11px] px-2 cursor-pointer">
+                        <SelectTrigger className="h-8 w-[74px] text-xs font-medium px-2.5 cursor-pointer">
                             <SelectValue />
                         </SelectTrigger>
-                        <SelectContent side="top" align="center" className="min-w-[68px]">
+                        <SelectContent side="top" align="center" className="min-w-[74px]">
                             <SelectItem value="10" className="text-xs cursor-pointer">10</SelectItem>
                             <SelectItem value="25" className="text-xs cursor-pointer">25</SelectItem>
                             <SelectItem value="50" className="text-xs cursor-pointer">50</SelectItem>
@@ -106,20 +106,20 @@ export function CrmPagination({
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-                <div className="flex items-center gap-1 self-center sm:self-auto">
+                <div className="flex items-center gap-1.5 self-center sm:self-auto">
                     {/* First Page */}
                     <Button
                         variant="outline"
                         size="sm"
                         disabled={currentPage <= 1}
                         onClick={() => onPageChange(1)}
-                        className="h-7 w-7 p-0"
+                        className="h-8 w-8 p-0"
                         title={isRtl ? 'الصفحة الأولى' : 'First page'}
                     >
                         {isRtl ? (
-                            <ChevronsRight className="size-3.5" />
+                            <ChevronsRight className="size-4" />
                         ) : (
-                            <ChevronsLeft className="size-3.5" />
+                            <ChevronsLeft className="size-4" />
                         )}
                     </Button>
 
@@ -129,13 +129,13 @@ export function CrmPagination({
                         size="sm"
                         disabled={currentPage <= 1}
                         onClick={() => onPageChange(currentPage - 1)}
-                        className="h-7 w-7 p-0"
+                        className="h-8 w-8 p-0"
                         title={isRtl ? 'الصفحة السابقة' : 'Previous page'}
                     >
                         {isRtl ? (
-                            <ChevronRight className="size-3.5" />
+                            <ChevronRight className="size-4" />
                         ) : (
-                            <ChevronLeft className="size-3.5" />
+                            <ChevronLeft className="size-4" />
                         )}
                     </Button>
 
@@ -146,7 +146,7 @@ export function CrmPagination({
                                 return (
                                     <span
                                         key={`ellipsis-${idx}`}
-                                        className="px-1 text-muted-foreground select-none"
+                                        className="px-1 text-sm text-muted-foreground select-none"
                                     >
                                         …
                                     </span>
@@ -160,7 +160,7 @@ export function CrmPagination({
                                     variant={isActive ? 'default' : 'outline'}
                                     size="sm"
                                     onClick={() => onPageChange(p)}
-                                    className={`h-7 min-w-7 px-2 text-xs font-mono font-medium ${
+                                    className={`h-8 min-w-8 px-2.5 text-xs sm:text-sm font-mono font-medium ${
                                         isActive ? 'shadow-xs' : 'text-muted-foreground hover:text-foreground'
                                     }`}
                                 >
@@ -176,13 +176,13 @@ export function CrmPagination({
                         size="sm"
                         disabled={currentPage >= totalPages}
                         onClick={() => onPageChange(currentPage + 1)}
-                        className="h-7 w-7 p-0"
+                        className="h-8 w-8 p-0"
                         title={isRtl ? 'الصفحة التالية' : 'Next page'}
                     >
                         {isRtl ? (
-                            <ChevronLeft className="size-3.5" />
+                            <ChevronLeft className="size-4" />
                         ) : (
-                            <ChevronRight className="size-3.5" />
+                            <ChevronRight className="size-4" />
                         )}
                     </Button>
 
@@ -192,13 +192,13 @@ export function CrmPagination({
                         size="sm"
                         disabled={currentPage >= totalPages}
                         onClick={() => onPageChange(totalPages)}
-                        className="h-7 w-7 p-0"
+                        className="h-8 w-8 p-0"
                         title={isRtl ? 'الصفحة الأخيرة' : 'Last page'}
                     >
                         {isRtl ? (
-                            <ChevronsLeft className="size-3.5" />
+                            <ChevronsLeft className="size-4" />
                         ) : (
-                            <ChevronsRight className="size-3.5" />
+                            <ChevronsRight className="size-4" />
                         )}
                     </Button>
                 </div>

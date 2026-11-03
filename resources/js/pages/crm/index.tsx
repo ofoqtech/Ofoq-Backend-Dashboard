@@ -630,7 +630,7 @@ export default function CrmIndex({
                                     type="button"
                                     onClick={() => handleTabChange(tab.key)}
                                     className={cn(
-                                        'group relative flex items-center gap-2 whitespace-nowrap rounded-lg px-3.5 py-2 text-xs font-semibold transition-all cursor-pointer select-none',
+                                        'group relative flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition-all cursor-pointer select-none',
                                         isActive
                                             ? 'bg-primary text-primary-foreground shadow-xs'
                                             : 'text-muted-foreground hover:bg-muted/70 hover:text-foreground'
@@ -638,7 +638,7 @@ export default function CrmIndex({
                                 >
                                     <Icon
                                         className={cn(
-                                            'size-3.5',
+                                            'size-4',
                                             isActive
                                                 ? 'text-primary-foreground'
                                                 : 'text-muted-foreground group-hover:text-foreground'
@@ -647,7 +647,7 @@ export default function CrmIndex({
                                     <span>{tab.title}</span>
                                     <span
                                         className={cn(
-                                            'flex h-4 min-w-4 items-center justify-center rounded-full px-1.5 text-[10px] font-mono font-bold leading-none',
+                                            'flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1.5 text-xs font-mono font-bold leading-none',
                                             isActive
                                                 ? 'bg-primary-foreground/20 text-primary-foreground'
                                                 : tab.badgeClass

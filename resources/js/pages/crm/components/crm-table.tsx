@@ -114,7 +114,7 @@ export function CrmTable({
 
                                 <td className="px-4 py-3 text-start">
                                     <div className="flex items-center gap-2">
-                                        <span className="font-mono text-xs">
+                                        <span className="font-mono text-sm text-foreground">
                                             {lead.phone}
                                         </span>
                                         <div
@@ -147,7 +147,7 @@ export function CrmTable({
                                 </td>
 
                                 <td className="px-4 py-3 text-start">
-                                    <div className="max-w-[200px] truncate text-xs font-medium text-foreground">
+                                    <div className="max-w-[200px] truncate text-sm font-medium text-foreground">
                                         {getServiceLabel(lead)}
                                     </div>
                                 </td>
@@ -180,7 +180,7 @@ export function CrmTable({
                                 </td>
 
                                 <td className="px-4 py-3 text-start whitespace-nowrap">
-                                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                                         {lead.assignee?.avatar ? (
                                             <img
                                                 src={lead.assignee.avatar}
@@ -197,7 +197,7 @@ export function CrmTable({
                                     </div>
                                 </td>
 
-                                <td className="px-4 py-3 text-start text-xs whitespace-nowrap text-muted-foreground">
+                                <td className="px-4 py-3 text-start text-sm whitespace-nowrap text-muted-foreground">
                                     {formatDate(lead.created_at)}
                                 </td>
 
