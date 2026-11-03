@@ -17,9 +17,16 @@ import { ChannelBadge } from './channel-badge';
 interface CrmTableProps {
     leads: Lead[];
     onSelectLead: (lead: Lead) => void;
+    emptyTitle?: string;
+    emptySubtitle?: string;
 }
 
-export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
+export function CrmTable({
+    leads,
+    onSelectLead,
+    emptyTitle,
+    emptySubtitle,
+}: CrmTableProps) {
     const { t, isRtl, localized, formatDate } = useTranslation();
 
     const getStatusLabel = (lead: Lead) => {
@@ -40,12 +47,12 @@ export function CrmTable({ leads, onSelectLead }: CrmTableProps) {
 
     if (leads.length === 0) {
         return (
-            <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center">
-                <p className="text-sm font-medium text-foreground">
-                    {t('crm.no_leads_found')}
+            <div className="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center bg-card/30">
+                <p className="text-sm font-semibold text-foreground">
+                    {emptyTitle || t('crm.no_leads_found')}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                    {t('crm.no_leads_hint')}
+                    {emptySubtitle || t('crm.no_leads_hint')}
                 </p>
             </div>
         );
