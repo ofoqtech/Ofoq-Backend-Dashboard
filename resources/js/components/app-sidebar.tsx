@@ -56,12 +56,12 @@ export function AppSidebar() {
         },
         ...(isAdmin
             ? [
-                {
-                    title: t('nav.admins'),
-                    href: adminsIndex(),
-                    icon: ShieldCheck,
-                },
-            ]
+                  {
+                      title: t('nav.admins'),
+                      href: adminsIndex(),
+                      icon: ShieldCheck,
+                  },
+              ]
             : []),
         {
             title: t('nav.employees'),
@@ -70,12 +70,12 @@ export function AppSidebar() {
         },
         ...(isAdmin
             ? [
-                {
-                    title: t('nav.categories'),
-                    href: '/categories',
-                    icon: FolderTree,
-                },
-            ]
+                  {
+                      title: t('nav.categories'),
+                      href: '/categories',
+                      icon: FolderTree,
+                  },
+              ]
             : []),
         {
             title: t('nav.projects'),
