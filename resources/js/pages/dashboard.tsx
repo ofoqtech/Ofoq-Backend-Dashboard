@@ -1,21 +1,16 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
     Briefcase,
-    Building2,
-    Calendar,
     ChevronRight,
     FolderKanban,
     Globe,
     Inbox,
     MessageCircle,
-    Phone,
     Plus,
     ShieldCheck,
     Smartphone,
-    UserCheck,
     Users,
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {

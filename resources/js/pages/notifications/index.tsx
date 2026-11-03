@@ -2,13 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import {
     Bell,
-    BellOff,
     BellRing,
     Building2,
-    Calendar,
     Clock,
     ExternalLink,
-    Filter,
     Inbox,
     MessageCircle,
     Phone,
@@ -448,158 +445,143 @@ export default function NotificationsIndex({
                             )}
                         </div>
                     ) : (
-                        notifications.data.map((lead: Lead) => {
-                            const platformLabel = isRtl
-                                ? lead.channel_label_ar ||
-                                  lead.channel ||
-                                  'الموقع'
-                                : lead.channel_label ||
-                                  lead.channel ||
-                                  'Website';
+                        notifications.data.map((lead: Lead) => (
+                            <Card
+                                key={lead.id}
+                                className="border bg-card transition-all duration-200 hover:border-primary/50 hover:shadow-xs"
+                            >
+                                <CardContent className="p-4 sm:p-5">
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                        {/* Client & Inquiry Core Info */}
+                                        <div className="min-w-0 flex-1 space-y-1.5">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <ChannelBadge
+                                                    channelKey={lead.channel}
+                                                    size="sm"
+                                                />
 
-                            return (
-                                <Card
-                                    key={lead.id}
-                                    className="border bg-card transition-all duration-200 hover:border-primary/50 hover:shadow-xs"
-                                >
-                                    <CardContent className="p-4 sm:p-5">
-                                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                            {/* Client & Inquiry Core Info */}
-                                            <div className="min-w-0 flex-1 space-y-1.5">
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    <ChannelBadge
-                                                        channelKey={
-                                                            lead.channel
-                                                        }
-                                                        size="sm"
-                                                    />
+                                                {lead.utm_campaign && (
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="font-mono text-[10px] text-primary"
+                                                    >
+                                                        📢 {lead.utm_campaign}
+                                                    </Badge>
+                                                )}
 
-                                                    {lead.utm_campaign && (
-                                                        <Badge
-                                                            variant="outline"
-                                                            className="font-mono text-[10px] text-primary"
-                                                        >
-                                                            📢{' '}
-                                                            {lead.utm_campaign}
-                                                        </Badge>
-                                                    )}
-
-                                                    {lead.form_name && (
-                                                        <span className="font-mono text-[11px] text-muted-foreground">
-                                                            📝 {lead.form_name}
-                                                        </span>
-                                                    )}
-
-                                                    <span className="flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
-                                                        <Clock className="size-3" />
-                                                        {new Date(
-                                                            lead.created_at,
-                                                        ).toLocaleString(
-                                                            isRtl
-                                                                ? 'ar-EG'
-                                                                : 'en-US',
-                                                            {
-                                                                month: 'short',
-                                                                day: 'numeric',
-                                                                hour: '2-digit',
-                                                                minute: '2-digit',
-                                                            },
-                                                        )}
+                                                {lead.form_name && (
+                                                    <span className="font-mono text-[11px] text-muted-foreground">
+                                                        📝 {lead.form_name}
                                                     </span>
-                                                </div>
+                                                )}
 
-                                                <div className="flex items-center gap-2 pt-0.5">
-                                                    <h3 className="text-base font-bold text-foreground">
-                                                        {lead.name}
-                                                    </h3>
-                                                    {lead.company && (
-                                                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                                            <Building2 className="size-3" />
-                                                            {lead.company}
-                                                        </span>
+                                                <span className="flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
+                                                    <Clock className="size-3" />
+                                                    {new Date(
+                                                        lead.created_at,
+                                                    ).toLocaleString(
+                                                        isRtl
+                                                            ? 'ar-EG'
+                                                            : 'en-US',
+                                                        {
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                        },
                                                     )}
-                                                </div>
+                                                </span>
+                                            </div>
 
-                                                <p className="text-xs text-muted-foreground">
-                                                    {isRtl
-                                                        ? 'الخدمة المطلوبة: '
-                                                        : 'Service: '}
-                                                    <span className="font-medium text-foreground">
-                                                        {lead.service_name_snapshot ||
-                                                            (isRtl
-                                                                ? 'استفسار عام'
-                                                                : 'General Inquiry')}
+                                            <div className="flex items-center gap-2 pt-0.5">
+                                                <h3 className="text-base font-bold text-foreground">
+                                                    {lead.name}
+                                                </h3>
+                                                {lead.company && (
+                                                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                        <Building2 className="size-3" />
+                                                        {lead.company}
                                                     </span>
-                                                </p>
-
-                                                {lead.internal_notes && (
-                                                    <p className="mt-2 rounded-lg border border-border/50 bg-muted/40 p-2.5 text-xs text-muted-foreground">
-                                                        {lead.internal_notes}
-                                                    </p>
                                                 )}
                                             </div>
 
-                                            {/* Action Buttons & Status */}
-                                            <div className="flex shrink-0 flex-wrap items-end gap-2 sm:flex-col">
-                                                <div className="flex items-center gap-1.5">
-                                                    {/* WhatsApp Button */}
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        className="h-8 gap-1.5 text-xs text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/20"
-                                                        asChild
-                                                    >
-                                                        <a
-                                                            href={
-                                                                lead.whatsapp_url
-                                                            }
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            <MessageCircle className="size-3.5" />
-                                                            WhatsApp
-                                                        </a>
-                                                    </Button>
+                                            <p className="text-xs text-muted-foreground">
+                                                {isRtl
+                                                    ? 'الخدمة المطلوبة: '
+                                                    : 'Service: '}
+                                                <span className="font-medium text-foreground">
+                                                    {lead.service_name_snapshot ||
+                                                        (isRtl
+                                                            ? 'استفسار عام'
+                                                            : 'General Inquiry')}
+                                                </span>
+                                            </p>
 
-                                                    {/* Phone Call */}
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        className="h-8 gap-1.5 text-xs"
-                                                        asChild
-                                                    >
-                                                        <a
-                                                            href={`tel:${lead.phone}`}
-                                                        >
-                                                            <Phone className="size-3.5" />
-                                                            {lead.phone}
-                                                        </a>
-                                                    </Button>
-                                                </div>
+                                            {lead.internal_notes && (
+                                                <p className="mt-2 rounded-lg border border-border/50 bg-muted/40 p-2.5 text-xs text-muted-foreground">
+                                                    {lead.internal_notes}
+                                                </p>
+                                            )}
+                                        </div>
 
-                                                {/* Open in CRM */}
+                                        {/* Action Buttons & Status */}
+                                        <div className="flex shrink-0 flex-wrap items-end gap-2 sm:flex-col">
+                                            <div className="flex items-center gap-1.5">
+                                                {/* WhatsApp Button */}
                                                 <Button
                                                     size="sm"
-                                                    className="h-8 w-full gap-1.5 text-xs font-semibold sm:w-auto"
+                                                    variant="outline"
+                                                    className="h-8 gap-1.5 text-xs text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/20"
                                                     asChild
                                                 >
-                                                    <Link
-                                                        href={`/crm?selected=${lead.id}`}
+                                                    <a
+                                                        href={lead.whatsapp_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
                                                     >
-                                                        <span>
-                                                            {t(
-                                                                'notifications.open_in_crm',
-                                                            )}
-                                                        </span>
-                                                        <ExternalLink className="size-3" />
-                                                    </Link>
+                                                        <MessageCircle className="size-3.5" />
+                                                        WhatsApp
+                                                    </a>
+                                                </Button>
+
+                                                {/* Phone Call */}
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="h-8 gap-1.5 text-xs"
+                                                    asChild
+                                                >
+                                                    <a
+                                                        href={`tel:${lead.phone}`}
+                                                    >
+                                                        <Phone className="size-3.5" />
+                                                        {lead.phone}
+                                                    </a>
                                                 </Button>
                                             </div>
+
+                                            {/* Open in CRM */}
+                                            <Button
+                                                size="sm"
+                                                className="h-8 w-full gap-1.5 text-xs font-semibold sm:w-auto"
+                                                asChild
+                                            >
+                                                <Link
+                                                    href={`/crm?selected=${lead.id}`}
+                                                >
+                                                    <span>
+                                                        {t(
+                                                            'notifications.open_in_crm',
+                                                        )}
+                                                    </span>
+                                                    <ExternalLink className="size-3" />
+                                                </Link>
+                                            </Button>
                                         </div>
-                                    </CardContent>
-                                </Card>
-                            );
-                        })
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))
                     )}
                 </div>
 

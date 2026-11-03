@@ -59,7 +59,7 @@ export default function ProjectsIndex({
         auth: Auth;
         flash?: { success?: string; error?: string };
     }>().props;
-    const { t, isRtl, localized } = useTranslation();
+    const { t, isRtl } = useTranslation();
 
     const [search, setSearch] = useState(filters.search || '');
     const [category, setCategory] = useState(filters.category || 'all');

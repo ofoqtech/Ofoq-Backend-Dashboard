@@ -218,9 +218,7 @@ export function showLeadNotification(
             navigator.serviceWorker.controller
         ) {
             navigator.serviceWorker.ready
-                .then((reg) => {
-                    reg.showNotification(title, notificationOptions);
-                })
+                .then((reg) => reg.showNotification(title, notificationOptions))
                 .catch(() => {
                     const n = new Notification(title, notificationOptions);
                     n.onclick = () => {

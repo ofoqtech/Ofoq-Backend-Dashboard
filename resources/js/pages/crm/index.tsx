@@ -2,18 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import {
     Clock,
-    Filter,
     Kanban,
     Layers,
     Plus,
     Search,
     Sparkles,
-    Table as TableIcon,
     Trophy,
     X,
     XCircle,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {

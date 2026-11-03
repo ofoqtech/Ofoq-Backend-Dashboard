@@ -37,7 +37,7 @@ export function CreateLeadDialog({
     priorities,
     teamMembers,
 }: CreateLeadDialogProps) {
-    const { t, isRtl, localized } = useTranslation();
+    const { t, isRtl } = useTranslation();
 
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');

@@ -1,0 +1,463 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Property App\\Models\\User\:\:\$avatar \(string\|null\) does not accept string\|false\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Http/Controllers/AdminController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ServiceBudget\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\ServiceBudget\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/LeadApiController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ServiceBudget\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\ServiceBudget\>\:\:\$range\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/LeadApiController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ServiceBudget\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\ServiceBudget\>\:\:\$service\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/LeadApiController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ServiceBudget\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\ServiceBudget\>\:\:\$service_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/LeadApiController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ServiceBudget\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\ServiceBudget\>\:\:\$type_ar\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/LeadApiController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Service\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Service\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/LeadApiController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Service\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Service\>\:\:\$name_ar\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/LeadApiController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name_en" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Api/LeadApiController.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\Service\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Api/LeadApiController.php
+
+		-
+			message: '#^Property App\\Models\\User\:\:\$avatar \(string\|null\) does not accept string\|false\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Http/Controllers/EmployeeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ServiceBudget\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\ServiceBudget\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ServiceBudget\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\ServiceBudget\>\:\:\$range\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ServiceBudget\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\ServiceBudget\>\:\:\$type_ar\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Service\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Service\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Service\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Service\>\:\:\$name_ar\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Service\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Service\>\:\:\$name_en\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:notify\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$arg1 of function max expects non\-empty\-array, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Parameter \#3 \$userId of method App\\Models\\Lead\:\:logActivity\(\) expects int\|null, int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 5
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Property App\\Models\\Lead\:\:\$contacted_at \(Illuminate\\Support\\Carbon\|null\) does not accept Carbon\\CarbonImmutable\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between App\\Enums\\Role and ''employee'' will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 2
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name_en" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between App\\Enums\\Role and ''employee'' will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Http/Controllers/NotificationController.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 2
+			path: app/Http/Controllers/ProjectController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\ProjectController\:\:getCategories\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/ProjectController.php
+
+		-
+			message: '#^Parameter \#1 \$path of static method Illuminate\\Filesystem\\FilesystemAdapter\:\:url\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 4
+			path: app/Http/Controllers/ProjectController.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\{ar\: string, en\?\: string\} will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Models/Category.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 1
+			path: app/Models/Category.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: app/Models/Category.php
+
+		-
+			message: '#^Class App\\Models\\Lead uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Lead.php
+
+		-
+			message: '#^Method App\\Models\\Lead\:\:activities\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Lead.php
+
+		-
+			message: '#^Method App\\Models\\Lead\:\:assignee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Lead.php
+
+		-
+			message: '#^Method App\\Models\\Lead\:\:logActivity\(\) should return App\\Models\\LeadActivity but returns Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Lead.php
+
+		-
+			message: '#^Method App\\Models\\Lead\:\:service\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Lead.php
+
+		-
+			message: '#^Method App\\Models\\Lead\:\:serviceBudget\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Lead.php
+
+		-
+			message: '#^Class App\\Models\\LeadActivity uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/LeadActivity.php
+
+		-
+			message: '#^Method App\\Models\\LeadActivity\:\:lead\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/LeadActivity.php
+
+		-
+			message: '#^Method App\\Models\\LeadActivity\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/LeadActivity.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\{ar\: string, en\?\: string\} will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Models/Project.php
+
+		-
+			message: '#^Method App\\Models\\Project\:\:getFeaturesArAttribute\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			message: '#^Method App\\Models\\Project\:\:getFeaturesEnAttribute\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			message: '#^Method App\\Models\\Project\:\:getMetricsArAttribute\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			message: '#^Method App\\Models\\Project\:\:getMetricsEnAttribute\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 5
+			path: app/Models/Project.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\{ar\: string, en\?\: string\} will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: app/Models/Service.php
+
+		-
+			message: '#^Class App\\Models\\Service uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Method App\\Models\\Service\:\:asJson\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Method App\\Models\\Service\:\:budgets\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Method App\\Models\\Service\:\:leads\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Method App\\Models\\Service\:\:toFrontendApiFormat\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: array, Closure\(App\\Models\\ServiceBudget\)\: array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\{ar\: string, en\?\: string\} will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: app/Models/ServiceBudget.php
+
+		-
+			message: '#^Class App\\Models\\ServiceBudget uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ServiceBudget.php
+
+		-
+			message: '#^Method App\\Models\\ServiceBudget\:\:asJson\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/ServiceBudget.php
+
+		-
+			message: '#^Method App\\Models\\ServiceBudget\:\:service\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ServiceBudget.php
+
+		-
+			message: '#^Method App\\Models\\ServiceBudget\:\:toFrontendApiFormat\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/ServiceBudget.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 1
+			path: app/Models/ServiceBudget.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: app/Models/ServiceBudget.php
+
+		-
+			message: '#^Property ''is_admin'' does not exist in model\.$#'
+			identifier: rules.modelAppends
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Property ''is_employee'' does not exist in model\.$#'
+			identifier: rules.modelAppends
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Lead\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Notifications/LeadAssignedNotification.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Notifications/LeadAssignedNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/LeadAssignedNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name_ar" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/LeadAssignedNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name_en" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Notifications/LeadAssignedNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name_en" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/NewLeadNotification.php
+
+		-
+			message: '#^Parameter \#2 \$string of function explode expects string, bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: config/sanctum.php
+
+		-
+			message: '#^Parameter \#1 \$string of function ucfirst expects string, array\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: database/factories/CategoryFactory.php
+
+		-
+			message: '#^Parameter \#1 \$title of static method Illuminate\\Support\\Str\:\:slug\(\) expects string, array\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: database/factories/CategoryFactory.php
+
+		-
+			message: '#^Offset ''activities'' on array\{lead\: array\{name\: ''Dr\. Mona Radwan …'', phone\: ''\+201123456789'', email\: ''dr\.mona…'', company\: ''HealthCare Plus…'', service_id\: int\|null, service_budget_id\: int\|null, service_name_snapshot\: ''Mobile App…'', budget_range_snapshot\: ''\$4,000 \- \$8,000 …'', \.\.\.\}\|array\{name\: ''Eng\. Tarek Mahmoud …'', phone\: ''\+201098765432'', email\: ''tarek…'', company\: ''Skyline Freight &…'', service_id\: int\|null, service_budget_id\: int\|null, service_name_snapshot\: ''ERP & Enterprise…'', budget_range_snapshot\: ''\$6,000 \- \$12,000 …'', \.\.\.\}\|array\{name\: ''Karim Al\-Husseini …'', phone\: ''\+201011223344'', email\: ''karim@cairoartisan…'', company\: ''Cairo Artisan…'', service_id\: int\|null, service_budget_id\: int\|null, service_name_snapshot\: ''Web Development &…'', budget_range_snapshot\: ''\$2,000 \- \$5,000 \(60…'', \.\.\.\}, activities\: array\{0\: array\{type\: ''created'', content\: ''Lead submitted via…'', user_id\: null, created_at\: Carbon\\CarbonImmutable\}, 1\?\: array\{type\: ''status_change'', content\: ''Status changed to…'', user_id\: int\|null, created_at\: Carbon\\CarbonImmutable\}\}\|array\{array\{type\: ''created'', content\: ''Lead submitted via…'', user_id\: null, created_at\: Carbon\\CarbonImmutable\}, array\{type\: ''status_change'', content\: ''Status changed from…'', user_id\: int\|null, created_at\: Carbon\\CarbonImmutable\}, array\{type\: ''note'', content\: ''Shared our previous…'', user_id\: int\|null, created_at\: Carbon\\CarbonImmutable\}\}\}\|array\{lead\: array\{name\: ''Nader Mansour \(Al…'', phone\: ''\+201200112233'', email\: ''nader@ahramtools\.com'', company\: ''Al\-Ahram Industrial…'', service_id\: int\|null, service_budget_id\: int\|null, service_name_snapshot\: ''Web Development &…'', budget_range_snapshot\: ''\$500 \- \$1,500 \(15…'', \.\.\.\}, activities\: array\{array\{type\: ''status_change'', content\: ''Deal closed and…'', user_id\: int\|null, created_at\: Carbon\\CarbonImmutable\}\}\}\|array\{lead\: array\{name\: ''Youssef El\-Shamy …'', phone\: ''\+971501234567'', email\: ''youssef@gulfhorizon…'', company\: ''Gulf Horizon…'', service_id\: int\|null, service_budget_id\: int\|null, service_name_snapshot\: ''AI Solutions &…'', budget_range_snapshot\: ''\$1,200 \- \$3,000 \(35…'', \.\.\.\}, activities\: array\{array\{type\: ''created'', content\: ''Lead submitted from…'', user_id\: null, created_at\: Carbon\\CarbonImmutable\}, array\{type\: ''proposal_sent'', content\: ''Formal proposal PDF…'', user_id\: int\|null, created_at\: Carbon\\CarbonImmutable\}\}\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: database/seeders/LeadSeeder.php
+
+		-
+			message: '#^Argument of an invalid type array\|array\<int\|string, list\<array\<string, string\>\|string\>\|string\>\|bool\|int\|string supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: database/seeders/ProjectSeeder.php
+
+		-
+			message: '#^Offset ''budgets'' on array\{slug\: ''ai\-automation'', name\: array\{en\: ''AI Solutions &…'', ar\: ''حلول الذكاء…''\}, description\: array\{en\: ''AI\-powered agents,…'', ar\: ''مساعدات ذكاء…''\}, icon\: ''sparkles'', order\: 4, is_active\: true, budgets\: array\{array\{tier_key\: ''ai_assistant'', type\: array\{en\: ''Smart AI Customer…'', ar\: ''مساعد دعم عملاء ذكي…''\}, range\: ''\$1,200 \- \$3,000 \(35…'', description\: array\{en\: ''WhatsApp & Web AI…'', ar\: ''روبوت محادثة ذكي…''\}, order\: 1\}, array\{tier_key\: ''workflow_ai'', type\: array\{en\: ''Intelligent…'', ar\: ''أتمتة سير العمل…''\}, range\: ''\$3,500 \- \$7,000 …'', description\: array\{en\: ''Automated data…'', ar\: ''استخراج بيانات…''\}, order\: 2\}, array\{tier_key\: ''custom_llm'', type\: array\{en\: ''Custom AI Models &…'', ar\: ''نماذج ووكلاء ذكاء…''\}, range\: ''\$8,000\+ \(240,000\+…'', description\: array\{en\: ''Fine\-tuned LLMs,…'', ar\: ''نماذج ذكاء اصطناعي…''\}, order\: 3\}\}\}\|array\{slug\: ''erp\-systems'', name\: array\{en\: ''ERP & Enterprise…'', ar\: ''نظم تخطيط المؤسسات …''\}, description\: array\{en\: ''Tailored ERP,…'', ar\: ''برمجيات مخصصة…''\}, icon\: ''server'', order\: 3, is_active\: true, budgets\: array\{array\{tier_key\: ''single_module'', type\: array\{en\: ''Departmental Module…'', ar\: ''نظام قسم واحد …''\}, range\: ''\$2,500 \- \$5,000 \(75…'', description\: array\{en\: ''Targeted workflow…'', ar\: ''أتمتة دورة عمل…''\}, order\: 1\}, array\{tier_key\: ''complete_erp'', type\: array\{en\: ''Complete Business…'', ar\: ''نظام ERP أعمال شامل''\}, range\: ''\$6,000 \- \$12,000 …'', description\: array\{en\: ''Unified accounting,…'', ar\: ''ربط مالي ومخزني…''\}, order\: 2\}, array\{tier_key\: ''custom_enterprise'', type\: array\{en\: ''Tailored Corporate…'', ar\: ''منظومة برمجية…''\}, range\: ''\$15,000\+ \(450,000\+…'', description\: array\{en\: ''Multi\-branch,…'', ar\: ''تعدد فروع وعملات،…''\}, order\: 3\}\}\}\|array\{slug\: ''mobile\-apps'', name\: array\{en\: ''Mobile App…'', ar\: ''تطوير تطبيقات…''\}, description\: array\{en\: ''Native and cross…'', ar\: ''تطبيقات الهواتف…''\}, icon\: ''smartphone'', order\: 2, is_active\: true, budgets\: array\{array\{tier_key\: ''mvp_mobile'', type\: array\{en\: ''MVP Mobile…'', ar\: ''نموذج أولي للتطبيق …''\}, range\: ''\$1,500 \- \$3,500 \(45…'', description\: array\{en\: ''Essential features…'', ar\: ''الميزات الأساسية…''\}, order\: 1\}, array\{tier_key\: ''full_mobile'', type\: array\{en\: ''Commercial Mobile…'', ar\: ''تطبيق تجاري متكامل''\}, range\: ''\$4,000 \- \$8,000 …'', description\: array\{en\: ''Push notifications,…'', ar\: ''إشعارات لحظية،…''\}, order\: 2\}, array\{tier_key\: ''enterprise_mobile'', type\: array\{en\: ''Enterprise…'', ar\: ''منظومة تطبيقات…''\}, range\: ''\$9,000\+ \(270,000\+…'', description\: array\{en\: ''Customer app \+…'', ar\: ''تطبيق العميل \+…''\}, order\: 3\}\}\}\|array\{slug\: ''ui\-ux\-design'', name\: array\{en\: ''UI/UX Design &…'', ar\: ''تصميم واجهات وتجربة…''\}, description\: array\{en\: ''World\-class product…'', ar\: ''تصاميم واجهات…''\}, icon\: ''palette'', order\: 5, is_active\: true, budgets\: array\{array\{tier_key\: ''design_audit'', type\: array\{en\: ''UI/UX Audit &…'', ar\: ''تدقيق الواجهات…''\}, range\: ''\$600 \- \$1,500 \(18…'', description\: array\{en\: ''UX evaluation,…'', ar\: ''تحليل رحلة…''\}, order\: 1\}, array\{tier_key\: ''full_product_design'', type\: array\{en\: ''Complete Product UI…'', ar\: ''تصميم منتج رقمي…''\}, range\: ''\$2,000 \- \$4,500 \(60…'', description\: array\{en\: ''Pixel\-perfect web…'', ar\: ''شاشات كاملة للويب…''\}, order\: 2\}\}\}\|array\{slug\: ''web\-development'', name\: array\{en\: ''Web Development &…'', ar\: ''تطوير المواقع…''\}, description\: array\{en\: ''Modern, scalable…'', ar\: ''تطبيقات ومواقع…''\}, icon\: ''globe'', order\: 1, is_active\: true, budgets\: array\{array\{tier_key\: ''starter'', type\: array\{en\: ''Starter Website /…'', ar\: ''موقع تعريفي / نموذج…''\}, range\: ''\$500 \- \$1,500 \(15…'', description\: array\{en\: ''High\-conversion…'', ar\: ''صفحة هبوط تسويقية…''\}, order\: 1\}, array\{tier_key\: ''growth'', type\: array\{en\: ''Business Platform /…'', ar\: ''منصة أعمال / متجر…''\}, range\: ''\$2,000 \- \$5,000 \(60…'', description\: array\{en\: ''Full\-featured web…'', ar\: ''تطبيق ويب متكامل مع…''\}, order\: 2\}, array\{tier_key\: ''enterprise'', type\: array\{en\: ''Enterprise Cloud…'', ar\: ''نظام سحابي مؤسسي ضخم''\}, range\: ''\$6,000\+ \(180,000\+…'', description\: array\{en\: ''High\-traffic SaaS,…'', ar\: ''أنظمة SaaS وبنية…''\}, order\: 3\}\}\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: database/seeders/ServiceSeeder.php

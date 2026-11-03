@@ -4,23 +4,16 @@ import {
     Bell,
     BellOff,
     BellRing,
-    Check,
+    Clock,
+    Trash2,
+    UserCheck,
     Volume2,
     VolumeX,
-    ExternalLink,
-    Trash2,
-    Clock,
-    User,
-    UserCheck,
-    Building2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTranslation } from '@/lib/i18n';
@@ -37,7 +30,7 @@ const STORAGE_KEY_HISTORY = 'ofoq_notifications_history';
 const STORAGE_KEY_SOUND = 'ofoq_sound_enabled';
 
 export function NotificationBell() {
-    const { isRtl, t } = useTranslation();
+    const { isRtl } = useTranslation();
     const { url } = usePage();
 
     const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
@@ -235,10 +228,16 @@ export function NotificationBell() {
         };
 
         // Initial check immediately
-        checkNewLeads();
+        checkNewLeads().catch((err) => {
+            console.warn('Realtime lead check error:', err);
+        });
 
         // Polling every 4500ms
-        const interval = setInterval(checkNewLeads, 4500);
+        const interval = setInterval(() => {
+            checkNewLeads().catch((err) => {
+                console.warn('Realtime lead check error:', err);
+            });
+        }, 4500);
 
         return () => {
             isMounted = false;
@@ -395,66 +394,54 @@ export function NotificationBell() {
                             </p>
                         </div>
                     ) : (
-                        history.map((lead) => {
-                            const platform = isRtl
-                                ? lead.channel_label_ar ||
-                                  lead.channel ||
-                                  'الموقع'
-                                : lead.channel_label ||
-                                  lead.channel ||
-                                  'Website';
-
-                            return (
-                                <div
-                                    key={lead.id}
-                                    onClick={() => handleSelectLead(lead.id)}
-                                    className="group flex cursor-pointer flex-col gap-1 p-3 transition-colors hover:bg-muted/60 active:bg-muted"
-                                >
-                                    <div className="flex items-center justify-between gap-2">
-                                        <div className="flex min-w-0 items-center gap-1.5">
-                                            <span className="truncate text-xs font-semibold text-foreground">
-                                                {lead.name}
+                        history.map((lead) => (
+                            <div
+                                key={lead.id}
+                                onClick={() => handleSelectLead(lead.id)}
+                                className="group flex cursor-pointer flex-col gap-1 p-3 transition-colors hover:bg-muted/60 active:bg-muted"
+                            >
+                                <div className="flex items-center justify-between gap-2">
+                                    <div className="flex min-w-0 items-center gap-1.5">
+                                        <span className="truncate text-xs font-semibold text-foreground">
+                                            {lead.name}
+                                        </span>
+                                        {lead.company && (
+                                            <span className="hidden truncate text-[11px] text-muted-foreground sm:inline">
+                                                · {lead.company}
                                             </span>
-                                            {lead.company && (
-                                                <span className="hidden truncate text-[11px] text-muted-foreground sm:inline">
-                                                    · {lead.company}
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {lead.notification_type ===
-                                            'assigned' || lead.is_assignment ? (
-                                            <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
-                                                <UserCheck className="size-2.5" />
-                                                {isRtl
-                                                    ? 'تكليف جديد'
-                                                    : 'Assigned'}
-                                            </span>
-                                        ) : (
-                                            <ChannelBadge
-                                                channelKey={lead.channel}
-                                                size="sm"
-                                            />
                                         )}
                                     </div>
 
-                                    <div className="mt-0.5 flex items-center justify-between text-[11px] text-muted-foreground">
-                                        <span className="max-w-[200px] truncate">
-                                            {lead.service_name_snapshot ||
-                                                (isRtl
-                                                    ? 'استفسار عام'
-                                                    : 'General Inquiry')}
+                                    {lead.notification_type === 'assigned' ||
+                                    lead.is_assignment ? (
+                                        <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                                            <UserCheck className="size-2.5" />
+                                            {isRtl ? 'تكليف جديد' : 'Assigned'}
                                         </span>
-
-                                        <span className="flex shrink-0 items-center gap-1 font-mono text-[10px] text-muted-foreground/80">
-                                            <Clock className="size-2.5" />
-                                            {lead.created_at ||
-                                                (isRtl ? 'الآن' : 'Just now')}
-                                        </span>
-                                    </div>
+                                    ) : (
+                                        <ChannelBadge
+                                            channelKey={lead.channel}
+                                            size="sm"
+                                        />
+                                    )}
                                 </div>
-                            );
-                        })
+
+                                <div className="mt-0.5 flex items-center justify-between text-[11px] text-muted-foreground">
+                                    <span className="max-w-[200px] truncate">
+                                        {lead.service_name_snapshot ||
+                                            (isRtl
+                                                ? 'استفسار عام'
+                                                : 'General Inquiry')}
+                                    </span>
+
+                                    <span className="flex shrink-0 items-center gap-1 font-mono text-[10px] text-muted-foreground/80">
+                                        <Clock className="size-2.5" />
+                                        {lead.created_at ||
+                                            (isRtl ? 'الآن' : 'Just now')}
+                                    </span>
+                                </div>
+                            </div>
+                        ))
                     )}
                 </div>
 

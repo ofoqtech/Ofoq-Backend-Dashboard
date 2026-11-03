@@ -1,7 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
     ArrowRight,
-    Briefcase,
     ChevronRight,
     FolderKanban,
     ShieldCheck,

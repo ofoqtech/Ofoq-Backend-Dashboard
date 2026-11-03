@@ -12,7 +12,6 @@ import {
     Trash2,
     X,
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,7 +38,7 @@ import {
     edit as editAdmin,
     index as adminsIndex,
 } from '@/routes/admins';
-import type { Auth, PaginatedData, User } from '@/types';
+import type { PaginatedData, User } from '@/types';
 
 type AdminsIndexProps = {
     admins: PaginatedData<User>;
@@ -58,10 +57,10 @@ export default function AdminsIndex({
     const { flash } = usePage<{
         flash?: { success?: string; error?: string };
     }>().props;
-    const { t, isRtl, localized } = useTranslation();
+    const { t, isRtl } = useTranslation();
 
     const [search, setSearch] = useState(filters.search || '');
-    const [status, setStatus] = useState(filters.status || '');
+    const status = filters.status || '';
     const [adminToDelete, setAdminToDelete] = useState<User | null>(null);
 
     // Keep search in sync if filters.search changes externally

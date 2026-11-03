@@ -47,7 +47,7 @@ export default function CategoriesIndex({
     const { flash } = usePage<{
         flash?: { success?: string; error?: string };
     }>().props;
-    const { t, isRtl, localized } = useTranslation();
+    const { t, isRtl } = useTranslation();
 
     const [search, setSearch] = useState(filters.search || '');
     const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(

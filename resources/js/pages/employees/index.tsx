@@ -6,12 +6,10 @@ import {
     Phone,
     Plus,
     Search,
-    ShieldCheck,
     Trash2,
     Users,
     X,
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -58,11 +56,11 @@ export default function EmployeesIndex({
         auth: Auth;
         flash?: { success?: string; error?: string };
     }>().props;
-    const { t, isRtl, localized } = useTranslation();
+    const { t, isRtl } = useTranslation();
     const currentUser = auth.user;
 
     const [search, setSearch] = useState(filters.search || '');
-    const [status, setStatus] = useState(filters.status || '');
+    const status = filters.status || '';
     const [employeeToDelete, setEmployeeToDelete] = useState<User | null>(null);
 
     // Keep search in sync if filters.search changes externally

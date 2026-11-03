@@ -67,7 +67,7 @@ export default function ProjectForm({
     errors,
     isEdit = false,
 }: ProjectFormProps) {
-    const { t, isRtl, localized } = useTranslation();
+    const { t, isRtl } = useTranslation();
 
     // Form fields helper for JSON / accessor fields
     const getInitial = (

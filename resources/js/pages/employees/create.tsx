@@ -32,7 +32,7 @@ type CreateEmployeeProps = {
 };
 
 export default function CreateEmployee({
-    canManageRoles,
+    canManageRoles: _canManageRoles,
 }: CreateEmployeeProps) {
     const { t, isRtl } = useTranslation();
     const fileInputRef = useRef<HTMLInputElement>(null);

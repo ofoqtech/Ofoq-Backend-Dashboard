@@ -14,11 +14,9 @@ import {
     PlusCircle,
     Send,
     SlidersHorizontal,
-    Tag,
     Trash2,
     UserCheck,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,

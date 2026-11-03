@@ -35,7 +35,7 @@ type EditEmployeeProps = {
 
 export default function EditEmployee({
     employee,
-    canManageRoles,
+    canManageRoles: _canManageRoles,
 }: EditEmployeeProps) {
     const { t, isRtl } = useTranslation();
     const fileInputRef = useRef<HTMLInputElement>(null);

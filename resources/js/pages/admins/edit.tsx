@@ -8,7 +8,6 @@ import {
     Shield,
     ShieldCheck,
     Trash2,
-    User as UserIcon,
 } from 'lucide-react';
 import InputError from '@/components/input-error';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

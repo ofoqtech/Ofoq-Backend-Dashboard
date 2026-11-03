@@ -15,7 +15,7 @@ export function CrmChannelsBreakdown({
     selectedChannel,
     onSelectChannel,
 }: CrmChannelsBreakdownProps) {
-    const { t, isRtl } = useTranslation();
+    const { t } = useTranslation();
 
     if (!channels || channels.length === 0) {
         return null;

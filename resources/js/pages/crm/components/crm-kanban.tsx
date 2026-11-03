@@ -1,13 +1,10 @@
 import {
     Building2,
     Calendar,
-    ChevronRight,
     MessageCircle,
     Phone,
     User as UserIcon,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from '@/lib/i18n';
 import type { Lead, PipelineStage } from '@/types/crm';
