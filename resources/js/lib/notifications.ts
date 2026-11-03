@@ -10,6 +10,9 @@ export interface RealtimeLead {
     channel_label_ar?: string;
     service_name_snapshot?: string | null;
     created_at?: string;
+    notification_type?: 'new_lead' | 'assigned';
+    assigned_by_name?: string | null;
+    is_assignment?: boolean;
 }
 
 // Global cached AudioContext to reuse and keep unlocked after user interaction
@@ -167,11 +170,18 @@ export function showLeadNotification(
 
     const serviceLabel = lead.service_name_snapshot || (isRtl ? 'طلب استفسار جديد' : 'New Client Inquiry');
 
-    const title = isRtl
-        ? `🔔 عميل جديد: ${lead.name}`
-        : `🔔 New Lead: ${lead.name}`;
+    const isAssignment = lead.notification_type === 'assigned' || !!lead.is_assignment;
 
-    const body = `${platformLabel ? `[${platformLabel}] ` : ''}${serviceLabel}${lead.company ? ` · ${lead.company}` : ''} (${lead.phone})`;
+    const title = isAssignment
+        ? (isRtl ? `📋 تم تكليفك بطلب عميل: ${lead.name}` : `📋 Lead Assigned to You: ${lead.name}`)
+        : (isRtl ? `🔔 عميل جديد: ${lead.name}` : `🔔 New Lead: ${lead.name}`);
+
+    const body = isAssignment
+        ? (isRtl
+            ? `قام ${lead.assigned_by_name || 'مدير النظام'} بتكليفك بمتابعة هذا العميل (${serviceLabel})`
+            : `Assigned to you by ${lead.assigned_by_name || 'Admin'} (${serviceLabel})`)
+        : `${platformLabel ? `[${platformLabel}] ` : ''}${serviceLabel}${lead.company ? ` · ${lead.company}` : ''} (${lead.phone})`;
+
     const targetUrl = `/crm?selected=${lead.id}`;
 
     // 3. Native Operating System & Mobile Notification

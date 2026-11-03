@@ -11,6 +11,7 @@ import {
     Trash2,
     Clock,
     User,
+    UserCheck,
     Building2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -58,6 +59,7 @@ export function NotificationBell() {
 
     const [unreadCount, setUnreadCount] = useState<number>(0);
     const lastLeadIdRef = useRef<number | null>(null);
+    const lastActivityIdRef = useRef<number | null>(null);
     const isInitialMount = useRef(true);
 
     // Synchronize permission status on mount
@@ -110,8 +112,15 @@ export function NotificationBell() {
 
         const checkNewLeads = async () => {
             try {
-                const params = lastLeadIdRef.current !== null ? `?last_id=${lastLeadIdRef.current}` : '';
-                const response = await fetch(`/crm/realtime-check${params}`, {
+                const params = new URLSearchParams();
+                if (lastLeadIdRef.current !== null) {
+                    params.set('last_id', String(lastLeadIdRef.current));
+                }
+                if (lastActivityIdRef.current !== null) {
+                    params.set('last_activity_id', String(lastActivityIdRef.current));
+                }
+                const queryString = params.toString() ? `?${params.toString()}` : '';
+                const response = await fetch(`/crm/realtime-check${queryString}`, {
                     headers: {
                         Accept: 'application/json',
                     },
@@ -121,6 +130,7 @@ export function NotificationBell() {
 
                 const data: {
                     latest_id: number;
+                    latest_activity_id?: number;
                     new_leads: RealtimeLead[];
                     recent_history?: RealtimeLead[];
                 } = await response.json();
@@ -130,6 +140,7 @@ export function NotificationBell() {
                 // First load: initialize watermark and load recent history if local history is empty
                 if (isInitialMount.current) {
                     lastLeadIdRef.current = data.latest_id;
+                    lastActivityIdRef.current = data.latest_activity_id ?? null;
                     isInitialMount.current = false;
 
                     if (data.recent_history && data.recent_history.length > 0) {
@@ -148,6 +159,9 @@ export function NotificationBell() {
                 // If new leads arrived since last poll
                 if (data.new_leads && data.new_leads.length > 0) {
                     lastLeadIdRef.current = data.latest_id;
+                    if (data.latest_activity_id !== undefined) {
+                        lastActivityIdRef.current = data.latest_activity_id;
+                    }
 
                     // 1. Play chime sound and trigger push/toast notification
                     data.new_leads.forEach((lead) => {
@@ -177,8 +191,13 @@ export function NotificationBell() {
                             only: ['leads', 'pipeline', 'analytics'],
                         });
                     }
-                } else if (data.latest_id > (lastLeadIdRef.current || 0)) {
-                    lastLeadIdRef.current = data.latest_id;
+                } else {
+                    if (data.latest_id > (lastLeadIdRef.current || 0)) {
+                        lastLeadIdRef.current = data.latest_id;
+                    }
+                    if (data.latest_activity_id !== undefined && data.latest_activity_id > (lastActivityIdRef.current || 0)) {
+                        lastActivityIdRef.current = data.latest_activity_id;
+                    }
                 }
             } catch {
                 // Quiet retry on next tick
@@ -353,7 +372,14 @@ export function NotificationBell() {
                                             )}
                                         </div>
 
-                                        <ChannelBadge channelKey={lead.channel} size="sm" />
+                                        {lead.notification_type === 'assigned' || lead.is_assignment ? (
+                                            <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                                                <UserCheck className="size-2.5" />
+                                                {isRtl ? 'تكليف جديد' : 'Assigned'}
+                                            </span>
+                                        ) : (
+                                            <ChannelBadge channelKey={lead.channel} size="sm" />
+                                        )}
                                     </div>
 
                                     <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-0.5">

@@ -6,6 +6,7 @@ use App\Models\Lead;
 use App\Models\Service;
 use App\Models\ServiceBudget;
 use App\Models\User;
+use App\Notifications\LeadAssignedNotification;
 use App\Notifications\NewLeadNotification;
 use Illuminate\Support\Facades\Notification;
 
@@ -218,7 +219,9 @@ test('staff can update lead priority', function () {
         ->and($lead->activities()->where('type', 'priority_change')->exists())->toBeTrue();
 });
 
-test('admin can assign lead to employee', function () {
+test('admin can assign lead to employee and dispatches assignment notification', function () {
+    Notification::fake();
+
     $admin = User::factory()->admin()->create();
     $employee = User::factory()->employee()->create();
     $lead = Lead::create([
@@ -238,6 +241,45 @@ test('admin can assign lead to employee', function () {
     $lead->refresh();
     expect($lead->assigned_to)->toBe($employee->id)
         ->and($lead->activities()->where('type', 'assigned')->exists())->toBeTrue();
+
+    Notification::assertSentTo(
+        $employee,
+        LeadAssignedNotification::class,
+        function (LeadAssignedNotification $notification) use ($lead, $admin) {
+            return $notification->lead->id === $lead->id
+                && $notification->assignedBy?->id === $admin->id;
+        }
+    );
+});
+
+test('realtime-check returns assigned leads when employee is assigned to an existing lead', function () {
+    $admin = User::factory()->admin()->create();
+    $employee = User::factory()->employee()->create();
+
+    $lead = Lead::create([
+        'name' => 'Realtime Assigned Lead',
+        'phone' => '+201099112233',
+        'status' => LeadStatus::New,
+        'priority' => LeadPriority::High,
+        'source' => 'meta',
+    ]);
+
+    // Admin assigns lead to employee
+    $this->actingAs($admin)->patch(route('crm.assign', $lead), [
+        'assigned_to' => $employee->id,
+    ]);
+
+    // Employee polls realtime-check with last_id ahead and last_activity_id = 0
+    $response = $this->actingAs($employee)->getJson('/crm/realtime-check?last_id=99999&last_activity_id=0');
+
+    $response->assertOk()
+        ->assertJsonStructure(['latest_id', 'latest_activity_id', 'new_leads'])
+        ->assertJsonFragment([
+            'id' => $lead->id,
+            'name' => 'Realtime Assigned Lead',
+            'notification_type' => 'assigned',
+            'is_assignment' => true,
+        ]);
 });
 
 test('employee cannot assign leads to others', function () {

@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Enums\LeadPriority;
 use App\Enums\LeadStatus;
 use App\Models\Lead;
+use App\Models\LeadActivity;
 use App\Models\Service;
 use App\Models\ServiceBudget;
 use App\Models\User;
+use App\Notifications\LeadAssignedNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -273,6 +276,20 @@ class LeadController extends Controller
         $lead->logActivity('created', 'Lead created manually by '.auth()->user()->name.'.', auth()->id());
         cache()->forget('crm_new_leads_count');
 
+        if (! empty($validated['assigned_to'])) {
+            $assignee = User::find($validated['assigned_to']);
+            if ($assignee && $assignee->id !== auth()->id()) {
+                try {
+                    $assignee->notify(new LeadAssignedNotification($lead, auth()->user()));
+                } catch (\Throwable $e) {
+                    Log::warning('Failed to dispatch LeadAssignedNotification: '.$e->getMessage(), [
+                        'lead_id' => $lead->id,
+                        'assignee_id' => $assignee->id,
+                    ]);
+                }
+            }
+        }
+
         return redirect()->route('crm.index', ['selected' => $lead->id])
             ->with('success', 'Lead created successfully.');
     }
@@ -352,6 +369,7 @@ class LeadController extends Controller
             'assigned_to' => ['nullable', 'exists:users,id'],
         ]);
 
+        $previousAssigneeId = $lead->assigned_to;
         $lead->assigned_to = $validated['assigned_to'] ?? null;
         $lead->save();
 
@@ -361,6 +379,20 @@ class LeadController extends Controller
             "Lead assigned to {$assigneeName} by ".auth()->user()->name.'.',
             auth()->id()
         );
+
+        if ($lead->assigned_to && $lead->assigned_to !== $previousAssigneeId) {
+            $assignee = User::find($lead->assigned_to);
+            if ($assignee && $assignee->id !== auth()->id()) {
+                try {
+                    $assignee->notify(new LeadAssignedNotification($lead, auth()->user()));
+                } catch (\Throwable $e) {
+                    Log::warning('Failed to dispatch LeadAssignedNotification: '.$e->getMessage(), [
+                        'lead_id' => $lead->id,
+                        'assignee_id' => $assignee->id,
+                    ]);
+                }
+            }
+        }
 
         return back()->with('success', 'Lead assignment updated.');
     }
@@ -394,11 +426,13 @@ class LeadController extends Controller
         Gate::authorize('viewAny', Lead::class);
 
         $lastId = $request->query('last_id');
+        $lastActivityId = $request->query('last_activity_id');
         $user = $request->user();
 
         // If no last_id is provided, initialize client watermark to the current max ID and return recent history
         if ($lastId === null || $lastId === '') {
             $latestId = (int) (Lead::query()->max('id') ?? 0);
+            $latestActivityId = (int) (LeadActivity::query()->max('id') ?? 0);
 
             $recentQuery = Lead::query()->latest('id')->limit(15);
             if ($user->role === 'employee') {
@@ -424,6 +458,7 @@ class LeadController extends Controller
 
             return response()->json([
                 'latest_id' => $latestId,
+                'latest_activity_id' => $latestActivityId,
                 'new_leads' => [],
                 'recent_history' => $recentHistory,
             ]);
@@ -453,6 +488,7 @@ class LeadController extends Controller
                 'channel_label_ar' => $lead->channel_label_ar,
                 'service_name_snapshot' => $lead->service_name_snapshot,
                 'created_at' => $lead->created_at->diffForHumans(),
+                'notification_type' => 'new_lead',
             ];
         });
 
@@ -460,9 +496,51 @@ class LeadController extends Controller
             ? max($newLeads->pluck('id')->all())
             : (int) $lastId;
 
+        // Check for new assignments targeting this user since last_activity_id
+        $currentMaxActivityId = (int) (LeadActivity::query()->max('id') ?? 0);
+        $assignedAlerts = collect();
+
+        if ($lastActivityId !== null && $lastActivityId !== '') {
+            $assignedActivities = LeadActivity::query()
+                ->with(['lead', 'user'])
+                ->where('id', '>', (int) $lastActivityId)
+                ->where('type', 'assigned')
+                ->where('user_id', '!=', $user->id)
+                ->whereHas('lead', function ($q) use ($user) {
+                    $q->where('assigned_to', $user->id);
+                })
+                ->get();
+
+            $assignedAlerts = $assignedActivities->map(function (LeadActivity $activity) {
+                $lead = $activity->lead;
+
+                return [
+                    'id' => $lead->id,
+                    'name' => $lead->name,
+                    'phone' => $lead->phone,
+                    'company' => $lead->company,
+                    'channel' => $lead->channel,
+                    'channel_label' => $lead->channel_label,
+                    'channel_label_ar' => $lead->channel_label_ar,
+                    'service_name_snapshot' => $lead->service_name_snapshot,
+                    'created_at' => $activity->created_at->diffForHumans(),
+                    'notification_type' => 'assigned',
+                    'assigned_by_name' => $activity->user?->name,
+                    'is_assignment' => true,
+                ];
+            });
+        }
+
+        // Merge alerts, preventing duplicate lead IDs in a single poll response
+        $existingIds = $newLeads->pluck('id')->flip();
+        $mergedAlerts = $newLeads->concat(
+            $assignedAlerts->reject(fn ($item) => isset($existingIds[$item['id']]))
+        );
+
         return response()->json([
             'latest_id' => $currentMaxId,
-            'new_leads' => $newLeads,
+            'latest_activity_id' => $currentMaxActivityId,
+            'new_leads' => $mergedAlerts->values(),
         ]);
     }
 
