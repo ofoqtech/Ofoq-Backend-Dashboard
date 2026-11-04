@@ -52,7 +52,7 @@ export function AppSidebarHeader({
                     className="text-xs text-muted-foreground hover:text-foreground"
                 >
                     <a
-                        href="http://localhost:5173"
+                        href="https://ofoqpro.tech/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1.5"
