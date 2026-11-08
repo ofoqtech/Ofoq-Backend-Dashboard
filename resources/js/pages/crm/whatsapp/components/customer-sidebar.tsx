@@ -8,6 +8,7 @@ import {
     FileEdit,
     Globe,
     Mail,
+    Megaphone,
     Phone,
     Plus,
     Tag,
@@ -322,14 +323,23 @@ export function CustomerSidebar({
                         </div>
                     )}
 
-                    {/* Acquisition Channel */}
+                    {/* Acquisition Channel & Campaign */}
                     <div>
                         <span className="text-[11px] font-semibold text-neutral-500 mb-1 block">
-                            {isRtl ? 'مصدر العميل (قناة التسويق)' : 'Acquisition Channel'}
+                            {isRtl ? 'مصدر العميل وقناة التسويق' : 'Source & Acquisition Channel'}
                         </span>
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium">
-                            <Globe className="size-3" />
-                            <span>{isRtl ? lead.channel_label_ar || 'واتساب مباشر' : lead.channel_label || 'WhatsApp Direct'}</span>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium">
+                                <Globe className="size-3" />
+                                <span>{isRtl ? lead.channel_label_ar || 'واتساب مباشر' : lead.channel_label || 'WhatsApp Direct'}</span>
+                            </div>
+
+                            {(lead.utm_campaign || lead.campaign_name) && (
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-700 dark:text-purple-300 text-xs font-semibold border border-purple-500/20">
+                                    <Megaphone className="size-3 text-purple-600" />
+                                    <span>{lead.utm_campaign || lead.campaign_name}</span>
+                                </div>
+                            )}
                         </div>
                     </div>
 

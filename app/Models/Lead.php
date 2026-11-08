@@ -90,6 +90,7 @@ class Lead extends Model
         'channel',
         'channel_label',
         'channel_label_ar',
+        'campaign_name',
     ];
 
     /**
@@ -332,6 +333,14 @@ class Lead extends Model
             'referral' => 'توصية / ترشيح عميل',
             default => 'الموقع الإلكتروني / مباشر',
         };
+    }
+
+    /**
+     * Get clean campaign name if present.
+     */
+    public function getCampaignNameAttribute(): ?string
+    {
+        return ! empty($this->utm_campaign) ? trim($this->utm_campaign) : null;
     }
 
     /**

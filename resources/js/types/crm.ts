@@ -89,6 +89,7 @@ export interface Lead {
     channel?: string;
     channel_label?: string;
     channel_label_ar?: string;
+    campaign_name?: string | null;
     ip_address?: string | null;
     created_at: string;
     updated_at: string;

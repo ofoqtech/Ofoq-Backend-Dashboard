@@ -1,6 +1,7 @@
 import {
     Building2,
     Calendar,
+    Megaphone,
     MessageCircle,
     Phone,
     User as UserIcon,
@@ -108,6 +109,15 @@ export function CrmKanban({ pipeline, onSelectLead }: CrmKanbanProps) {
                                                         lead={lead}
                                                         size="sm"
                                                     />
+                                                    {(lead.utm_campaign || lead.campaign_name) && (
+                                                        <span
+                                                            className="inline-flex items-center gap-1 rounded bg-purple-500/10 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-purple-700 dark:text-purple-300 border border-purple-500/20 max-w-[130px] truncate"
+                                                            title={`Campaign: ${lead.utm_campaign || lead.campaign_name}`}
+                                                        >
+                                                            <Megaphone className="size-2.5 shrink-0 text-purple-600" />
+                                                            <span className="truncate">{lead.utm_campaign || lead.campaign_name}</span>
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 <span className="flex shrink-0 items-center gap-1 text-muted-foreground">
                                                     <Calendar className="size-3" />

@@ -518,13 +518,14 @@ export function LeadDetailSheet({
                                         </span>
                                     </div>
 
-                                    {lead.utm_campaign && (
-                                        <div>
-                                            <span className="block text-[11px] text-muted-foreground">
-                                                {t('crm.campaign')}
+                                    {(lead.utm_campaign || lead.campaign_name) && (
+                                        <div className="sm:col-span-2 rounded-lg border border-purple-500/25 bg-purple-500/10 p-2.5">
+                                            <span className="flex items-center gap-1.5 text-xs font-bold text-purple-700 dark:text-purple-300">
+                                                <Megaphone className="size-3.5 text-purple-600" />
+                                                <span>{t('crm.campaign_name')}</span>
                                             </span>
-                                            <span className="font-mono text-[11px] font-semibold text-primary">
-                                                {lead.utm_campaign}
+                                            <span className="mt-1 block font-mono text-xs font-bold text-purple-900 dark:text-purple-100">
+                                                {lead.utm_campaign || lead.campaign_name}
                                             </span>
                                         </div>
                                     )}

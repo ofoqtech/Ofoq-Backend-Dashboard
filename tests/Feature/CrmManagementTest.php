@@ -159,6 +159,30 @@ test('submitting service form stores marketing attribution and auto-detects refe
     expect($liLead->channel)->toBe('linkedin');
 });
 
+test('submitting service form automatically extracts utm campaign and source from landing_page or referrer url query', function () {
+    $service = Service::firstOrCreate(
+        ['slug' => 'test-url-campaign-service'],
+        ['name' => ['en' => 'Campaign Test Service', 'ar' => 'خدمة فحص الحملة'], 'order' => 1, 'is_active' => true]
+    );
+
+    $payload = [
+        'name' => 'Ad Campaign Lead',
+        'mobile' => '+201500112233',
+        'service_id' => $service->id,
+        'landing_page' => 'https://ofoq.tech/services?utm_source=facebook&utm_campaign=black_friday_deals&utm_medium=paid_social',
+    ];
+
+    $response = $this->postJson('/api/service-form', $payload);
+    $response->assertCreated();
+
+    $lead = Lead::where('phone', '+201500112233')->first();
+    expect($lead)->not->toBeNull()
+        ->and($lead->utm_campaign)->toBe('black_friday_deals')
+        ->and($lead->utm_source)->toBe('facebook')
+        ->and($lead->utm_medium)->toBe('paid_social')
+        ->and($lead->channel)->toBe('meta');
+});
+
 test('submitting service form validates required name mobile and service_id', function () {
     $response = $this->postJson('/api/service-form', []);
 

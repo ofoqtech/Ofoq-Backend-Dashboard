@@ -1,6 +1,7 @@
 import {
     Building2,
     ChevronRight,
+    Megaphone,
     MessageCircle,
     Phone,
     User as UserIcon,
@@ -70,7 +71,7 @@ export function CrmTable({
                                 {t('crm.service_requested')}
                             </th>
                             <th className="px-4 py-3 text-start">
-                                {t('crm.channel')}
+                                {isRtl ? 'المصدر والحملة' : 'Source & Campaign'}
                             </th>
                             <th className="px-4 py-3 text-start">
                                 {t('crm.stage')}
@@ -149,14 +150,19 @@ export function CrmTable({
                                 </td>
 
                                 <td className="px-4 py-3 text-start whitespace-nowrap">
-                                    <div className="flex flex-col items-start gap-0.5">
+                                    <div className="flex flex-col items-start gap-1">
                                         <ChannelBadge lead={lead} size="sm" />
-                                        {lead.utm_campaign && (
+                                        {(lead.utm_campaign || lead.campaign_name) ? (
                                             <span
-                                                className="max-w-[130px] truncate font-mono text-[10px] text-muted-foreground"
-                                                title={lead.utm_campaign}
+                                                className="inline-flex items-center gap-1 rounded bg-purple-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-purple-700 dark:text-purple-300 border border-purple-500/20 max-w-[160px] truncate"
+                                                title={`Campaign: ${lead.utm_campaign || lead.campaign_name}`}
                                             >
-                                                {lead.utm_campaign}
+                                                <Megaphone className="size-2.5 shrink-0 text-purple-600" />
+                                                <span className="truncate">{lead.utm_campaign || lead.campaign_name}</span>
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] text-muted-foreground/60 italic">
+                                                {isRtl ? 'بدون حملة محددة' : 'No Campaign'}
                                             </span>
                                         )}
                                     </div>

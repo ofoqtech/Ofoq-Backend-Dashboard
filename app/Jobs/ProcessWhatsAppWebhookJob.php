@@ -183,6 +183,12 @@ class ProcessWhatsAppWebhookJob implements ShouldQueue
                     $contact->update(['profile_name' => $profileName]);
                 }
 
+                // Check if incoming message has Meta Click-to-WhatsApp Ad referral
+                $referral = $msgData['referral'] ?? null;
+                $adHeadline = $referral['headline'] ?? null;
+                $adSourceId = $referral['source_id'] ?? null;
+                $campaignFromAd = $adHeadline ?: ($adSourceId ? 'Ad #'.$adSourceId : null);
+
                 // 2. Link with CRM Lead (Avoid duplicate customer systems)
                 if (! $contact->lead_id) {
                     $lead = $this->findMatchingLead($waId);
@@ -194,16 +200,29 @@ class ProcessWhatsAppWebhookJob implements ShouldQueue
                             'phone' => '+'.$waId,
                             'status' => LeadStatus::New,
                             'priority' => LeadPriority::Medium,
-                            'source' => 'whatsapp_direct',
-                            'utm_source' => 'whatsapp',
+                            'source' => $referral ? 'meta_ad' : 'whatsapp_direct',
+                            'utm_source' => $referral ? 'meta' : 'whatsapp',
+                            'utm_campaign' => $campaignFromAd,
                         ]);
 
-                        $lead->logActivity('whatsapp', 'New conversation started via WhatsApp Direct.');
+                        $lead->logActivity(
+                            'whatsapp',
+                            $campaignFromAd
+                                ? "New conversation started via Meta Ad: {$campaignFromAd}."
+                                : 'New conversation started via WhatsApp Direct.'
+                        );
                     }
 
                     $contact->update(['lead_id' => $lead->id]);
                 } else {
                     $lead = $contact->lead;
+                    if ($campaignFromAd && $lead && empty($lead->utm_campaign)) {
+                        $lead->update([
+                            'utm_campaign' => $campaignFromAd,
+                            'utm_source' => $lead->utm_source ?: 'meta',
+                        ]);
+                        $lead->logActivity('whatsapp', "Referral received from Meta Ad: {$campaignFromAd}.");
+                    }
                 }
 
                 // 3. Find or create Conversation
@@ -273,6 +292,10 @@ class ProcessWhatsAppWebhookJob implements ShouldQueue
                     default:
                         $body = "[Unsupported message: {$type}]";
                         break;
+                }
+
+                if (! empty($referral)) {
+                    $metadata['referral'] = $referral;
                 }
 
                 $sentAt = isset($msgData['timestamp'])

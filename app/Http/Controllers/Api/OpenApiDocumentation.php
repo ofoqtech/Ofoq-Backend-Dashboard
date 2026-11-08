@@ -263,23 +263,23 @@ class OpenApiDocumentation
     #[OA\Post(
         path: '/api/service-form',
         summary: 'Submit Service Inquiry Form (Creates CRM Lead)',
-        description: 'Public contact and quote request form. Creates a new Lead and logs attribution metadata.',
+        description: 'Public contact and quote request form. Creates a new Lead and logs attribution metadata. Accepts mobile or phone.',
         tags: ['Public API & Services'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['name', 'phone'],
+                required: ['name', 'mobile', 'service_id'],
                 properties: [
                     new OA\Property(property: 'name', type: 'string', example: 'Sherif Watany'),
-                    new OA\Property(property: 'phone', type: 'string', example: '01012345678'),
-                    new OA\Property(property: 'email', type: 'string', example: 'client@example.com'),
-                    new OA\Property(property: 'company', type: 'string', example: 'Acme Corp'),
-                    new OA\Property(property: 'service_id', type: 'integer', example: 1),
-                    new OA\Property(property: 'service_budget_id', type: 'integer', example: 1),
-                    new OA\Property(property: 'internal_notes', type: 'string', example: 'Need web and mobile app integration.'),
-                    new OA\Property(property: 'utm_source', type: 'string', example: 'google'),
-                    new OA\Property(property: 'utm_medium', type: 'string', example: 'cpc'),
-                    new OA\Property(property: 'utm_campaign', type: 'string', example: 'web_dev_2026'),
+                    new OA\Property(property: 'mobile', type: 'string', example: '01012345678', description: 'Contact mobile or phone number'),
+                    new OA\Property(property: 'phone', type: 'string', nullable: true, example: '01012345678', description: 'Alias for mobile'),
+                    new OA\Property(property: 'service_id', type: 'integer', example: 1, description: 'ID of requested Service or Budget tier'),
+                    new OA\Property(property: 'email', type: 'string', nullable: true, example: 'client@example.com'),
+                    new OA\Property(property: 'company', type: 'string', nullable: true, example: 'Acme Corp'),
+                    new OA\Property(property: 'message', type: 'string', nullable: true, example: 'Need web and mobile app integration.'),
+                    new OA\Property(property: 'utm_source', type: 'string', nullable: true, example: 'meta'),
+                    new OA\Property(property: 'utm_medium', type: 'string', nullable: true, example: 'paid_social'),
+                    new OA\Property(property: 'utm_campaign', type: 'string', nullable: true, example: 'Ramadan_Promo_2026'),
                 ]
             )
         ),
@@ -294,16 +294,19 @@ class OpenApiDocumentation
     #[OA\Post(
         path: '/api/contact',
         summary: 'Submit Contact Message',
-        description: 'Alias endpoint to submit inquiry / contact message.',
+        description: 'Alias endpoint to submit inquiry / contact message. Accepts mobile or phone.',
         tags: ['Public API & Services'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['name', 'phone'],
+                required: ['name', 'mobile', 'service_id'],
                 properties: [
                     new OA\Property(property: 'name', type: 'string', example: 'Mohamed Ali'),
-                    new OA\Property(property: 'phone', type: 'string', example: '01122334455'),
-                    new OA\Property(property: 'email', type: 'string', example: 'mohamed@example.com'),
+                    new OA\Property(property: 'mobile', type: 'string', example: '01122334455'),
+                    new OA\Property(property: 'phone', type: 'string', nullable: true, example: '01122334455'),
+                    new OA\Property(property: 'service_id', type: 'integer', example: 1),
+                    new OA\Property(property: 'email', type: 'string', nullable: true, example: 'mohamed@example.com'),
+                    new OA\Property(property: 'message', type: 'string', nullable: true, example: 'Inquiry regarding software development.'),
                 ]
             )
         ),
@@ -506,4 +509,3 @@ class OpenApiDocumentation
     )]
     public function currentUser(): void {}
 }
-

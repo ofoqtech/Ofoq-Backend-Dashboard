@@ -231,6 +231,66 @@ test('process webhook job auto-creates new crm lead if contact does not exist', 
     expect($createdLead->channel)->toBe('whatsapp');
 });
 
+test('process webhook job captures campaign name from Meta Click-to-WhatsApp ad referral', function () {
+    $payload = [
+        'object' => 'whatsapp_business_account',
+        'entry' => [
+            [
+                'id' => 'WABA_123',
+                'changes' => [
+                    [
+                        'value' => [
+                            'messaging_product' => 'whatsapp',
+                            'contacts' => [
+                                [
+                                    'profile' => ['name' => 'Eng. Kareem Ads'],
+                                    'wa_id' => '201299887766',
+                                ],
+                            ],
+                            'messages' => [
+                                [
+                                    'from' => '201299887766',
+                                    'id' => 'wamid.HBgREFERRAL_AD_1',
+                                    'timestamp' => '1731067400',
+                                    'text' => ['body' => 'I saw your Meta Ad about ERP Systems'],
+                                    'type' => 'text',
+                                    'referral' => [
+                                        'source_type' => 'ad',
+                                        'source_id' => '987654321',
+                                        'source_url' => 'https://fb.me/ofoq_erp_ad',
+                                        'headline' => 'ERP & Cloud Solutions 2026 Promo',
+                                        'body' => 'Get 25% off custom ERP systems',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'field' => 'messages',
+                    ],
+                ],
+            ],
+        ],
+    ];
+
+    $event = WhatsAppWebhookEvent::create([
+        'event_id' => 'evt_referral_test',
+        'payload' => $payload,
+        'processed' => false,
+    ]);
+
+    (new ProcessWhatsAppWebhookJob($event->id))->handle();
+
+    $lead = Lead::where('phone', '+201299887766')->first();
+    expect($lead)->not->toBeNull();
+    expect($lead->name)->toBe('Eng. Kareem Ads');
+    expect($lead->utm_campaign)->toBe('ERP & Cloud Solutions 2026 Promo');
+    expect($lead->utm_source)->toBe('meta');
+    expect($lead->channel)->toBe('meta');
+
+    $message = WhatsAppMessage::where('whatsapp_message_id', 'wamid.HBgREFERRAL_AD_1')->first();
+    expect($message)->not->toBeNull();
+    expect($message->metadata['referral']['headline'])->toBe('ERP & Cloud Solutions 2026 Promo');
+});
+
 test('process webhook job handles message status updates', function () {
     $contact = WhatsAppContact::create([
         'wa_id' => '201000111222',

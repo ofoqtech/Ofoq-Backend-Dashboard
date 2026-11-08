@@ -121,5 +121,62 @@ class WhatsAppSeeder extends Seeder
                 $qr
             );
         }
+
+        // 4. Seed initial WhatsApp conversations for existing leads if empty
+        $defaultAccount = WhatsAppAccount::getDefault();
+        $sampleLeads = \App\Models\Lead::take(2)->get();
+        foreach ($sampleLeads as $index => $lead) {
+            $waId = \App\Models\WhatsAppContact::normalizePhoneNumber($lead->phone ?: '20101234567'.$index);
+            $contact = \App\Models\WhatsAppContact::firstOrCreate(
+                ['wa_id' => $waId],
+                [
+                    'profile_name' => $lead->name,
+                    'phone_number' => '+'.$waId,
+                    'lead_id' => $lead->id,
+                ]
+            );
+
+            $conversation = \App\Models\WhatsAppConversation::firstOrCreate(
+                ['contact_id' => $contact->id],
+                [
+                    'account_id' => $defaultAccount?->id,
+                    'lead_id' => $lead->id,
+                    'assigned_to' => $lead->assigned_to,
+                    'status' => 'open',
+                    'unread_count' => 1,
+                    'last_message_at' => now(),
+                    'last_message_preview' => 'Hello, I want to inquire about custom software development services.',
+                    'last_message_direction' => 'incoming',
+                ]
+            );
+
+            if ($conversation->messages()->count() === 0) {
+                \App\Models\WhatsAppMessage::create([
+                    'conversation_id' => $conversation->id,
+                    'contact_id' => $contact->id,
+                    'whatsapp_message_id' => 'wamid.SEED_IN_'.$conversation->id,
+                    'direction' => 'incoming',
+                    'type' => 'text',
+                    'body' => 'Hello, I want to inquire about custom software development services.',
+                    'status' => 'delivered',
+                    'sent_at' => now()->subMinutes(15),
+                    'delivered_at' => now()->subMinutes(15),
+                ]);
+
+                \App\Models\WhatsAppMessage::create([
+                    'conversation_id' => $conversation->id,
+                    'contact_id' => $contact->id,
+                    'user_id' => $lead->assigned_to,
+                    'whatsapp_message_id' => 'wamid.SEED_OUT_'.$conversation->id,
+                    'direction' => 'outgoing',
+                    'type' => 'text',
+                    'body' => 'Welcome to Ofoq Technology! We would be delighted to help you. What type of platform are you planning to build?',
+                    'status' => 'read',
+                    'sent_at' => now()->subMinutes(10),
+                    'delivered_at' => now()->subMinutes(10),
+                    'read_at' => now()->subMinutes(8),
+                ]);
+            }
+        }
     }
 }

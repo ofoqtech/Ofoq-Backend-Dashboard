@@ -486,7 +486,7 @@
                     "Public API & Services"
                 ],
                 "summary": "Submit Service Inquiry Form (Creates CRM Lead)",
-                "description": "Public contact and quote request form. Creates a new Lead and logs attribution metadata.",
+                "description": "Public contact and quote request form. Creates a new Lead and logs attribution metadata. Accepts mobile or phone.",
                 "operationId": "adb593405a0847c24d136b791a4a8f41",
                 "requestBody": {
                     "required": true,
@@ -495,48 +495,59 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "phone"
+                                    "mobile",
+                                    "service_id"
                                 ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
                                         "example": "Sherif Watany"
                                     },
-                                    "phone": {
+                                    "mobile": {
+                                        "description": "Contact mobile or phone number",
                                         "type": "string",
                                         "example": "01012345678"
                                     },
+                                    "phone": {
+                                        "description": "Alias for mobile",
+                                        "type": "string",
+                                        "example": "01012345678",
+                                        "nullable": true
+                                    },
+                                    "service_id": {
+                                        "description": "ID of requested Service or Budget tier",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
                                     "email": {
                                         "type": "string",
-                                        "example": "client@example.com"
+                                        "example": "client@example.com",
+                                        "nullable": true
                                     },
                                     "company": {
                                         "type": "string",
-                                        "example": "Acme Corp"
+                                        "example": "Acme Corp",
+                                        "nullable": true
                                     },
-                                    "service_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "service_budget_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "internal_notes": {
+                                    "message": {
                                         "type": "string",
-                                        "example": "Need web and mobile app integration."
+                                        "example": "Need web and mobile app integration.",
+                                        "nullable": true
                                     },
                                     "utm_source": {
                                         "type": "string",
-                                        "example": "google"
+                                        "example": "meta",
+                                        "nullable": true
                                     },
                                     "utm_medium": {
                                         "type": "string",
-                                        "example": "cpc"
+                                        "example": "paid_social",
+                                        "nullable": true
                                     },
                                     "utm_campaign": {
                                         "type": "string",
-                                        "example": "web_dev_2026"
+                                        "example": "Ramadan_Promo_2026",
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -563,7 +574,7 @@
                     "Public API & Services"
                 ],
                 "summary": "Submit Contact Message",
-                "description": "Alias endpoint to submit inquiry / contact message.",
+                "description": "Alias endpoint to submit inquiry / contact message. Accepts mobile or phone.",
                 "operationId": "9b642057302a1b3b82e2c533fb6d19c4",
                 "requestBody": {
                     "required": true,
@@ -572,20 +583,36 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "phone"
+                                    "mobile",
+                                    "service_id"
                                 ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
                                         "example": "Mohamed Ali"
                                     },
-                                    "phone": {
+                                    "mobile": {
                                         "type": "string",
                                         "example": "01122334455"
                                     },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "01122334455",
+                                        "nullable": true
+                                    },
+                                    "service_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
                                     "email": {
                                         "type": "string",
-                                        "example": "mohamed@example.com"
+                                        "example": "mohamed@example.com",
+                                        "nullable": true
+                                    },
+                                    "message": {
+                                        "type": "string",
+                                        "example": "Inquiry regarding software development.",
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"

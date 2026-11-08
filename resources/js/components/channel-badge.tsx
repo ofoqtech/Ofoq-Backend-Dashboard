@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, MessageCircle, Phone, Share2, FileText } from 'lucide-react';
+import { Globe, MessageCircle, Phone, Share2, FileText, Megaphone } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import type { Lead } from '@/types/crm';
 
@@ -7,6 +7,7 @@ export interface ChannelBadgeProps {
     lead?: Lead;
     channelKey?: string;
     showLabel?: boolean;
+    showCampaign?: boolean;
     size?: 'sm' | 'md';
 }
 
@@ -54,6 +55,7 @@ export function ChannelBadge({
     lead,
     channelKey,
     showLabel = true,
+    showCampaign = false,
     size = 'sm',
 }: ChannelBadgeProps) {
     const { isRtl } = useTranslation();
@@ -173,17 +175,27 @@ export function ChannelBadge({
             break;
     }
 
+    const campaignName = lead?.campaign_name || lead?.utm_campaign;
+
     return (
-        <span
-            className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 font-semibold ${textSize} ${badgeClass}`}
-            title={
-                lead?.utm_campaign
-                    ? `Campaign: ${lead.utm_campaign}`
-                    : undefined
-            }
-        >
-            {icon}
-            {showLabel && <span>{isRtl ? labelAr : labelEn}</span>}
-        </span>
+        <div className="inline-flex flex-wrap items-center gap-1">
+            <span
+                className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 font-semibold ${textSize} ${badgeClass}`}
+                title={campaignName ? `Campaign: ${campaignName}` : undefined}
+            >
+                {icon}
+                {showLabel && <span>{isRtl ? labelAr : labelEn}</span>}
+            </span>
+
+            {showCampaign && campaignName && (
+                <span
+                    className={`inline-flex items-center gap-1 rounded-md border border-purple-500/25 bg-purple-500/10 px-1.5 py-0.5 font-mono text-purple-700 dark:text-purple-300 font-semibold ${textSize}`}
+                    title={`Campaign: ${campaignName}`}
+                >
+                    <Megaphone className={iconSize} />
+                    <span className="max-w-[130px] truncate">{campaignName}</span>
+                </span>
+            )}
+        </div>
     );
 }

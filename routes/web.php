@@ -26,7 +26,7 @@ Route::redirect('api/docs', '/api/documentation');
 Route::get('webhooks/whatsapp', [WhatsAppWebhookController::class, 'verify'])->name('webhooks.whatsapp.verify');
 Route::post('webhooks/whatsapp', [WhatsAppWebhookController::class, 'handle'])->name('webhooks.whatsapp.handle');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth:web,sanctum'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     // CRM & Lead Pipeline Management

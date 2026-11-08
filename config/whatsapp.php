@@ -29,4 +29,3 @@ return [
     'max_retries' => (int) env('WHATSAPP_MAX_RETRIES', 3),
 
 ];
-

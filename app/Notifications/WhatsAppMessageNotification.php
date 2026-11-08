@@ -42,4 +42,3 @@ class WhatsAppMessageNotification extends Notification
         ];
     }
 }
-

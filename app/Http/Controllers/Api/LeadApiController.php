@@ -45,9 +45,14 @@ class LeadApiController extends Controller
      */
     public function submitServiceForm(Request $request): JsonResponse
     {
+        if ($request->filled('phone') && ! $request->filled('mobile')) {
+            $request->merge(['mobile' => $request->input('phone')]);
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'mobile' => ['required', 'string', 'max:40'],
+            'phone' => ['nullable', 'string', 'max:40'],
             'service_id' => ['required'],
             'email' => ['nullable', 'email', 'max:150'],
             'company' => ['nullable', 'string', 'max:150'],
@@ -87,6 +92,34 @@ class LeadApiController extends Controller
 
         $referrer = $validated['referrer'] ?? $request->header('referer');
         $utmSource = $validated['utm_source'] ?? null;
+        $utmCampaign = $validated['utm_campaign'] ?? null;
+        $utmMedium = $validated['utm_medium'] ?? null;
+        $utmContent = $validated['utm_content'] ?? null;
+
+        // Auto-extract UTM parameters from URL query strings (landing_page, referrer, or request query)
+        $extractUtmFromUrl = function (?string $url) use (&$utmSource, &$utmCampaign, &$utmMedium, &$utmContent) {
+            if (empty($url)) {
+                return;
+            }
+            $query = parse_url($url, PHP_URL_QUERY);
+            if (! $query) {
+                return;
+            }
+            parse_str($query, $params);
+            $utmCampaign ??= $params['utm_campaign'] ?? $params['campaign'] ?? null;
+            $utmSource ??= $params['utm_source'] ?? $params['source'] ?? null;
+            $utmMedium ??= $params['utm_medium'] ?? $params['medium'] ?? null;
+            $utmContent ??= $params['utm_content'] ?? null;
+        };
+
+        $extractUtmFromUrl($validated['landing_page'] ?? null);
+        $extractUtmFromUrl($referrer);
+        $extractUtmFromUrl($request->fullUrl());
+
+        // Direct request query fallback (e.g. /api/service-form?utm_campaign=winter_promo)
+        $utmCampaign ??= $request->query('utm_campaign') ?: $request->query('campaign');
+        $utmSource ??= $request->query('utm_source');
+        $utmMedium ??= $request->query('utm_medium');
 
         // Auto-detect advertising & social platform from HTTP Referer if UTM is omitted
         if (empty($utmSource) && ! empty($referrer)) {
@@ -125,9 +158,9 @@ class LeadApiController extends Controller
             'internal_notes' => $validated['message'] ?? null,
             'source' => $validated['source'] ?? ($utmSource ?: 'website_form'),
             'utm_source' => $utmSource,
-            'utm_medium' => $validated['utm_medium'] ?? null,
-            'utm_campaign' => $validated['utm_campaign'] ?? null,
-            'utm_content' => $validated['utm_content'] ?? null,
+            'utm_medium' => $utmMedium,
+            'utm_campaign' => $utmCampaign,
+            'utm_content' => $utmContent,
             'form_name' => $formName,
             'landing_page' => $validated['landing_page'] ?? null,
             'referrer' => $referrer,

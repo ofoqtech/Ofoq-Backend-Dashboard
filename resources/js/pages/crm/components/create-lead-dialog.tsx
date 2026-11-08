@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
+import { Megaphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -315,31 +316,23 @@ export function CreateLeadDialog({
                         </div>
                     </div>
 
-                    {[
-                        'meta',
-                        'tiktok',
-                        'snapchat',
-                        'linkedin',
-                        'google',
-                        'facebook',
-                        'instagram',
-                    ].includes(source) && (
-                        <div className="space-y-1.5 rounded-lg border border-primary/20 bg-primary/5 p-3">
-                            <Label
-                                htmlFor="lead-campaign"
-                                className="text-xs font-semibold"
-                            >
-                                {t('crm.campaign_name')}
-                            </Label>
-                            <Input
-                                id="lead-campaign"
-                                value={campaign}
-                                onChange={(e) => setCampaign(e.target.value)}
-                                placeholder="e.g. Ramadan Promo 2026, Healthcare Campaign..."
-                                className="h-8 bg-background text-xs"
-                            />
-                        </div>
-                    )}
+                    <div className="space-y-1.5 rounded-lg border border-purple-500/25 bg-purple-500/5 p-3">
+                        <Label
+                            htmlFor="lead-campaign"
+                            className="text-xs font-semibold flex items-center gap-1.5 text-purple-900 dark:text-purple-200"
+                        >
+                            <Megaphone className="size-3.5 text-purple-600" />
+                            <span>{t('crm.campaign_name')}</span>
+                            <span className="text-[10px] font-normal text-muted-foreground">({t('common.optional', 'Optional')})</span>
+                        </Label>
+                        <Input
+                            id="lead-campaign"
+                            value={campaign}
+                            onChange={(e) => setCampaign(e.target.value)}
+                            placeholder={isRtl ? 'مثال: حملة رمضان 2026، إعلانات الصيف، B2B Enterprise...' : 'e.g. Ramadan Promo 2026, Summer Healthcare Ads, B2B SaaS Launch...'}
+                            className="h-8 bg-background text-xs"
+                        />
+                    </div>
 
                     <div className="space-y-1.5">
                         <Label htmlFor="lead-notes">
