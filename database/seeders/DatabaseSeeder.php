@@ -75,5 +75,8 @@ class DatabaseSeeder extends Seeder
 
         // 6. Seed CRM Leads
         $this->call(LeadSeeder::class);
+
+        // 7. Seed WhatsApp Cloud API Integration (Account, Templates, Quick Replies)
+        $this->call(WhatsAppSeeder::class);
     }
 }

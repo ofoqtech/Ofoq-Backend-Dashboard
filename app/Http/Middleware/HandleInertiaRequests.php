@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Enums\LeadStatus;
 use App\Models\Lead;
+use App\Models\WhatsAppConversation;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -50,6 +51,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'crm' => [
                 'newLeadsCount' => $user ? fn () => cache()->remember('crm_new_leads_count', 15, fn () => Lead::where('status', LeadStatus::New)->count()) : 0,
+                'whatsappUnreadCount' => $user ? fn () => cache()->remember('whatsapp_unread_count', 10, fn () => (int) WhatsAppConversation::sum('unread_count')) : 0,
             ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),

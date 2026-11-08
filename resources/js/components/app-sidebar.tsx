@@ -5,6 +5,7 @@ import {
     FolderTree,
     Inbox,
     LayoutGrid,
+    MessageSquare,
     ShieldCheck,
     Users,
 } from 'lucide-react';
@@ -31,7 +32,7 @@ import type { Auth, NavItem } from '@/types';
 export function AppSidebar() {
     const { auth, crm } = usePage<{
         auth: Auth;
-        crm?: { newLeadsCount?: number };
+        crm?: { newLeadsCount?: number; whatsappUnreadCount?: number };
     }>().props;
     const { t, isRtl } = useTranslation();
     const { toggleSidebar } = useSidebar();
@@ -48,6 +49,12 @@ export function AppSidebar() {
             href: '/crm',
             icon: Inbox,
             badge: crm?.newLeadsCount ?? 0,
+        },
+        {
+            title: t('nav.whatsapp'),
+            href: '/crm/whatsapp',
+            icon: MessageSquare,
+            badge: crm?.whatsappUnreadCount ?? 0,
         },
         {
             title: t('nav.notifications'),

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -124,6 +125,21 @@ class Lead extends Model
     public function activities(): HasMany
     {
         return $this->hasMany(LeadActivity::class)->latest('id');
+    }
+
+    public function whatsappContact(): HasOne
+    {
+        return $this->hasOne(WhatsAppContact::class, 'lead_id');
+    }
+
+    public function whatsappConversation(): HasOne
+    {
+        return $this->hasOne(WhatsAppConversation::class, 'lead_id')->latestOfMany();
+    }
+
+    public function whatsappConversations(): HasMany
+    {
+        return $this->hasMany(WhatsAppConversation::class, 'lead_id');
     }
 
     public function getStatusLabelAttribute(): string

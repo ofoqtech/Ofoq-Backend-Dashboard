@@ -1,0 +1,1028 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Ofoq Technology CRM & WhatsApp API",
+        "description": "Ofoq Technology CRM, WhatsApp Business Cloud API & Portfolio REST API Documentation. Use this interactive Swagger UI to inspect, execute, and test any API endpoint.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Development Server (Port 8000)"
+        },
+        {
+            "url": "/",
+            "description": "Current Environment Server"
+        }
+    ],
+    "paths": {
+        "/webhooks/whatsapp": {
+            "get": {
+                "tags": [
+                    "WhatsApp Cloud API"
+                ],
+                "summary": "Meta WhatsApp Webhook Handshake Verification (GET)",
+                "description": "Endpoint invoked by Meta to verify webhook URL with hub.mode, hub.verify_token, and hub.challenge.",
+                "operationId": "a393adec8367deb5e904ac7bf8bed113",
+                "parameters": [
+                    {
+                        "name": "hub_mode",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "subscribe"
+                        }
+                    },
+                    {
+                        "name": "hub_verify_token",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "ofoq_whatsapp_verify_token_2026"
+                        }
+                    },
+                    {
+                        "name": "hub_challenge",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "123456789"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Webhook verified, returns challenge string"
+                    },
+                    "403": {
+                        "description": "Invalid verification token"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "WhatsApp Cloud API"
+                ],
+                "summary": "Meta WhatsApp Incoming Webhook Events (POST)",
+                "description": "Receives real-time incoming messages, media events, and status updates (sent, delivered, read, failed) from Meta.",
+                "operationId": "f5641a689db0e5e10de2df7511e58224",
+                "parameters": [
+                    {
+                        "name": "X-Hub-Signature-256",
+                        "in": "header",
+                        "description": "HMAC-SHA256 signature calculated with Meta App Secret",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {},
+                            "example": {
+                                "object": "whatsapp_business_account",
+                                "entry": [
+                                    {
+                                        "id": "WABA_ACCOUNT_ID",
+                                        "changes": [
+                                            {
+                                                "value": {
+                                                    "messaging_product": "whatsapp",
+                                                    "metadata": {
+                                                        "display_phone_number": "+20 100 000 0000",
+                                                        "phone_number_id": "100000000000000"
+                                                    },
+                                                    "contacts": [
+                                                        {
+                                                            "profile": {
+                                                                "name": "Ahmed Client"
+                                                            },
+                                                            "wa_id": "201012345678"
+                                                        }
+                                                    ],
+                                                    "messages": [
+                                                        {
+                                                            "from": "201012345678",
+                                                            "id": "wamid.HBgSAMPLE12345",
+                                                            "timestamp": "1731067200",
+                                                            "text": {
+                                                                "body": "Hello, I want to inquire about mobile app development."
+                                                            },
+                                                            "type": "text"
+                                                        }
+                                                    ]
+                                                },
+                                                "field": "messages"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Event queued and acknowledged",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "status": "received"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Signature verification failed"
+                    }
+                }
+            }
+        },
+        "/crm/whatsapp/conversations": {
+            "post": {
+                "tags": [
+                    "WhatsApp Cloud API"
+                ],
+                "summary": "Start a new WhatsApp Conversation",
+                "description": "Initiates a direct WhatsApp conversation with a customer phone number or links to an existing Lead.",
+                "operationId": "0513ce44d7cab0ef0daa2c09487ba8ea",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+20 101 234 5678"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Ahmed Customer"
+                                    },
+                                    "lead_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "initial_message": {
+                                        "type": "string",
+                                        "example": "Hello from Ofoq Technology!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Conversation started successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/crm/whatsapp/conversations/{conversation}/messages": {
+            "get": {
+                "tags": [
+                    "WhatsApp Cloud API"
+                ],
+                "summary": "Get Messages for Conversation (Poll updates)",
+                "description": "Retrieves message history and media attachments for an active WhatsApp conversation.",
+                "operationId": "e9f00b4b8bbd5397534925b98439befc",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "after_id",
+                        "in": "query",
+                        "description": "Only fetch messages with ID greater than after_id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Messages list and unread count"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "WhatsApp Cloud API"
+                ],
+                "summary": "Send Outgoing WhatsApp Text Message",
+                "description": "Sends an official WhatsApp text message directly via Meta WhatsApp Cloud API.",
+                "operationId": "087624dcf2c4c6c33d7e23c2f34116fd",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "message"
+                                ],
+                                "properties": {
+                                    "message": {
+                                        "type": "string",
+                                        "example": "Hello! Thanks for reaching out. How can we help?"
+                                    },
+                                    "reply_to_message_id": {
+                                        "type": "string",
+                                        "example": "wamid.HBg...",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Message sent successfully"
+                    },
+                    "422": {
+                        "description": "Validation or Meta API error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/crm/whatsapp/conversations/{conversation}/templates": {
+            "post": {
+                "tags": [
+                    "WhatsApp Cloud API"
+                ],
+                "summary": "Send WhatsApp Approved Template",
+                "description": "Sends an approved template message to initiate a conversation or follow up outside the 24h window.",
+                "operationId": "72dc719e89ff6c4de7bafacfdbbb9e48",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "template_name",
+                                    "language"
+                                ],
+                                "properties": {
+                                    "template_name": {
+                                        "type": "string",
+                                        "example": "lead_follow_up_ar"
+                                    },
+                                    "language": {
+                                        "type": "string",
+                                        "example": "ar"
+                                    },
+                                    "parameters": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "أحمد"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Template dispatched to recipient"
+                    },
+                    "422": {
+                        "description": "Meta API template dispatch error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/crm/whatsapp/conversations/{conversation}/assign": {
+            "patch": {
+                "tags": [
+                    "WhatsApp Cloud API"
+                ],
+                "summary": "Assign WhatsApp Conversation to Employee",
+                "operationId": "0f90fcf148827e223da7360a895dd23d",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "assigned_to": {
+                                        "type": "integer",
+                                        "example": 2,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Assigned successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/crm/whatsapp/conversations/{conversation}/status": {
+            "patch": {
+                "tags": [
+                    "WhatsApp Cloud API"
+                ],
+                "summary": "Update WhatsApp Conversation Status",
+                "operationId": "62ee01e7e80a583a161dcec8c88f579f",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "closed",
+                                        "enum": [
+                                            "open",
+                                            "pending",
+                                            "closed",
+                                            "archived"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status updated successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/services": {
+            "get": {
+                "tags": [
+                    "Public API & Services"
+                ],
+                "summary": "Get Active Services & Budget Ranges",
+                "description": "Returns available services, features, and budget tier options for client inquiry forms.",
+                "operationId": "2436ef99240db4b38f948bed7656c0d6",
+                "responses": {
+                    "200": {
+                        "description": "Active services and budgets list"
+                    }
+                }
+            }
+        },
+        "/api/service-form": {
+            "post": {
+                "tags": [
+                    "Public API & Services"
+                ],
+                "summary": "Submit Service Inquiry Form (Creates CRM Lead)",
+                "description": "Public contact and quote request form. Creates a new Lead and logs attribution metadata.",
+                "operationId": "adb593405a0847c24d136b791a4a8f41",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Sherif Watany"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "01012345678"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "client@example.com"
+                                    },
+                                    "company": {
+                                        "type": "string",
+                                        "example": "Acme Corp"
+                                    },
+                                    "service_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "service_budget_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "internal_notes": {
+                                        "type": "string",
+                                        "example": "Need web and mobile app integration."
+                                    },
+                                    "utm_source": {
+                                        "type": "string",
+                                        "example": "google"
+                                    },
+                                    "utm_medium": {
+                                        "type": "string",
+                                        "example": "cpc"
+                                    },
+                                    "utm_campaign": {
+                                        "type": "string",
+                                        "example": "web_dev_2026"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Inquiry received and Lead created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "429": {
+                        "description": "Rate limit exceeded"
+                    }
+                }
+            }
+        },
+        "/api/contact": {
+            "post": {
+                "tags": [
+                    "Public API & Services"
+                ],
+                "summary": "Submit Contact Message",
+                "description": "Alias endpoint to submit inquiry / contact message.",
+                "operationId": "9b642057302a1b3b82e2c533fb6d19c4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Mohamed Ali"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "01122334455"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "mohamed@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Contact message received"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/categories": {
+            "get": {
+                "tags": [
+                    "Portfolio Projects"
+                ],
+                "summary": "Get Portfolio Project Categories",
+                "operationId": "837c11904d60ed933bf5b7f143ebff52",
+                "responses": {
+                    "200": {
+                        "description": "Categories list"
+                    }
+                }
+            }
+        },
+        "/api/projects": {
+            "get": {
+                "tags": [
+                    "Portfolio Projects"
+                ],
+                "summary": "List Portfolio Projects",
+                "description": "Returns published portfolio projects with images and category filters.",
+                "operationId": "1acc05c5b95f0de724deea25ca95c9e6",
+                "parameters": [
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Projects list"
+                    }
+                }
+            }
+        },
+        "/api/projects/{project}": {
+            "get": {
+                "tags": [
+                    "Portfolio Projects"
+                ],
+                "summary": "Get Portfolio Project Details",
+                "operationId": "29bab52ae527abf8c93b4913ee4c7bde",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Project details and images"
+                    },
+                    "404": {
+                        "description": "Project not found"
+                    }
+                }
+            }
+        },
+        "/crm/realtime-check": {
+            "get": {
+                "tags": [
+                    "CRM & Leads Pipeline"
+                ],
+                "summary": "Real-time CRM Alerts & New Leads Check",
+                "description": "Endpoint used by dashboard and chime notification bell to check for newly created or assigned leads.",
+                "operationId": "488eba5f42c859a1d2dc06b3fab6f42f",
+                "parameters": [
+                    {
+                        "name": "last_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "last_activity_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "New leads and notifications list"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/crm/{lead}/status": {
+            "patch": {
+                "tags": [
+                    "CRM & Leads Pipeline"
+                ],
+                "summary": "Update CRM Lead Status",
+                "description": "Moves lead to a new pipeline stage (new, contacted, qualified, proposal_sent, negotiation, won, lost).",
+                "operationId": "66f6ddeb40d9cef60c32dfae7a798516",
+                "parameters": [
+                    {
+                        "name": "lead",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "qualified"
+                                    },
+                                    "lost_reason": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lead status updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/crm/{lead}/priority": {
+            "patch": {
+                "tags": [
+                    "CRM & Leads Pipeline"
+                ],
+                "summary": "Update CRM Lead Priority",
+                "operationId": "3875e5c9c2a8327f4f4db43cd11c923f",
+                "parameters": [
+                    {
+                        "name": "lead",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "priority"
+                                ],
+                                "properties": {
+                                    "priority": {
+                                        "type": "string",
+                                        "example": "urgent",
+                                        "enum": [
+                                            "low",
+                                            "medium",
+                                            "high",
+                                            "urgent"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lead priority updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/crm/{lead}/assign": {
+            "patch": {
+                "tags": [
+                    "CRM & Leads Pipeline"
+                ],
+                "summary": "Assign Lead to Employee",
+                "operationId": "6b3fac6d85367f4a14e01f73ea016057",
+                "parameters": [
+                    {
+                        "name": "lead",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "assigned_to": {
+                                        "type": "integer",
+                                        "example": 2,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lead assigned"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/crm/{lead}/notes": {
+            "post": {
+                "tags": [
+                    "CRM & Leads Pipeline"
+                ],
+                "summary": "Add Internal Activity Note to Lead",
+                "operationId": "52cb480236ce8c2b162134a6bacfc96b",
+                "parameters": [
+                    {
+                        "name": "lead",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "type": "string",
+                                        "example": "Client requested a proposal meeting next Tuesday."
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "default": "note"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Note added to lead activities"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/notifications/mark-as-read": {
+            "post": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Mark In-App Notifications as Read",
+                "operationId": "fe515381c9669ba014df935278e2f9f9",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "Specific notification UUID",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "lead_id": {
+                                        "description": "Mark all notifications for this lead",
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Notifications marked as read"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "Public API & Services"
+                ],
+                "summary": "Get Authenticated User Profile",
+                "operationId": "49d888d4c75080a330dcb0ab08afa97e",
+                "responses": {
+                    "200": {
+                        "description": "Current authenticated user profile"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format: Bearer <token>",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "WhatsApp Cloud API",
+            "description": "Meta WhatsApp Business Cloud API Direct Integration & Messaging"
+        },
+        {
+            "name": "CRM & Leads Pipeline",
+            "description": "CRM Customer Relationship Management, Leads, and Follow-ups"
+        },
+        {
+            "name": "Public API & Services",
+            "description": "Public Website Inquiry Forms, Services, and Budgets"
+        },
+        {
+            "name": "Portfolio Projects",
+            "description": "Projects, Categories, and Showcase"
+        },
+        {
+            "name": "Notifications",
+            "description": "In-app real-time alerts and activity history"
+        }
+    ],
+    "security": [
+        {
+            "sanctum": []
+        }
+    ]
+}
