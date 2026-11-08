@@ -7,7 +7,6 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/app-layout';
 import { useTranslation } from '@/lib/i18n';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem, User } from '@/types';
@@ -107,26 +106,11 @@ export default function WhatsAppInbox({
         );
     };
 
-    const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: t('nav.dashboard'),
-            href: dashboard(),
-        },
-        {
-            title: t('nav.crm'),
-            href: '/crm',
-        },
-        {
-            title: isRtl ? 'صندوق محادثات واتساب' : 'WhatsApp Inbox',
-            href: '/crm/whatsapp',
-        },
-    ];
-
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={isRtl ? 'صندوق محادثات واتساب - Meta Cloud API' : 'WhatsApp Inbox - Meta Cloud API'} />
 
-            <div className="flex h-[calc(100vh-65px)] flex-col bg-neutral-100 dark:bg-neutral-950 overflow-hidden">
+            <div className="flex h-[calc(100vh-4rem)] flex-col bg-neutral-100 dark:bg-neutral-950 overflow-hidden">
                 {/* Top Meta Cloud Status Banner if not configured */}
                 {!account.is_active && (
                     <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2 text-xs flex items-center justify-between text-amber-900 dark:text-amber-200 shrink-0">
@@ -220,7 +204,24 @@ export default function WhatsAppInbox({
                     isRtl={isRtl}
                 />
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+WhatsAppInbox.layout = {
+    breadcrumbs: [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+        },
+        {
+            title: 'CRM & Leads',
+            href: '/crm',
+        },
+        {
+            title: 'WhatsApp Inbox',
+            href: '/crm/whatsapp',
+        },
+    ],
+};
 
